@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma';
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { name, server, faction, characterClass, role } = req.body;
-
     try {
       const raider = await prisma.raider.create({
         data: {
@@ -38,8 +37,21 @@ export default async function handler(req, res) {
     }
   } 
   
+  else if (req.method === "DELETE") {
+    const { id } = req.query;
+    try {
+      await prisma.raider.delete({
+        where: { id: parseInt(id) }
+      });
+      res.status(200).json({ message: `Raider ${id} deleted` });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to delete raider" });
+    }
+  }
+  
   else {
-    res.setHeader("Allow", ["POST", "GET"]);
+    res.setHeader("Allow", ["POST", "GET", "DELETE"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
