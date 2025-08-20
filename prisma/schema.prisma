@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Raider {
+  id        Int          @id @default(autoincrement())
+  name      String
+  server    String
+  faction   String?
+  class     String?
+  history   ItemLevel[]
+}
+
+model ItemLevel {
+  id         Int      @id @default(autoincrement())
+  raiderId   Int
+  raider     Raider   @relation(fields: [raiderId], references: [id])
+  ilvl       Float
+  retrievedAt DateTime @default(now())
+}
