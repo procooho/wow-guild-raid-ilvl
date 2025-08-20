@@ -8,18 +8,34 @@ datasource db {
 }
 
 model Raider {
-  id        Int          @id @default(autoincrement())
-  name      String
-  server    String
-  faction   String?
-  class     String?
-  history   ItemLevel[]
+  id                 Int          @id @default(autoincrement())
+  name               String
+  server             String
+  role               Role
+  faction            String?
+  characterClass     String?
+  history            ItemLevel[]
 }
 
 model ItemLevel {
-  id         Int      @id @default(autoincrement())
-  raiderId   Int
-  raider     Raider   @relation(fields: [raiderId], references: [id])
-  ilvl       Float
+  id          Int      @id @default(autoincrement())
+  raiderId    Int
+  raider      Raider   @relation(fields: [raiderId], references: [id])
+  ilvl        Float
+  seasonId    Int
+  season      Season   @relation(fields: [seasonId], references: [id])
   retrievedAt DateTime @default(now())
+}
+
+model Season {
+  id       Int         @id @default(autoincrement())
+  code     String      @unique
+  name     String
+  itemLvls ItemLevel[]
+}
+
+enum Role {
+  TANK
+  HEALER
+  DPS
 }

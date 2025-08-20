@@ -2,8 +2,44 @@ import { prisma } from '@/lib/prisma';
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { name, server, faction, class } = req.body;
-    const user = await prisma.user.create({ data: { name, server, faction, class } });
-    res.status(201).json(user);
+    const { name, server, faction, characterClass, role } = req.body;
+
+    try {
+      const raider = await prisma.raider.create({
+        data: {
+          name,
+          server,
+          faction,
+          characterClass,
+          role
+        }
+      });
+      res.status(201).json(raider);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to create raider" });
+    }
+  } 
+  
+  else if (req.method === "GET") {
+    try {
+      const raiders = await prisma.raider.findMany({
+        include: {
+          history: {
+            orderBy: { retrievedAt: "desc" },
+            take: 1
+          }
+        }
+      });
+      res.status(200).json(raiders);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch raiders" });
+    }
+  } 
+  
+  else {
+    res.setHeader("Allow", ["POST", "GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
