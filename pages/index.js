@@ -1,51 +1,27 @@
-import { useEffect, useState } from "react";
-
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Container from '@mui/material/Container';
 import NavBar from "@/components/NavBar";
-import { getRoster } from "@/utils/api/roster";
-import RaidRoster from "@/components/RaidRoster";
+import { Button, Link, Stack } from "@mui/material";
+import Image from "next/image";
 
 export default function Home() {
-  const [roster, setRoster] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchRoster();
-  }, []);
-
-  const fetchRoster = async () => {
-    try {
-      const data = await getRoster();
-      setRoster(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error Fetching Roster:', error);
-    }
-  };
-  
-
-  if (loading) {
-
-    return <main>
-
-      <NavBar />
-      <Container>
-        <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
-          <CircularProgress />
-        </Box>
-      </Container>
-
-    </main>
-  }
-
   return (
     <main>
       <NavBar />
-      <RaidRoster
-        roster={roster}
-      />
+      <Stack direction="column" justifyContent="center" alignItems="center" gap={10} sx={{ mt: 10 }}>
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={600}
+          height={300}
+        />
+        <Stack direction="row" justifyContent="center" alignItems="center" gap={10}>
+          <Link href={"#"}>
+            <Button variant="contained">Add Raider</Button>
+          </Link>
+          <Link href={"/currentGuildRoster"}>
+            <Button variant="contained">Current Guild Roster</Button>
+          </Link>
+        </Stack>
+      </Stack>
     </main>
   );
 }

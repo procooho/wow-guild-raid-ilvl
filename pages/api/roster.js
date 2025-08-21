@@ -25,7 +25,6 @@ export default async function handler(req, res) {
       const raiders = await prisma.raider.findMany({
         include: {
           history: {
-            orderBy: { recordedAt: "desc" }, // <-- use recordedAt
             take: 1
           }
         }
