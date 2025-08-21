@@ -18,14 +18,14 @@ export default async function handler(req, res) {
       console.error(err);
       res.status(500).json({ error: "Failed to create raider" });
     }
-  } 
-  
+  }
+
   else if (req.method === "GET") {
     try {
       const raiders = await prisma.raider.findMany({
         include: {
           history: {
-            orderBy: { retrievedAt: "desc" },
+            orderBy: { recordedAt: "desc" }, // <-- use recordedAt
             take: 1
           }
         }
@@ -35,8 +35,8 @@ export default async function handler(req, res) {
       console.error(err);
       res.status(500).json({ error: "Failed to fetch raiders" });
     }
-  } 
-  
+  }
+
   else if (req.method === "DELETE") {
     const { id } = req.query;
     try {
@@ -48,10 +48,5 @@ export default async function handler(req, res) {
       console.error(err);
       res.status(500).json({ error: "Failed to delete raider" });
     }
-  }
-  
-  else {
-    res.setHeader("Allow", ["POST", "GET", "DELETE"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
