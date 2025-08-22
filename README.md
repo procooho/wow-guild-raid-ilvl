@@ -1,5 +1,9 @@
 # Guild Raid Roster Item Level Check
 
+**Aug 21 2025 v3**
+- Current Roster
+    -Add Raider form added, works
+
 **Aug 21 2025 v2**
 - Main Page
     - Add Raider

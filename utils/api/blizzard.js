@@ -61,7 +61,7 @@ export async function getCharacterProfile(realm, name) {
   if (!res.ok) {
     const text = await res.text();
     console.error("Blizzard API response:", res.status, text);
-    throw new Error(`Failed to fetch character profile for ${name} on ${realm}`);
+    console.error(`Failed to fetch character profile for ${name} on ${realm}`);
   }
 
   const data = await res.json();

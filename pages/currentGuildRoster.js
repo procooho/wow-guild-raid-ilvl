@@ -6,9 +6,12 @@ import Container from '@mui/material/Container';
 import NavBar from "@/components/NavBar";
 import { getRoster } from "@/utils/api/roster";
 import RaidRoster from "@/components/RaidRoster";
+import { Button, TextField } from "@mui/material";
+import AddRaider from "@/components/AddRaider";
 
 export default function CurrentGuildRoster() {
   const [roster, setRoster] = useState([]);
+  const [addRaider, setAddRaider] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,6 +35,14 @@ export default function CurrentGuildRoster() {
 
       <NavBar />
       <Container>
+        <Button
+          variant="contained"
+          onClick={() => setAddRaider(prev => !prev)}>
+          Add Raider
+        </Button>
+        {addRaider ? (
+          <AddRaider />
+        ) : null}
         <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
           <CircularProgress />
         </Box>
@@ -43,6 +54,14 @@ export default function CurrentGuildRoster() {
   return (
     <main>
       <NavBar />
+      <Button
+        variant="contained"
+        onClick={() => setAddRaider(prev => !prev)}>
+        Add Raider
+      </Button>
+      {addRaider ? (
+        <AddRaider />
+      ) : null}
       <RaidRoster
         roster={roster}
       />

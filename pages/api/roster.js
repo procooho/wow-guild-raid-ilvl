@@ -2,14 +2,12 @@ import { prisma } from '@/lib/prisma';
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { name, server, faction, characterClass, role } = req.body;
+    const { name, server, role } = req.body;
     try {
       const raider = await prisma.raider.create({
         data: {
           name,
           server,
-          faction,
-          characterClass,
           role
         }
       });
