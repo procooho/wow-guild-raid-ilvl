@@ -12,6 +12,18 @@
 
 ---
 
+## Update Log
+
+---
+
+**Aug 25 2025 v1**
+- Fix
+    - Add Raider success feedback message correctly show
+    - Roster now show in alphabetical order (order was keep changing on its own)
+
+
+---
+
 **Aug 24 2025 v1**
 - Most functionality so far seems to be working properly
     - Add Raider

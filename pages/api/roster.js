@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         }
       });
 
-      return res.status(201).json({ success: true, raider });
+      res.status(201).json({ message: `Raider ${raiderName} : Role ${role} Created Successfully`, raider });
 
     } catch (err) {
       console.error(err);
@@ -55,7 +55,8 @@ export default async function handler(req, res) {
   else if (req.method === "GET") {
     try {
       const raiders = await prisma.raider.findMany({
-        include: { history: { take: 1 } }
+        include: { history: { take: 1 } },
+        orderBy: { name: 'asc' },
       });
       return res.status(200).json(raiders);
     } catch (err) {

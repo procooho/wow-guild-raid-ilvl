@@ -17,7 +17,7 @@ export default function NavBar() {
         </Box>
         <Link href={"/currentGuildRoster"}>
           <Typography variant="h6" component="div" sx={{ cursor: "pointer", pr: 2 }}>
-            Current Roster
+            Manage Guild Raid Roster
           </Typography>
         </Link>
       </Toolbar>

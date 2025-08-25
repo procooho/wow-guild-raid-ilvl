@@ -26,17 +26,18 @@ export default function RaidRoster({ roster }) {
   const handleDeleteRaider = (id) => {
     setUpdatedRoster(prev => prev.filter(r => r.id !== id));
 
-    if (clearSelected) setSelectedRaider(null);
-
     // Reset right panel if the deleted raider is selected
     setSelectedRaider(prev => (prev?.id === id ? null : prev));
   };
 
   // Search function
-  const filteredRoster = updatedRoster.filter((raider) => {
-    if (!search) return true;
-    return raider.name.toLowerCase().includes(search.toLowerCase());
-  });
+  const filteredRoster = updatedRoster
+    .filter((raider) => {
+      if (!search) return true;
+      return raider.name.toLowerCase().includes(search.toLowerCase());
+    })
+    //alphabetical order
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   // Average Item Level
   const averageItemLevel = updatedRoster.length > 0

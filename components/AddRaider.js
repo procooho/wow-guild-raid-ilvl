@@ -6,6 +6,7 @@ export default function AddRaider({ onAdd }) {
     const [server, setServer] = useState("");
     const [role, setRole] = useState("");
     const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState("");
 
     //All US server lists
     const usServers = [
@@ -71,6 +72,7 @@ export default function AddRaider({ onAdd }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setSuccess("");
         if (!validateAll()) return;
 
         try {
@@ -85,7 +87,6 @@ export default function AddRaider({ onAdd }) {
             if (!res.ok) {
                 const errorMessage = data.error || data.message || "Failed to create raider";
 
-                // Check for duplicate message
                 if (errorMessage.includes("already exists")) {
                     const newErrors = {};
                     if (errorMessage.includes(`"${name}"`)) newErrors.name = errorMessage;
@@ -102,8 +103,10 @@ export default function AddRaider({ onAdd }) {
             setServer("");
             setRole("");
             setErrors({});
+            setSuccess(data.message || `Raider "${data.raider.name}" added successfully!`);
         } catch (err) {
             setErrors({ form: err.message || "An unexpected error occurred" });
+            setSuccess("");
         }
     };
 
@@ -151,6 +154,8 @@ export default function AddRaider({ onAdd }) {
                         <MenuItem value="HEALER">Healer</MenuItem>
                     </Select>
                 </FormControl>
+
+                {success && (<Paper sx={{ color: 'green', p: 2 }}>{success}</Paper>)}
 
                 {errors.form && <Paper sx={{ color: 'red', p: 2 }}>{errors.form}</Paper>}
 
