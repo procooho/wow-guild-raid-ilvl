@@ -11,7 +11,6 @@ export default function RaidRoster({ roster }) {
   useEffect(() => {
     async function fetchRosterItemLevels() {
       try {
-        //get item level for all raider
         const res = await fetch('/api/rosterItemLevels');
         const data = await res.json();
         setUpdatedRoster(data);
@@ -23,16 +22,31 @@ export default function RaidRoster({ roster }) {
     fetchRosterItemLevels();
   }, [roster]);
 
-  //search function
+  // Function to delete raider
+  const handleDeleteRaider = (id) => {
+    setUpdatedRoster(prev => prev.filter(r => r.id !== id));
+
+    if (clearSelected) setSelectedRaider(null);
+
+    // Reset right panel if the deleted raider is selected
+    setSelectedRaider(prev => (prev?.id === id ? null : prev));
+  };
+
+  // Search function
   const filteredRoster = updatedRoster.filter((raider) => {
     if (!search) return true;
     return raider.name.toLowerCase().includes(search.toLowerCase());
   });
 
+  // Average Item Level
+  const averageItemLevel = updatedRoster.length > 0
+    ? updatedRoster.reduce((sum, r) => sum + (r.currentIlvl || 0), 0) / updatedRoster.length
+    : 0;
+
   return (
-    <Container sx={{ width: "80%", display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Container sx={{ width: "80%", display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
       <Typography variant="h4" sx={{ paddingTop: 2, paddingBottom: 2, color: 'black' }}>
-        Current Guild Roster
+        Manage Current Guild Roster
       </Typography>
 
       <TextField
@@ -42,6 +56,16 @@ export default function RaidRoster({ roster }) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+
+      <Typography variant="h6" align="center" sx={{ mb: 2, color: 'black' }}>
+        Average Item Level of {updatedRoster.length} Raiders: {averageItemLevel.toFixed(2)}
+      </Typography>
+      <Typography variant="body2" sx={{ color: 'black' }}>
+        Showing the average item level of the character has in the bag.
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
+        The actual equipped item level may be lower.
+      </Typography>
 
       <Grid container spacing={2}>
         {/* Left: Roster list */}
@@ -59,7 +83,7 @@ export default function RaidRoster({ roster }) {
                 boxShadow: selectedRaider?.id === raider.id ? '0 4px 12px #3d51e6ff' : '0 2px 6px #414247ff',
               }}
             >
-              <RosterList raider={raider} />
+              <RosterList raider={raider} onDelete={handleDeleteRaider} />
             </div>
           ))}
         </Grid>
@@ -71,7 +95,7 @@ export default function RaidRoster({ roster }) {
               <Individual raider={selectedRaider} />
             </Paper>
           ) : (
-            <Typography variant="body1" sx={{ padding: 2, color: 'black'}}>
+            <Typography variant="body1" sx={{ padding: 2, color: 'black' }}>
               Select a raider to see details
             </Typography>
           )}

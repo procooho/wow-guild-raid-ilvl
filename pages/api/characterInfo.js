@@ -7,35 +7,44 @@ export default async function handler(req, res) {
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  //if name or server is not provided, throw error
   const { name, server, role } = req.body;
+
   if (!name || !server) {
     return res.status(400).json({ error: "Missing name or server" });
   }
 
   try {
-    //get profile from blizzard api
+    // Fetch profile from Blizzard API
     const profile = await getCharacterProfile(server, name);
-    //set current item level from blizzard api
-    const currentIlvl = profile.averageItemLevel;
 
-    //find or create raider - check name and server both match
+    if (!profile) {
+      return res
+        .status(404)
+        .json({ error: `Character "${name}" not found on server "${server}"` });
+    }
+
+    // Capitalize first letter of name
+    const formattedName = profile.name.charAt(0).toUpperCase() + profile.name.slice(1);
+
+    const currentIlvl = profile.averageItemLevel ?? 0;
+
+    // Find existing raider
     let raider = await prisma.raider.findUnique({
-      where: { name_server: { name: profile.name, server } },
+      where: { name_server: { name: formattedName, server } },
     });
 
-    //if raider is not existed, create new one
-    //else, update item level and role
     if (!raider) {
+      // Create new raider
       raider = await prisma.raider.create({
         data: {
-          name: profile.name,
+          name: formattedName,
           server,
-          role: role,
+          role,
           currentIlvl,
         },
       });
     } else {
+      // Update existing raider's item level
       raider = await prisma.raider.update({
         where: { id: raider.id },
         data: {
@@ -45,7 +54,7 @@ export default async function handler(req, res) {
       });
     }
 
-    //check last recorded item level using id
+    // Fetch last item level history
     const lastHistory = await prisma.itemLevelHistory.findFirst({
       where: { raiderId: raider.id },
       orderBy: { recordedAt: "desc" },
@@ -54,8 +63,6 @@ export default async function handler(req, res) {
     const today = new Date();
     let recordedToday = false;
 
-    //record new item level only if it's not recorded today
-    //else, set flag for recorded today
     if (!lastHistory || new Date(lastHistory.recordedAt).toDateString() !== today.toDateString()) {
       await prisma.itemLevelHistory.create({
         data: {
@@ -67,7 +74,7 @@ export default async function handler(req, res) {
       recordedToday = true;
     }
 
-    //get the 2 recent histories for check progress
+    // Get the 2 most recent histories
     const history = await prisma.itemLevelHistory.findMany({
       where: { raiderId: raider.id },
       orderBy: { recordedAt: "desc" },
@@ -85,9 +92,9 @@ export default async function handler(req, res) {
         recordedToday,
       },
       profile: {
-        faction: profile.faction,
-        characterClass: profile.characterClass,
-        race: profile.race,
+        faction: profile.faction ?? "Unknown",
+        characterClass: profile.characterClass ?? "Unknown",
+        race: profile.race ?? "Unknown",
       },
     });
   } catch (err) {

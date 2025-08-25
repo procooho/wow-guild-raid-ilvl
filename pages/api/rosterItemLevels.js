@@ -25,21 +25,27 @@ export default async function handler(req, res) {
         //get new item level if it's been more than a day or no history exists
         if (!lastCheck || Date.now() - new Date(lastCheck) > oneDay) {
           const profile = await getCharacterProfile(raider.server, raider.name);
-          currentIlvl = profile.averageItemLevel;
 
-          //save new item level in history
-          await prisma.itemLevelHistory.create({
-            data: {
-              raiderId: raider.id,
-              ilvl: currentIlvl,
-            },
-          });
+          // skip if profile is null
+          if (profile) {
+            currentIlvl = profile.averageItemLevel;
 
-          //update current item level in Raider table
-          await prisma.raider.update({
-            where: { id: raider.id },
-            data: { currentIlvl },
-          });
+            // save new item level in history
+            await prisma.itemLevelHistory.create({
+              data: {
+                raiderId: raider.id,
+                ilvl: currentIlvl,
+              },
+            });
+
+            // update current item level in Raider table
+            await prisma.raider.update({
+              where: { id: raider.id },
+              data: { currentIlvl },
+            });
+          } else {
+            console.warn(`Skipping ${raider.name} on ${raider.server}, profile not found.`);
+          }
         }
 
         return { ...raider, currentIlvl, lastCheck };

@@ -14,11 +14,8 @@ export default function Home() {
           height={300}
         />
         <Stack direction="row" justifyContent="center" alignItems="center" gap={10}>
-          <Link href={"#"}>
-            <Button variant="contained">Add Raider</Button>
-          </Link>
           <Link href={"/currentGuildRoster"}>
-            <Button variant="contained">Current Guild Roster</Button>
+            <Button variant="contained">Manage Guild Raid Roster</Button>
           </Link>
         </Stack>
       </Stack>

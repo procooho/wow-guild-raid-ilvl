@@ -15,11 +15,6 @@ export default function NavBar() {
             </Typography>
           </Link>
         </Box>
-        <Link href={"#"}>
-          <Typography variant="h6" component="div" sx={{ cursor: "pointer", pr: 2 }}>
-            Add Raider
-          </Typography>
-        </Link>
         <Link href={"/currentGuildRoster"}>
           <Typography variant="h6" component="div" sx={{ cursor: "pointer", pr: 2 }}>
             Current Roster

@@ -43,34 +43,27 @@ export async function getBlizzardToken() {
 //Get character profile
 
 export async function getCharacterProfile(realm, name) {
-
-  //get token
   const token = await getBlizzardToken();
 
-  //get character data
   const res = await fetch(
     `https://us.api.blizzard.com/profile/wow/character/${realm.toLowerCase()}/${name.toLowerCase()}?namespace=profile-us&locale=en_US`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     }
   );
 
-  //show error if data cannot be retrieved
   if (!res.ok) {
-    const text = await res.text();
-    console.error("Blizzard API response:", res.status, text);
-    console.error(`Failed to fetch character profile for ${name} on ${realm}`);
+    console.error("Blizzard API response:", res.status, await res.text());
+    return null;
   }
 
   const data = await res.json();
 
   return {
     name: data.name,
-    faction: data.faction.name,
-    characterClass: data.character_class.name,
-    race: data.race?.name,
-    averageItemLevel: data.average_item_level
+    faction: data.faction?.name ?? "Unknown",
+    characterClass: data.character_class?.name ?? "Unknown",
+    race: data.race?.name ?? "Unknown",
+    averageItemLevel: data.average_item_level ?? 0
   };
 }

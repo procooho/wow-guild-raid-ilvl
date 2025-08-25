@@ -1,86 +1,148 @@
 import { useEffect, useState } from 'react';
-import { Box, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Stack, Typography, Button, Select, MenuItem, Divider } from '@mui/material';
 
 export default function Individual({ raider }) {
-//get and show detail information of selected character
-
+  const [raiderState, setRaider] = useState(raider);
   const [charInfo, setCharInfo] = useState(null);
   const [progress, setProgress] = useState(null);
+  const [editingRole, setEditingRole] = useState(false);
+  const [newRole, setNewRole] = useState(raider?.role || 'DPS');
 
-  //do nothing if name or server is not provided
   useEffect(() => {
-    if (!raider?.name || !raider?.server) return;
+    setRaider({
+      ...raider,
+      role: raider?.role || 'DPS',
+    });
+    setNewRole(raider?.role || 'DPS');
+    setProgress(null);
+    setCharInfo(null);
+  }, [raider]);
 
-    //get data from blizzard api
+  // Fetch character info from API
+  useEffect(() => {
+    if (!raiderState?.name || !raiderState?.server) return;
+
     async function fetchCharacterInfo() {
       try {
         const res = await fetch('/api/characterInfo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name: raider.name,
-            server: raider.server,
-            role: raider.role,
+            name: raiderState.name,
+            server: raiderState.server,
           }),
         });
 
-        //show error if failed
         if (!res.ok) {
           const errorData = await res.json();
-          console.error(`Error fetching ${raider.name}:`, errorData.error);
+          console.error(`Error fetching ${raiderState.name}:`, errorData.error);
+          setCharInfo(null);
           return;
         }
 
-        //put data into state
         const data = await res.json();
+
+        // Ensure the raider has a role
+        const raiderData = {
+          ...raiderState,
+          history: data.raider.history,
+          role: raiderState.role || 'DPS',
+        };
+
+        setRaider(raiderData);
         setCharInfo(data.profile);
 
-        //ilvl history
+        // Calculate ilvl progress
         if (data.raider.history?.length >= 2) {
           const diff = data.raider.history[0].ilvl - data.raider.history[1].ilvl;
           setProgress(diff);
+        } else {
+          setProgress(null);
         }
       } catch (err) {
         console.error('Fetch failed:', err);
+        setCharInfo(null);
       }
     }
-
     fetchCharacterInfo();
-  }, [raider]);
+  }, [raiderState.name, raiderState.server]);
 
-  if (!raider) return null;
+  //change role and update database
+  const handleRoleChange = async () => {
+    if (!newRole) return;
+
+    try {
+      const res = await fetch(`/api/raider/${raiderState.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('Error updating role:', text);
+        alert(`Failed to update role: ${text}`);
+        return;
+      }
+
+      const updatedRaider = await res.json();
+      setRaider(prev => ({ ...prev, role: updatedRaider.role }));
+      setEditingRole(false);
+    } catch (err) {
+      console.error('Error updating role:', err);
+      alert('Error updating role. See console for details.');
+    }
+  };
+
+  //failed to get data doesn't cause error, show unknown instead
+
+  if (!raiderState) return null;
+
+  const faction = charInfo?.faction || 'Unknown';
+  const characterClass = charInfo?.characterClass || 'Unknown';
+  const race = charInfo?.race || 'Unknown';
+
+  //show last check date
+
+  const lastCheckedDate = (() => {
+    const recentHistory = raiderState?.history?.[0];
+    if (!recentHistory?.recordedAt) return 'Unknown';
+    return new Date(recentHistory.recordedAt).toLocaleString();
+  })();
+
+  // Link for related sites
+  const armoryLink = `https://worldofwarcraft.com/en-us/character/us/${raiderState.server.toLowerCase()}/${raiderState.name.toLowerCase()}`;
+  const wclLink = `https://www.warcraftlogs.com/character/us/${raiderState.server.toLowerCase()}/${raiderState.name.toLowerCase()}`;
+  const raiderIoLink = `https://raider.io/characters/us/${raiderState.server.toLowerCase()}/${raiderState.name.toLowerCase()}`;
 
   return (
     <Card variant="outlined" sx={{ minWidth: 400, width: '100%' }}>
       <Box sx={{ p: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">{raider.name}</Typography>
-          <Typography variant="body2" color="text.secondary">{raider.server}</Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Typography variant="h6">{raiderState.name}</Typography>
+          <Typography variant="body2" color="text.secondary">{raiderState.server}</Typography>
         </Stack>
-
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mt: 2 }}>
-          {/* Role & Class */}
+        <Divider />
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mt: 2, mb: 2 }}>
           <Stack direction="column" alignItems="center">
             <Typography variant="body1">Role</Typography>
-            <Typography variant="body2" color="text.secondary">{raider.role}</Typography>
+            <Typography variant="body2" color="text.secondary">{raiderState.role}</Typography>
 
-            <Typography variant="body1" sx={{ mt: 1 }}>Class</Typography>
-            <Typography variant="body2" color="text.secondary">{charInfo?.characterClass || 'Unknown'}</Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>Class</Typography>
+            <Typography variant="body2" color="text.secondary">{characterClass}</Typography>
           </Stack>
 
-          {/* Race & Faction */}
           <Stack direction="column" alignItems="center">
             <Typography variant="body1">Race</Typography>
-            <Typography variant="body2" color="text.secondary">{charInfo?.race || 'Unknown'}</Typography>
+            <Typography variant="body2" color="text.secondary">{race}</Typography>
 
-            <Typography variant="body1" sx={{ mt: 1 }}>Faction</Typography>
-            <Typography variant="body2" color="text.secondary">{charInfo?.faction || 'Unknown'}</Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>Faction</Typography>
+            <Typography variant="body2" color="text.secondary">{faction}</Typography>
           </Stack>
 
-          {/* Item Level */}
           <Stack direction="column" alignItems="center">
             <Typography variant="h5">Item Level</Typography>
-            <Typography variant="body2" color="text.secondary">{raider.currentIlvl ?? 0}</Typography>
+            <Typography variant="body2" color="text.secondary">{raiderState.currentIlvl ?? 0}</Typography>
 
             {progress !== null && (
               <>
@@ -90,14 +152,32 @@ export default function Individual({ raider }) {
                 </Typography>
               </>
             )}
-
-            {raider.lastChecked && (
-              <Typography variant="caption" sx={{ mt: 1 }}>
-                Last checked: {new Date(raider.lastChecked).toLocaleString()}
-              </Typography>
-            )}
           </Stack>
         </Stack>
+        <Divider />
+        <Typography variant="body1" sx={{ mt: 2 }}>Useful Links</Typography>
+        <Stack direction="row" justifyContent={'space-between'} spacing={1} sx={{ mt: 2, mb: 2 }}>
+          <Button variant="outlined" size="small" href={armoryLink} target="_blank">WoW Armory</Button>
+          <Button variant="outlined" size="small" href={wclLink} target="_blank">WCL</Button>
+          <Button variant="outlined" size="small" href={raiderIoLink} target="_blank">Raider.IO</Button>
+        </Stack>
+        <Divider sx={{ mb: 2 }} />
+        <Stack direction="column" spacing={1} sx={{ mb: 2 }}>
+          {editingRole && (
+            <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} size="small">
+              <MenuItem value="TANK">Tank</MenuItem>
+              <MenuItem value="DPS">DPS</MenuItem>
+              <MenuItem value="HEALER">Healer</MenuItem>
+            </Select>
+          )}
+          {editingRole && <Button size="small" variant="contained" onClick={handleRoleChange}>Save</Button>}
+          {editingRole && <Button size="small" variant="outlined" onClick={() => setEditingRole(false)}>Cancel</Button>}
+          {!editingRole && <Button variant="contained" size="small" onClick={() => setEditingRole(true)}>Edit Role</Button>}
+        </Stack>
+        <Divider />
+        <Typography variant="caption" sx={{ mt: 2, display: 'block', textAlign: 'right' }}>
+          Last checked: {lastCheckedDate}
+        </Typography>
       </Box>
     </Card>
   );

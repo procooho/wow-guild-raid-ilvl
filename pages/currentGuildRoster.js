@@ -6,12 +6,12 @@ import Container from '@mui/material/Container';
 import NavBar from "@/components/NavBar";
 import { getRoster } from "@/utils/api/roster";
 import RaidRoster from "@/components/RaidRoster";
-import { Button, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import AddRaider from "@/components/AddRaider";
 
 export default function CurrentGuildRoster() {
   const [roster, setRoster] = useState([]);
-  const [addRaider, setAddRaider] = useState(true);
+  const [addRaider, setAddRaider] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,43 +28,39 @@ export default function CurrentGuildRoster() {
     }
   };
 
-
   if (loading) {
-
-    return <main>
-
-      <NavBar />
-      <Container>
-        <Button
-          variant="contained"
-          onClick={() => setAddRaider(prev => !prev)}>
-          Add Raider
-        </Button>
-        {addRaider ? (
-          <AddRaider />
-        ) : null}
-        <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
-          <CircularProgress />
-        </Box>
-      </Container>
-
-    </main>
+    return (
+      <main>
+        <NavBar />
+        <Container>
+          <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
+            <CircularProgress />
+          </Box>
+        </Container>
+      </main>
+    );
   }
 
   return (
     <main>
       <NavBar />
-      <Button
-        variant="contained"
-        onClick={() => setAddRaider(prev => !prev)}>
-        Add Raider
-      </Button>
-      {addRaider ? (
-        <AddRaider />
-      ) : null}
-      <RaidRoster
-        roster={roster}
-      />
+      <Container sx={{ mb: 5 }}>
+        <Button
+          variant="contained"
+          onClick={() => setAddRaider(prev => !prev)}
+          sx={{ ml: 5 }}>
+          Add Raider
+        </Button>
+        {addRaider && (
+          <AddRaider
+            onAdd={(newRaider) => setRoster(prev => [newRaider, ...prev])}
+          />
+        )}
+        <RaidRoster
+          roster={roster}
+          onDelete={(id) => setRoster(prev => prev.filter(r => r.id !== id))}
+        />
+      </Container>
     </main>
   );
 }
