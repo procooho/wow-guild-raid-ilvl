@@ -18,6 +18,7 @@
     - Feedback(snackbar) message added to let user knows data may need update
 - Visibility Improved
     - Add Raider toggle button has arrow to show user it's expandable menu.
+    - Nav bar hover color change added
 - Some codes cleaned up for better visibility.
 - Loading circle added to roster summary page
 

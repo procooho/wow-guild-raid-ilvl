@@ -39,19 +39,28 @@ export default function LeftNav() {
             <Box sx={{ overflow: 'auto' }}>
                 <Divider />
                 <Link href={"/"}>
-                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2 }}>
+                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2, '&:hover': {
+                        backgroundColor: '#c9c9c9ff',
+                        color: '#111'
+                    }, }}>
                         <HomeFilledIcon />
                         <Typography sx={{ ml: 2 }}>Home</Typography>
                     </Stack>
                 </Link>
                 <Link href={"/rosterSummaryPage"}>
-                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2 }}>
+                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2, '&:hover': {
+                        backgroundColor: '#c9c9c9ff',
+                        color: '#111'
+                    }, }}>
                         <ListAltIcon />
                         <Typography sx={{ ml: 2 }}>Roster Summary</Typography>
                     </Stack>
                 </Link>
                 <Link href={"/currentGuildRoster"}>
-                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2 }}>
+                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2, '&:hover': {
+                        backgroundColor: '#c9c9c9ff',
+                        color: '#111'
+                    }, }}>
                         <ChecklistIcon />
                         <Typography sx={{ ml: 2 }}>Manage Raid Roster</Typography>
                     </Stack>
