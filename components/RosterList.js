@@ -5,9 +5,30 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from 'react';
+import Image from 'next/image';
+
+//Show simple information of the raider
 
 export default function RosterList({ raider, onDelete }) {
   const [deleting, setDeleting] = useState(false);
+
+  const classIconMap = {
+    Warrior: "/warrior.png",
+    Paladin: "/paladin.png",
+    Hunter: "/hunter.png",
+    Rogue: "/rogue.png",
+    Priest: "/priest.png",
+    "Death Knight": "/deathknight.png",
+    Shaman: "/shaman.png",
+    Mage: "/mage.png",
+    Warlock: "/warlock.png",
+    Monk: "/monk.png",
+    Druid: "/druid.png",
+    "Demon Hunter": "/demonhunter.webp",
+    Evoker: "/evoker.webp",
+  };
+
+  const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
 
   const handleDelete = async (event) => {
     event.stopPropagation();
@@ -49,9 +70,15 @@ export default function RosterList({ raider, onDelete }) {
           <IconButton onClick={handleDelete} disabled={deleting} color="error">
             <ClearIcon />
           </IconButton>
-
-          <Typography variant="h6">{raider.name}</Typography>
-
+          <Stack direction="row" alignItems={'center'}>
+            <Image
+              src={getClassIcon(raider.characterClass)}
+              alt={raider.characterClass}
+              width={25}
+              height={25}
+            />
+            <Typography variant="h6" sx={{ml:2}}>{raider.name}</Typography>
+          </Stack>
           <Stack direction="row" alignItems="center" gap={1}>
             <Stack direction="column" alignItems="center">
               <Typography variant="body2">Item Level</Typography>

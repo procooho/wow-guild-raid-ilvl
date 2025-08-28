@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Box, Card, Stack, Typography, Button, Select, MenuItem, Divider } from '@mui/material';
+import Image from 'next/image';
+
+//Show Individual Radier's Details
 
 export default function Individual({ raider }) {
   const [raiderState, setRaider] = useState(raider);
@@ -7,6 +10,24 @@ export default function Individual({ raider }) {
   const [progress, setProgress] = useState(null);
   const [editingRole, setEditingRole] = useState(false);
   const [newRole, setNewRole] = useState(raider?.role || 'DPS');
+
+  const classIconMap = {
+    Warrior: "/warrior.png",
+    Paladin: "/paladin.png",
+    Hunter: "/hunter.png",
+    Rogue: "/rogue.png",
+    Priest: "/priest.png",
+    "Death Knight": "/deathknight.png",
+    Shaman: "/shaman.png",
+    Mage: "/mage.png",
+    Warlock: "/warlock.png",
+    Monk: "/monk.png",
+    Druid: "/druid.png",
+    "Demon Hunter": "/demonhunter.webp",
+    Evoker: "/evoker.webp",
+  };
+
+  const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
 
   useEffect(() => {
     setRaider({
@@ -119,11 +140,19 @@ export default function Individual({ raider }) {
     <Card variant="outlined" sx={{ minWidth: 400, width: '100%' }}>
       <Box sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h6">{raiderState.name}</Typography>
+          <Stack direction="row" alignItems={'center'}>
+            <Image
+              src={getClassIcon(characterClass)}
+              alt={characterClass}
+              width={30}
+              height={30}
+            />
+            <Typography variant="h6" sx={{ ml: 2 }}>{raiderState.name}</Typography>
+          </Stack>
           <Typography variant="body2" color="text.secondary">{raiderState.server}</Typography>
         </Stack>
         <Divider />
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mt: 2, mb: 2 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2, mb: 2 }}>
           <Stack direction="column" alignItems="center">
             <Typography variant="body1">Role</Typography>
             <Typography variant="body2" color="text.secondary">{raiderState.role}</Typography>
@@ -146,7 +175,14 @@ export default function Individual({ raider }) {
 
             {progress !== null && (
               <>
-                <Typography variant="body2" sx={{ mt: 1 }}>Since last check:</Typography>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  Since last check
+                </Typography>
+                <Typography variant="body2">
+                  ({raiderState?.history?.[1]?.recordedAt
+                    ? new Date(raiderState.history[1].recordedAt).toLocaleDateString()
+                    : "N/A"}):
+                </Typography>
                 <Typography variant="body2" color={progress >= 0 ? 'green' : 'red'}>
                   {progress >= 0 ? `+${progress}` : progress}
                 </Typography>
@@ -155,13 +191,29 @@ export default function Individual({ raider }) {
           </Stack>
         </Stack>
         <Divider />
-        <Typography variant="body1" sx={{ mt: 2 }}>Useful Links</Typography>
+        <Typography variant="body1" sx={{ mt: 2 }}>Links</Typography>
         <Stack direction="row" justifyContent={'space-between'} spacing={1} sx={{ mt: 2, mb: 2 }}>
-          <Button variant="outlined" size="small" href={armoryLink} target="_blank">WoW Armory</Button>
-          <Button variant="outlined" size="small" href={wclLink} target="_blank">WCL</Button>
-          <Button variant="outlined" size="small" href={raiderIoLink} target="_blank">Raider.IO</Button>
+          <Button variant="outlined" size="small" href={armoryLink} target="_blank" sx={{
+            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              backgroundColor: '#c9c9c9ff',
+              color: '#111'
+            },
+          }}>WoW Armory</Button>
+          <Button variant="outlined" size="small" href={wclLink} target="_blank" sx={{
+            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              backgroundColor: '#c9c9c9ff',
+              color: '#111'
+            },
+          }}>WCL</Button>
+          <Button variant="outlined" size="small" href={raiderIoLink} target="_blank" sx={{
+            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              backgroundColor: '#c9c9c9ff',
+              color: '#111'
+            },
+          }}>Raider.IO</Button>
         </Stack>
         <Divider sx={{ mb: 2 }} />
+        <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>Edit Role</Typography>
         <Stack direction="column" spacing={1} sx={{ mb: 2 }}>
           {editingRole && (
             <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} size="small">
@@ -170,13 +222,28 @@ export default function Individual({ raider }) {
               <MenuItem value="HEALER">Healer</MenuItem>
             </Select>
           )}
-          {editingRole && <Button size="small" variant="contained" onClick={handleRoleChange}>Save</Button>}
-          {editingRole && <Button size="small" variant="outlined" onClick={() => setEditingRole(false)}>Cancel</Button>}
-          {!editingRole && <Button variant="contained" size="small" onClick={() => setEditingRole(true)}>Edit Role</Button>}
+          {editingRole && <Button size="small" variant="contained" onClick={handleRoleChange} sx={{
+            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              backgroundColor: '#c9c9c9ff',
+              color: '#111'
+            },
+          }}>Save</Button>}
+          {editingRole && <Button size="small" variant="outlined" onClick={() => setEditingRole(false)} sx={{
+            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              backgroundColor: '#c9c9c9ff',
+              color: '#111'
+            },
+          }}>Cancel</Button>}
+          {!editingRole && <Button variant="outlined" size="small" onClick={() => setEditingRole(true)} sx={{
+            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              backgroundColor: '#c9c9c9ff',
+              color: '#111'
+            },
+          }}>Edit Role</Button>}
         </Stack>
         <Divider />
         <Typography variant="caption" sx={{ mt: 2, display: 'block', textAlign: 'right' }}>
-          Last checked: {lastCheckedDate}
+          Recently checked: {lastCheckedDate}
         </Typography>
       </Box>
     </Card>

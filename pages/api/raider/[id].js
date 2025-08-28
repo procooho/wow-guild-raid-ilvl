@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 
+//For update role and delete(delete not being used)
+
 export default async function handler(req, res) {
     const { id } = req.query;
     const parsedId = parseInt(id);

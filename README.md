@@ -3,16 +3,24 @@
 ---
 
 **To Do**
- - Home
-     - Show all raiders in one screen sort by role (Maybe Toggle Button?)
-     - Add Icons??
- - Manage
-    - Need Fix - Order of result is keep changing...
-    - Add Icons??
+- Authentication for add roster??
 
 ---
 
 ## Update Log
+
+---
+
+**Aug 27 2025 v1**
+- Home
+    - Show all raiders in one screen sort by role (Summary)
+- Class Icons are added to all pages
+    - API updated to show class icons
+- Entire site's visibility imporved
+- Code comments added / updated
+- Add New Raider button will stay disabled until security implementation. 
+- Unnecessary files removed
+- Import for all files arranged
 
 ---
 

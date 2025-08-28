@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getCharacterProfile } from "@/utils/api/blizzard";
 
+//For get detailed information from api
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -17,6 +19,7 @@ export default async function handler(req, res) {
     // Fetch profile from Blizzard API
     const profile = await getCharacterProfile(server, name);
 
+    // Show error when there's no match
     if (!profile) {
       return res
         .status(404)
@@ -26,13 +29,15 @@ export default async function handler(req, res) {
     // Capitalize first letter of name
     const formattedName = profile.name.charAt(0).toUpperCase() + profile.name.slice(1);
 
+    // Extract item level, if nothing, show 0
     const currentIlvl = profile.averageItemLevel ?? 0;
 
-    // Find existing raider
+    // Find existing raider in database
     let raider = await prisma.raider.findUnique({
       where: { name_server: { name: formattedName, server } },
     });
 
+    // If not existing,
     if (!raider) {
       // Create new raider
       raider = await prisma.raider.create({
@@ -44,7 +49,7 @@ export default async function handler(req, res) {
         },
       });
     } else {
-      // Update existing raider's item level
+      // Update existing raider
       raider = await prisma.raider.update({
         where: { id: raider.id },
         data: {
@@ -63,6 +68,7 @@ export default async function handler(req, res) {
     const today = new Date();
     let recordedToday = false;
 
+    // if there's no last history, or nothing recorede today, create new one
     if (!lastHistory || new Date(lastHistory.recordedAt).toDateString() !== today.toDateString()) {
       await prisma.itemLevelHistory.create({
         data: {

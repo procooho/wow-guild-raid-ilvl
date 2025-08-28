@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import NavBar from "@/components/NavBar";
 import { getRoster } from "@/utils/api/roster";
 import RaidRoster from "@/components/RaidRoster";
-import { Button } from "@mui/material";
+import { Button, Divider, Paper } from "@mui/material";
 import AddRaider from "@/components/AddRaider";
+import LeftNav from "@/components/LeftNav";
+
+//Manage Roster Page
 
 export default function CurrentGuildRoster() {
   const [roster, setRoster] = useState([]);
@@ -31,36 +33,50 @@ export default function CurrentGuildRoster() {
   if (loading) {
     return (
       <main>
-        <NavBar />
-        <Container>
-          <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
-            <CircularProgress />
-          </Box>
-        </Container>
+        <Box sx={{ display: 'flex' }}>
+          <LeftNav />
+          <Container>
+            <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
+              <CircularProgress />
+            </Box>
+          </Container>
+        </Box>
       </main>
     );
   }
 
   return (
     <main>
-      <NavBar />
-      <Container sx={{ mb: 5 }}>
-        <Button
-          variant="contained"
-          onClick={() => setAddRaider(prev => !prev)}
-          sx={{ ml: 5 }}>
-          Add Raider
-        </Button>
-        {addRaider && (
-          <AddRaider
-            onAdd={(newRaider) => setRoster(prev => [newRaider, ...prev])}
+      <Box sx={{ display: 'flex' }}>
+        <LeftNav />
+        <Container sx={{ mb: 5, mt: 5 }}>
+          <Divider />
+          <Button
+            variant="outlined"
+            onClick={() => setAddRaider(prev => !prev)}
+            sx={{
+              mt:2, mb:2, border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+                backgroundColor: '#c9c9c9ff',
+                color: '#111'
+              },
+            }}
+            fullWidth>
+            Add Raider
+          </Button>
+          {addRaider && (
+            <Paper>
+              <AddRaider
+                onAdd={(newRaider) => setRoster(prev => [newRaider, ...prev])}
+              />
+            </Paper>
+          )}
+          <Divider />
+          <RaidRoster
+            roster={roster}
+            onDelete={(id) => setRoster(prev => prev.filter(r => r.id !== id))}
           />
-        )}
-        <RaidRoster
-          roster={roster}
-          onDelete={(id) => setRoster(prev => prev.filter(r => r.id !== id))}
-        />
-      </Container>
+        </Container>
+      </Box>
     </main>
   );
 }

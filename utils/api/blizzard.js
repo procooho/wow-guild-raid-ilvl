@@ -45,6 +45,7 @@ export async function getBlizzardToken() {
 export async function getCharacterProfile(realm, name) {
   const token = await getBlizzardToken();
 
+  // Get api using token
   const res = await fetch(
     `https://us.api.blizzard.com/profile/wow/character/${realm.toLowerCase()}/${name.toLowerCase()}?namespace=profile-us&locale=en_US`,
     {
@@ -52,6 +53,7 @@ export async function getCharacterProfile(realm, name) {
     }
   );
 
+  // Show error
   if (!res.ok) {
     console.error("Blizzard API response:", res.status, await res.text());
     return null;

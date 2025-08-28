@@ -7,6 +7,8 @@ function capitalizeName(name) {
 }
 
 export default async function handler(req, res) {
+  
+  //Add Raider to database with name capitalized
   if (req.method === "POST") {
     const { name, server, role } = req.body;
 
@@ -52,18 +54,39 @@ export default async function handler(req, res) {
     }
   }
 
+  //Get roster, add class from blizzard api, return
+
   else if (req.method === "GET") {
     try {
       const raiders = await prisma.raider.findMany({
         include: { history: { take: 1 } },
         orderBy: { name: 'asc' },
       });
-      return res.status(200).json(raiders);
+
+      // Enrich with Blizzard API class
+      const enriched = await Promise.all(
+        raiders.map(async (r) => {
+          try {
+            const profile = await getCharacterProfile(r.server, r.name);
+            return {
+              ...r,
+              characterClass: profile?.characterClass || "Unknown",
+            };
+          } catch {
+            return { ...r, characterClass: "Unknown" };
+          }
+        })
+      );
+
+      return res.status(200).json(enriched);
+
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "Failed to fetch raiders" });
     }
   }
+
+  //Delete raider from database
 
   else if (req.method === "DELETE") {
     const { id } = req.query;

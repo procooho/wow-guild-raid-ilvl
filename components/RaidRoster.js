@@ -3,6 +3,8 @@ import { Typography, TextField, Grid, Paper, Container } from '@mui/material';
 import RosterList from './RosterList';
 import Individual from './Individual';
 
+// Main tamplate for roster list and details
+
 export default function RaidRoster({ roster }) {
   const [search, setSearch] = useState('');
   const [selectedRaider, setSelectedRaider] = useState(null);
@@ -45,7 +47,7 @@ export default function RaidRoster({ roster }) {
     : 0;
 
   return (
-    <Container sx={{ width: "80%", display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+    <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
       <Typography variant="h4" sx={{ paddingTop: 2, paddingBottom: 2, color: 'black' }}>
         Manage Current Guild Roster
       </Typography>
@@ -70,27 +72,44 @@ export default function RaidRoster({ roster }) {
 
       <Grid container spacing={2}>
         {/* Left: Roster list */}
-        <Grid item xs={4}>
-          {filteredRoster.map((raider) => (
-            <div
-              key={raider.id}
-              onClick={() => setSelectedRaider(raider)}
-              style={{
-                cursor: 'pointer',
-                borderRadius: '8px',
-                marginBottom: '8px',
-                transform: selectedRaider?.id === raider.id ? 'scale(1.02)' : 'scale(1)',
-                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                boxShadow: selectedRaider?.id === raider.id ? '0 4px 12px #3d51e6ff' : '0 2px 6px #414247ff',
-              }}
-            >
-              <RosterList raider={raider} onDelete={handleDeleteRaider} />
-            </div>
-          ))}
+        <Grid item>
+          <Paper
+            sx={{
+              maxHeight: '70vh',
+              overflowY: 'auto',
+              '&::-webkit-scrollbar': { width: '10px' },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#1E1E1E',
+                borderRadius: '5px',
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#c5c5c5ff',
+                borderRadius: '5px',
+              },
+              padding: 1
+            }}
+          >
+            {filteredRoster.map((raider) => (
+              <div
+                key={raider.id}
+                onClick={() => setSelectedRaider(raider)}
+                style={{
+                  cursor: 'pointer',
+                  borderRadius: '8px',
+                  marginBottom: '8px',
+                  transform: selectedRaider?.id === raider.id ? 'scale(1.02)' : 'scale(1)',
+                  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                  boxShadow: selectedRaider?.id === raider.id ? '0 8px 12px #1E1E1E' : '0 2px 6px #414247ff',
+                }}
+              >
+                <RosterList raider={raider} onDelete={handleDeleteRaider} />
+              </div>
+            ))}
+          </Paper>
         </Grid>
 
         {/* Right: Detail panel */}
-        <Grid item xs={8}>
+        <Grid>
           {selectedRaider ? (
             <Paper sx={{ padding: 2 }}>
               <Individual raider={selectedRaider} />

@@ -1,5 +1,7 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
+
+//Component for add raider
 
 export default function AddRaider({ onAdd }) {
     const [name, setName] = useState("");
@@ -46,7 +48,7 @@ export default function AddRaider({ onAdd }) {
         "Zangarmarsh", "Zul’jin", "Zuluhed"
     ];
 
-    //validate form
+    //validate form when submit
     const validateField = (field, value) => {
         switch (field) {
             case 'name': return value.trim() ? '' : 'Character name is required';
@@ -56,10 +58,12 @@ export default function AddRaider({ onAdd }) {
         }
     };
 
+    //validate form when user leaves field
     const handleBlur = (field, value) => {
         setErrors(prev => ({ ...prev, [field]: validateField(field, value) }));
     };
 
+    //validate form when submit
     const validateAll = () => {
         const newErrors = {
             name: validateField('name', name),
@@ -98,6 +102,7 @@ export default function AddRaider({ onAdd }) {
                 return;
             }
 
+            //reset form and message
             onAdd?.(data.raider);
             setName("");
             setServer("");
@@ -159,9 +164,19 @@ export default function AddRaider({ onAdd }) {
 
                 {errors.form && <Paper sx={{ color: 'red', p: 2 }}>{errors.form}</Paper>}
 
-                <Button variant="contained" type="submit">
-                    Add New Raider
+                <Button variant="outlined" type="submit" disabled sx={{
+                    border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', 
+                    '&:hover': {
+                        backgroundColor: '#c9c9c9ff',
+                        color: '#111'
+                    }, '&.Mui-disabled': {
+                        backgroundColor: '#555',
+                        color: '#fff',
+                    },
+                }}>
+                    Add New Raider (Disabled)
                 </Button>
+                <Typography>**Add button disabled until security implement (But functionality checked)</Typography>
             </Stack>
             <Divider />
         </form>
