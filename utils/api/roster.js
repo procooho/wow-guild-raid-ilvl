@@ -1,5 +1,5 @@
 export const getRoster = async () => {
-  const response = await fetch(`${BASE_URL}/api/roster`);
+  const response = await fetch(`api/roster`);
   const data = await response.json();
   return data;
 }
