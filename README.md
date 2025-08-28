@@ -14,6 +14,7 @@
 **Aug 27 2025 v2** (Stage 1 Final)
 - Fixed Local Host urls
 - Delete Raider button will stay disabled until security implementation. 
+- Edit Raider button will stay disabled until security implementation. 
 - Click logo in nav will redirect to home
 - Unnecessary codes removed
 - Comment regarding disabled buttons added
