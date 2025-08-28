@@ -1,33 +1,49 @@
 import { useState, useEffect } from 'react';
-import { Typography, TextField, Grid, Paper, Container } from '@mui/material';
+import { Typography, TextField, Grid, Paper, Container, Button, Snackbar, Alert } from '@mui/material';
 import RosterList from './RosterList';
 import Individual from './Individual';
 
-// Main tamplate for roster list and details
-
+// Main template for roster list and details
 export default function RaidRoster({ roster }) {
   const [search, setSearch] = useState('');
   const [selectedRaider, setSelectedRaider] = useState(null);
-  const [updatedRoster, setUpdatedRoster] = useState([]);
 
+  // initialize with passed roster
+  const [updatedRoster, setUpdatedRoster] = useState(roster);
+
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+
+  // show info snackbar on initial load
   useEffect(() => {
-    async function fetchRosterItemLevels() {
-      try {
-        const res = await fetch('/api/rosterItemLevels');
-        const data = await res.json();
-        setUpdatedRoster(data);
-      } catch (err) {
-        console.error("Failed to fetch item levels:", err);
-        setUpdatedRoster(roster);
-      }
+    setSnackbar({
+      open: true,
+      message: "Displaying saved data. Press 'Refresh All Item Level' to get the latest data.",
+      severity: 'info',
+    });
+  }, []);
+
+  const fetchRosterItemLevels = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/rosterItemLevels');
+      if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+      const data = await res.json();
+      setUpdatedRoster(data);
+
+      setSnackbar({ open: true, message: 'Roster item levels refreshed!', severity: 'success' });
+    } catch (err) {
+      console.error("Failed to fetch item levels:", err);
+      setUpdatedRoster(roster);
+      setSnackbar({ open: true, message: 'Failed to refresh item levels.', severity: 'error' });
+    } finally {
+      setLoading(false);
     }
-    fetchRosterItemLevels();
-  }, [roster]);
+  };
 
   // Function to delete raider
   const handleDeleteRaider = (id) => {
     setUpdatedRoster(prev => prev.filter(r => r.id !== id));
-
     // Reset right panel if the deleted raider is selected
     setSelectedRaider(prev => (prev?.id === id ? null : prev));
   };
@@ -73,9 +89,27 @@ export default function RaidRoster({ roster }) {
         **Delete button disabled until security implement (But functionality checked)
       </Typography>
 
+      <Button
+        variant="outlined"
+        sx={{
+          mt: 2, mb: 2, border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff',
+          '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' },
+        }}
+        fullWidth
+        onClick={fetchRosterItemLevels}
+        disabled={loading}
+      >
+        {loading ? 'Refreshing...' : 'Refresh All Item Level'}
+      </Button>
+
+      <Typography variant="body2" sx={{ mb: 2, color: 'black', textAlign: 'center' }}>
+        (Item Level only refreshes once a day)
+      </Typography>
+
+      {/* Left & Right Panels */}
       <Grid container spacing={2}>
         {/* Left: Roster list */}
-        <Grid item>
+        <Grid>
           <Paper
             sx={{
               maxHeight: '70vh',
@@ -124,6 +158,23 @@ export default function RaidRoster({ roster }) {
           )}
         </Grid>
       </Grid>
+
+      {/* Snackbar for success/error messages */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={10000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{ width: '100%' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '80vw' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

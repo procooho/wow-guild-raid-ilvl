@@ -8,6 +8,8 @@ import RaidRoster from "@/components/RaidRoster";
 import { Button, Divider, Paper } from "@mui/material";
 import AddRaider from "@/components/AddRaider";
 import LeftNav from "@/components/LeftNav";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 //Manage Roster Page
 
@@ -55,13 +57,30 @@ export default function CurrentGuildRoster() {
             variant="outlined"
             onClick={() => setAddRaider(prev => !prev)}
             sx={{
-              mt:2, mb:2, border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
+              mt: 2,
+              mb: 2,
+              border: '2px solid',
+              backgroundColor: '#1E1E1E',
+              color: '#fff',
+              '&:hover': {
                 backgroundColor: '#c9c9c9ff',
                 color: '#111'
               },
             }}
             fullWidth>
-            Add Raider
+            {addRaider ? (
+              <>
+                <ExpandMoreIcon sx={{ mr: 1 }} />
+                Add Raider
+                <ExpandMoreIcon sx={{ ml: 1 }} />
+              </>
+            ) : (
+              <>
+                <ExpandLessIcon sx={{ mr: 1 }} />
+                Add Raider
+                <ExpandLessIcon sx={{ ml: 1 }} />
+              </>
+            )}
           </Button>
           {addRaider && (
             <Paper>

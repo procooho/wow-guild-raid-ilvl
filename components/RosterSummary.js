@@ -1,24 +1,17 @@
-import { useState } from "react";
-import { Stack, Typography, Paper, IconButton, Collapse, Grid } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Stack, Typography, Paper, IconButton, Collapse, Grid, Button, Snackbar, Alert } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import Image from "next/image";
 
-// For main page roster summary
+// For roster summary
 
 export default function RosterSummary({ roster }) {
-
     //Collapsable individually
-    const [collapsed, setCollapsed] = useState({
-        TANK: true,
-        HEALER: true,
-        DPS: true,
-    });
-
-    //Toggle individually
-    const toggleCollapse = (role) => {
-        setCollapsed((prev) => ({ ...prev, [role]: !prev[role] }));
-    };
+    const [collapsed, setCollapsed] = useState({ TANK: true, HEALER: true, DPS: true });
+    const [updatedRoster, setUpdatedRoster] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
     const roles = ["TANK", "HEALER", "DPS"];
 
@@ -47,23 +40,49 @@ export default function RosterSummary({ roster }) {
 
     const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
 
-    // Group raiders by role
+    // show info snackbar on initial load
+    useEffect(() => {
+        setUpdatedRoster(roster);
+        setSnackbar({
+            open: true,
+            message: "Displaying saved data. Press 'Refresh All Item Level' to get the latest data.",
+            severity: "info",
+        });
+    }, [roster]);
+
+    //Toggle individually
+    const toggleCollapse = (role) => setCollapsed((prev) => ({ ...prev, [role]: !prev[role] }));
+
     const groupedRaiders = roles.reduce((acc, role) => {
-        acc[role] = roster.filter((r) => r.role.toUpperCase() === role);
+        acc[role] = updatedRoster.filter((r) => r.role.toUpperCase() === role);
         return acc;
     }, {});
 
-    // Count raiders per class
     const classCounts = Object.keys(classIconMap).reduce((acc, className) => {
-        acc[className] = roster.filter((r) => r.characterClass === className).length;
+        acc[className] = updatedRoster.filter((r) => r.characterClass === className).length;
         return acc;
     }, {});
 
-    // Calculate average item level
     const averageIlvl =
-        roster.length > 0
-            ? roster.reduce((sum, r) => sum + (r.currentIlvl || 0), 0) / roster.length
+        updatedRoster.length > 0
+            ? updatedRoster.reduce((sum, r) => sum + (r.currentIlvl || 0), 0) / updatedRoster.length
             : 0;
+
+    const fetchRosterItemLevels = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/rosterItemLevels");
+            if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+            const data = await res.json();
+            setUpdatedRoster(data);
+            setSnackbar({ open: true, message: "Roster item levels refreshed!", severity: "success" });
+        } catch (err) {
+            console.error("Failed to fetch item levels:", err);
+            setSnackbar({ open: true, message: "Failed to refresh item levels.", severity: "error" });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Stack spacing={2} sx={{ mb: 5 }}>
@@ -76,17 +95,30 @@ export default function RosterSummary({ roster }) {
             <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
                 The actual equipped item level may be lower.
             </Typography>
+            
+            <Button
+                variant="outlined"
+                sx={{ mt: 2, border: "2px solid", backgroundColor: "#1E1E1E", color: "#fff", "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" } }}
+                fullWidth
+                onClick={fetchRosterItemLevels}
+                disabled={loading}
+            >
+                {loading ? "Refreshing..." : "Refresh All Item Level"}
+            </Button>
+
+            <Typography variant="body2" sx={{ mb: 2, color: 'black', textAlign:'center' }}>
+                (Item Level only refreshes once a day)
+            </Typography>
 
             {/* Class Summary */}
             <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mt: 1, mb: 2 }}>
                 {Object.entries(classCounts).map(([className, count]) => (
                     <Stack
-                        key={className}
                         direction="row"
                         alignItems="center"
                         spacing={0.5}
-                        sx={{ mr: 2, mb: 1 }}
-                    >
+                        key={className}
+                        sx={{ mr: 2, mb: 1 }}>
                         <Image
                             src={getClassIcon(className)}
                             alt={className}
@@ -106,7 +138,7 @@ export default function RosterSummary({ roster }) {
                             <Stack direction="row" alignItems="center" justifyContent="space-between">
                                 <Image
                                     src={roleIconMap[role]}
-                                    alt={[role]}
+                                    alt={role}
                                     width={24}
                                     height={24}
                                 />
@@ -139,6 +171,18 @@ export default function RosterSummary({ roster }) {
                     </Grid>
                 ))}
             </Grid>
+
+            {/* Snackbar */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={10000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: "80vw" }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Stack>
     );
 }

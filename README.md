@@ -11,6 +11,17 @@
 
 ---
 
+**Aug 28 2025 v1** (Stage 1 Final)
+- Bug Fix
+    - Item level was not updated until each card is clicked. 
+    - Added manual fetch button on both summary and manage page.
+    - Feedback(snackbar) message added to let user knows data may need update
+- Visibility Improved
+    - Add Raider toggle button has arrow to show user it's expandable menu.
+- Some codes cleaned up for better visibility.
+
+---
+
 **Aug 27 2025 v2** (Stage 1 Final)
 - Fixed Local Host urls
 - Delete Raider button will stay disabled until security implementation. 
