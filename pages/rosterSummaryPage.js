@@ -1,10 +1,11 @@
 import LeftNav from "@/components/LeftNav";
 import RosterSummary from "@/components/RosterSummary";
-import { Box } from "@mui/material";
+import { Box, Container, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function RosterSummaryPage() {
-    const [roster, setRoster] = useState([]); // define state
+    const [roster, setRoster] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchRoster() {
@@ -14,18 +15,35 @@ export default function RosterSummaryPage() {
                 setRoster(data);
             } catch (err) {
                 console.error("Failed to fetch roster:", err);
+            } finally {
+                setLoading(false);
             }
         }
 
         fetchRoster();
     }, []);
 
+    if (loading) {
+        return (
+            <main>
+                <Box sx={{ display: 'flex' }}>
+                    <LeftNav />
+                    <Container>
+                        <Box sx={{ display: 'flex', paddingTop: 4, justifyContent: 'center' }}>
+                            <CircularProgress />
+                        </Box>
+                    </Container>
+                </Box>
+            </main>
+        );
+    }
+
     return (
         <main>
             <Box sx={{ display: 'flex' }}>
                 <LeftNav />
                 <Box sx={{ mt: 10, width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    <RosterSummary roster={roster} /> {/* safe to use now */}
+                    <RosterSummary roster={roster} />
                 </Box>
             </Box>
         </main>

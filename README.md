@@ -19,6 +19,7 @@
 - Visibility Improved
     - Add Raider toggle button has arrow to show user it's expandable menu.
 - Some codes cleaned up for better visibility.
+- Loading circle added to roster summary page
 
 ---
 
