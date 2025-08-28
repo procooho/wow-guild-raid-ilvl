@@ -1,5 +1,3 @@
-export const BASE_URL = "http://localhost:3000"
-
 export const getRoster = async () => {
   const response = await fetch(`${BASE_URL}/api/roster`);
   const data = await response.json();
@@ -7,7 +5,7 @@ export const getRoster = async () => {
 }
 
 export const postRoster = async ({ name, server, role }) => {
-  return fetch(`${BASE_URL}/api/roster`, {
+  return fetch(`/api/roster`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json'
