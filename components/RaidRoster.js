@@ -69,6 +69,9 @@ export default function RaidRoster({ roster }) {
       <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
         The actual equipped item level may be lower.
       </Typography>
+      <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
+        **Delete button disabled until security implement (But functionality checked)
+      </Typography>
 
       <Grid container spacing={2}>
         {/* Left: Roster list */}

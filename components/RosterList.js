@@ -67,7 +67,8 @@ export default function RosterList({ raider, onDelete }) {
     >
       <Box sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" gap={4}>
-          <IconButton onClick={handleDelete} disabled={deleting} color="error">
+          {/* disabled={deleting} */}
+          <IconButton onClick={handleDelete} disabled color="error">
             <ClearIcon />
           </IconButton>
           <Stack direction="row" alignItems={'center'}>

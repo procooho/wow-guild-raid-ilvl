@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import RosterSummary from "@/components/RosterSummary";
 import LeftNav from "@/components/LeftNav";
@@ -26,14 +26,11 @@ export default function Home() {
     <main>
       <Box sx={{ display: 'flex' }}>
         <LeftNav />
-
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 20 }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 10 }}>
+          <Typography variant="h2" sx={{ mb: 5, color: 'black' }}>
+            Raid Roster Manager
+          </Typography>
           <Image src="/logo.png" alt="Logo" width={600} height={300} />
-          {showSummary && (
-            <Box sx={{ mt: 10, width: '100%', display: 'flex', justifyContent: 'center' }}>
-              <RosterSummary roster={roster} />
-            </Box>
-          )}
         </Box>
       </Box>
     </main>

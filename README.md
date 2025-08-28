@@ -11,6 +11,16 @@
 
 ---
 
+**Aug 27 2025 v2** (Stage 1 Final)
+- Fixed Local Host urls
+- Delete Raider button will stay disabled until security implementation. 
+- Click logo in nav will redirect to home
+- Unnecessary codes removed
+- Comment regarding disabled buttons added
+- Stage 1 Done ( Basic Roster Add / Edit / View)
+
+---
+
 **Aug 27 2025 v1**
 - Home
     - Show all raiders in one screen sort by role (Summary)

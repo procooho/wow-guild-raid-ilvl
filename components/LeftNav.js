@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Stack, Typography } from '@mui/material';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import Image from 'next/image';
 
 const drawerWidth = 240;
@@ -25,13 +26,15 @@ export default function LeftNav() {
             }}
         >
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
-                <Image
-                    src="/logo.png"
-                    alt="Logo"
-                    width={180}
-                    height={60}
-                    style={{ width: '100%', height: 'auto' }}
-                />
+                <Link href={"/"}>
+                    <Image
+                        src="/logo.png"
+                        alt="Logo"
+                        width={180}
+                        height={60}
+                        style={{ width: '100%', height: 'auto' }}
+                    />
+                </Link>
             </Box>
             <Box sx={{ overflow: 'auto' }}>
                 <Divider />
@@ -43,7 +46,7 @@ export default function LeftNav() {
                 </Link>
                 <Link href={"/rosterSummaryPage"}>
                     <Stack direction={'row'} alignItems={'center'} sx={{ p: 2 }}>
-                        <HomeFilledIcon />
+                        <ListAltIcon />
                         <Typography sx={{ ml: 2 }}>Roster Summary</Typography>
                     </Stack>
                 </Link>
