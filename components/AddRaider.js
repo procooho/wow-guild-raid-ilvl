@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper, Typography } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper } from '@mui/material';
 import { useState } from 'react';
 
 //Component for add raider
@@ -9,6 +9,7 @@ export default function AddRaider({ onAdd }) {
     const [role, setRole] = useState("");
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState(false);
 
     //All US server lists
     const usServers = [
@@ -76,8 +77,10 @@ export default function AddRaider({ onAdd }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setSuccess("");
         if (!validateAll()) return;
+
+        setLoading(true);
+        setSuccess("");
 
         try {
             const res = await fetch("/api/roster", {
@@ -89,29 +92,19 @@ export default function AddRaider({ onAdd }) {
             const data = await res.json().catch(() => ({}));
 
             if (!res.ok) {
-                const errorMessage = data.error || data.message || "Failed to create raider";
+                setErrors({ form: data.error || "Failed to add raider" });
+            } else {
+                setSuccess(`Raider "${data.raider.name}" added as Role "${data.raider.role}" successfully!`);
+                setErrors({});
 
-                if (errorMessage.includes("already exists")) {
-                    const newErrors = {};
-                    if (errorMessage.includes(`"${name}"`)) newErrors.name = errorMessage;
-                    if (errorMessage.includes(`"${server}"`)) newErrors.server = errorMessage;
-                    setErrors(prev => ({ ...prev, ...newErrors }));
-                } else {
-                    setErrors(prev => ({ ...prev, form: errorMessage }));
-                }
-                return;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
-
-            //reset form and message
-            onAdd?.(data.raider);
-            setName("");
-            setServer("");
-            setRole("");
-            setErrors({});
-            setSuccess(data.message || `Raider "${data.raider.name}" added successfully!`);
         } catch (err) {
-            setErrors({ form: err.message || "An unexpected error occurred" });
-            setSuccess("");
+            setErrors({ form: err.message || "Unexpected error" });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -127,8 +120,8 @@ export default function AddRaider({ onAdd }) {
                     onBlur={() => handleBlur('name', name)}
                     error={!!errors.name}
                     helperText={errors.name}
+                    disabled={loading || !!success}
                 />
-
                 <Autocomplete
                     options={usServers}
                     value={server}
@@ -145,9 +138,9 @@ export default function AddRaider({ onAdd }) {
                         />
                     )}
                     freeSolo
+                    disabled={loading || !!success}
                 />
-
-                <FormControl fullWidth error={!!errors.role}>
+                <FormControl fullWidth error={!!errors.role} disabled={loading || !!success}>
                     <InputLabel>Role</InputLabel>
                     <Select
                         value={role}
@@ -160,23 +153,35 @@ export default function AddRaider({ onAdd }) {
                     </Select>
                 </FormControl>
 
-                {success && (<Paper sx={{ color: 'green', p: 2 }}>{success}</Paper>)}
+                {/* Error message */}
+                {errors.form && (
+                    <Paper sx={{ color: 'red', p: 2, mt: 2 }}>
+                        {errors.form}
+                    </Paper>
+                )}
 
-                {errors.form && <Paper sx={{ color: 'red', p: 2 }}>{errors.form}</Paper>}
+                {/* Submit button hidden after success */}
+                {!success && (
+                    <Button
+                        type="submit"
+                        variant="outlined"
+                        disabled={loading}
+                        sx={{
+                            backgroundColor: '#1E1E1E',
+                            color: '#fff',
+                            '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' }
+                        }}
+                    >
+                        {loading ? "Adding..." : "Add New Raider"}
+                    </Button>
+                )}
 
-                <Button variant="outlined" type="submit" disabled sx={{
-                    border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', 
-                    '&:hover': {
-                        backgroundColor: '#c9c9c9ff',
-                        color: '#111'
-                    }, '&.Mui-disabled': {
-                        backgroundColor: '#555',
-                        color: '#fff',
-                    },
-                }}>
-                    Add New Raider (Disabled)
-                </Button>
-                <Typography>**Add button disabled until security implement (But functionality checked)</Typography>
+                {/* Success message */}
+                {success && (
+                    <Paper sx={{ color: 'green', p: 2, mt: 2 }}>
+                        {success}
+                    </Paper>
+                )}
             </Stack>
             <Divider />
         </form>

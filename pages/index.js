@@ -1,26 +1,8 @@
-import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
-import RosterSummary from "@/components/RosterSummary";
 import LeftNav from "@/components/LeftNav";
 
 export default function Home() {
-  const [roster, setRoster] = useState([]);
-  const [showSummary, setShowSummary] = useState(false);
-
-  useEffect(() => {
-    async function fetchRoster() {
-      try {
-        const res = await fetch("/api/roster");
-        const data = await res.json();
-        setRoster(data);
-      } catch (err) {
-        console.error("Failed to fetch roster:", err);
-      }
-    }
-
-    fetchRoster();
-  }, []);
 
   return (
     <main>
@@ -31,6 +13,9 @@ export default function Home() {
             Raid Roster Manager
           </Typography>
           <Image src="/logo.png" alt="Logo" width={600} height={300} />
+          <Typography variant="h2" sx={{ mt: 5, color: 'black' }}>
+            TWW S3 Roster Updated!
+          </Typography>
         </Box>
       </Box>
     </main>

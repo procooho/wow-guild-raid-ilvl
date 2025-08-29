@@ -214,8 +214,6 @@ export default function Individual({ raider }) {
         </Stack>
         <Divider sx={{ mb: 2 }} />
         <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>Edit Role</Typography>
-        <Typography>**Add button disabled until security implement</Typography>
-        <Typography>(But functionality checked)</Typography>
         <Stack direction="column" spacing={1} sx={{ mb: 2 }}>
           {editingRole && (
             <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} size="small">
@@ -236,7 +234,7 @@ export default function Individual({ raider }) {
               color: '#111'
             },
           }}>Cancel</Button>}
-          {!editingRole && <Button variant="outlined" size="small" onClick={() => setEditingRole(true)} disabled sx={{
+          {!editingRole && <Button variant="outlined" size="small" onClick={() => setEditingRole(true)} sx={{
             border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff',
             '&:hover': {
               backgroundColor: '#c9c9c9ff',

@@ -2,15 +2,27 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import Link from 'next/link';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, Button } from '@mui/material';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import Image from 'next/image';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const drawerWidth = 240;
 
 export default function LeftNav() {
+    const { loggedIn, logoutUser } = useAuth();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        // updates context & localStorage
+        logoutUser();
+        // redirect home
+        router.push("/");
+    };
+
     return (
         <Drawer
             variant="permanent"
@@ -36,36 +48,110 @@ export default function LeftNav() {
                     />
                 </Link>
             </Box>
+
             <Box sx={{ overflow: 'auto' }}>
                 <Divider />
+
                 <Link href={"/"}>
-                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2, '&:hover': {
-                        backgroundColor: '#c9c9c9ff',
-                        color: '#111'
-                    }, }}>
+                    <Stack
+                        direction='row'
+                        alignItems='center'
+                        sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                    >
                         <HomeFilledIcon />
                         <Typography sx={{ ml: 2 }}>Home</Typography>
                     </Stack>
                 </Link>
+
                 <Link href={"/rosterSummaryPage"}>
-                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2, '&:hover': {
-                        backgroundColor: '#c9c9c9ff',
-                        color: '#111'
-                    }, }}>
+                    <Stack
+                        direction='row'
+                        alignItems='center'
+                        sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                    >
                         <ListAltIcon />
                         <Typography sx={{ ml: 2 }}>Roster Summary</Typography>
                     </Stack>
                 </Link>
-                <Link href={"/currentGuildRoster"}>
-                    <Stack direction={'row'} alignItems={'center'} sx={{ p: 2, '&:hover': {
-                        backgroundColor: '#c9c9c9ff',
-                        color: '#111'
-                    }, }}>
-                        <ChecklistIcon />
-                        <Typography sx={{ ml: 2 }}>Manage Raid Roster</Typography>
-                    </Stack>
-                </Link>
-                <Divider />
+
+                {/* Officer Only Section */}
+                <Divider
+                    variant="middle"
+                    sx={{
+                        mt: 20,
+                        mb: 5,
+                        "&::before, &::after": { borderColor: "white" },
+                        color: "white",
+                    }}
+                >
+                    Officer Only
+                </Divider>
+
+                {loggedIn ? (
+                    <Link href={"/currentGuildRoster"}>
+                        <Stack
+                            direction='row'
+                            alignItems='center'
+                            sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                        >
+                            <ChecklistIcon />
+                            <Typography sx={{ ml: 2 }}>Manage Raid Roster</Typography>
+                        </Stack>
+                    </Link>
+                ) : (
+                    <>
+                        <Typography sx={{ px: 2, fontStyle: "italic", color: "#ccc", textAlign: "center" }}>
+                            Login as Officer
+                        </Typography>
+                        <Typography sx={{ px: 2, fontStyle: "italic", color: "#ccc", textAlign: "center" }}>
+                            to view this menu
+                        </Typography>
+                    </>
+                )}
+
+                {/* Login / Logout */}
+                <Box sx={{ p: 2, mt:3 }}>
+                    {loggedIn ? (
+                        <>
+                            <Typography sx={{ mb: 1, fontSize: "0.9rem" }}>
+                                Logged in as: <b>Officer</b>
+                            </Typography>
+                            <Button
+                                variant="outlined"
+                                fullWidth
+                                onClick={handleLogout}
+                                sx={{
+                                    border: "2px solid",
+                                    backgroundColor: "#1E1E1E",
+                                    color: "#fff",
+                                    "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" },
+                                }}
+                            >
+                                Logout
+                            </Button>
+                        </>
+                    ) : (
+                        <Link href={"/login"}>
+                            <Button
+                                variant="outlined"
+                                fullWidth
+                                sx={{
+                                    border: "2px solid",
+                                    backgroundColor: "#1E1E1E",
+                                    color: "#fff",
+                                    "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" },
+                                }}
+                            >
+                                Officer Login
+                            </Button>
+                        </Link>
+                    )}
+                </Box>
+
+                <Divider
+                    variant="middle"
+                    sx={{ mt: 5, mb: 5, borderColor: "white" }}
+                />
             </Box>
         </Drawer>
     );

@@ -14,6 +14,11 @@ export default function RaidRoster({ roster }) {
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
+  // Sync with roster immediately
+  useEffect(() => {
+    setUpdatedRoster(roster);
+  }, [roster]);
+
   // show info snackbar on initial load
   useEffect(() => {
     setSnackbar({
@@ -85,9 +90,6 @@ export default function RaidRoster({ roster }) {
       <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
         The actual equipped item level may be lower.
       </Typography>
-      <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
-        **Delete button disabled until security implement (But functionality checked)
-      </Typography>
 
       <Button
         variant="outlined"
@@ -152,9 +154,11 @@ export default function RaidRoster({ roster }) {
               <Individual raider={selectedRaider} />
             </Paper>
           ) : (
-            <Typography variant="body1" sx={{ padding: 2, color: 'black' }}>
-              Select a raider to see details
-            </Typography>
+            <Paper sx={{ padding: 2 }}>
+              <Typography variant="h5" sx={{ padding: 2, color: 'black', textAlign: 'center' }}>
+                Select a raider to see details
+              </Typography>
+            </Paper>
           )}
         </Grid>
       </Grid>

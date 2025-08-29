@@ -11,6 +11,19 @@
 
 ---
 
+**Aug 28 2025 v2** (Stage 2 - Auth / Bug Fix)
+- Some code clean up
+- Add Raider
+    - After a successful add, refresh the page to update the list
+    - Add Raider fixed
+- Login Implemented
+    - Add, Delete, Edit buttons enabled
+    - Nav bar has a login button
+    - Manage the Roster page now only for logged in officers
+    - Manager only menu added, can only be seen by logged in officer
+
+---
+
 **Aug 28 2025 v1** (Stage 1 Final)
 - Bug Fix
     - Item level was not updated until each card is clicked. 

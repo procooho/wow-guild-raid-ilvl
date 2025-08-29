@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       // Check if raider already exists
       const existing = await prisma.raider.findFirst({ where: { name: raiderName, server } });
       if (existing) {
-        return res.status(409).json({ error: `Raider "${raiderName}" already exists on "${server}"` });
+        return res.status(409).json({ error: `Raider "${raiderName}" on "${server}" already exists.` });
       }
 
       const raider = await prisma.raider.create({
