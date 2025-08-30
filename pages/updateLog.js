@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-export default function updateLog() {
+export default function UpdateLog() {
     const [content, setContent] = useState("");
 
     useEffect(() => {
