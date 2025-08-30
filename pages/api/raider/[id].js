@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     // Handle role update
     if (req.method === 'PATCH') {
         const { role } = req.body;
-        if (!role || !['TANK', 'DPS', 'HEALER'].includes(role.toUpperCase())) {
+        if (!role || !['TANK', 'DPS', 'MELEEDPS', 'RANGEDPS', 'HEALER'].includes(role.toUpperCase())) {
             return res.status(400).json({ error: 'Invalid role' });
         }
 

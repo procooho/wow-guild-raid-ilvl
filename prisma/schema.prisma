@@ -31,4 +31,6 @@ enum Role {
   TANK
   HEALER
   DPS
+  MELEEDPS
+  RANGEDPS
 }

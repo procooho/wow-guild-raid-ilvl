@@ -112,7 +112,7 @@ export default function AddRaider({ onAdd }) {
         <form onSubmit={handleSubmit}>
             <Stack spacing={3} sx={{ mt: 2, px: 5, mb: 5 }}>
                 <TextField
-                    label="Character Name"
+                    label="Character Name (Case Insensitive)"
                     fullWidth
                     variant="standard"
                     value={name}
@@ -148,7 +148,8 @@ export default function AddRaider({ onAdd }) {
                         onBlur={() => handleBlur('role', role)}
                     >
                         <MenuItem value="TANK">Tank</MenuItem>
-                        <MenuItem value="DPS">DPS</MenuItem>
+                        <MenuItem value="MELEEDPS">MELEE DPS</MenuItem>
+                        <MenuItem value="RANGEDPS">RANGE DPS</MenuItem>
                         <MenuItem value="HEALER">Healer</MenuItem>
                     </Select>
                 </FormControl>

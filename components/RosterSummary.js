@@ -8,12 +8,12 @@ import Image from "next/image";
 
 export default function RosterSummary({ roster }) {
     //Collapsable individually
-    const [collapsed, setCollapsed] = useState({ TANK: true, HEALER: true, DPS: true });
+    const [collapsed, setCollapsed] = useState({ TANK: true, HEALER: true, MELEEDPS: true, RANGEDPS: true });
     const [updatedRoster, setUpdatedRoster] = useState([]);
     const [loading, setLoading] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
-    const roles = ["TANK", "HEALER", "DPS"];
+    const roles = ["TANK", "HEALER", "MELEEDPS", "RANGEDPS"];
 
     //Icons
     const classIconMap = {
@@ -35,7 +35,8 @@ export default function RosterSummary({ roster }) {
     const roleIconMap = {
         TANK: "/2.png",
         HEALER: "/3.png",
-        DPS: "/1.png",
+        MELEEDPS: "/1.png",
+        RANGEDPS: "/1.png",
     };
 
     const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
@@ -53,8 +54,15 @@ export default function RosterSummary({ roster }) {
     //Toggle individually
     const toggleCollapse = (role) => setCollapsed((prev) => ({ ...prev, [role]: !prev[role] }));
 
+    const roleDisplayMap = {
+        TANK: "TANK",
+        HEALER: "HEALER",
+        MELEEDPS: "MELEE DPS",
+        RANGEDPS: "RANGE DPS",
+    };
+
     const groupedRaiders = roles.reduce((acc, role) => {
-        acc[role] = updatedRoster.filter((r) => r.role.toUpperCase() === role);
+        acc[role] = updatedRoster.filter((r) => r.role.trim().toUpperCase() === role);
         return acc;
     }, {});
 
@@ -95,7 +103,7 @@ export default function RosterSummary({ roster }) {
             <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
                 The actual equipped item level may be lower.
             </Typography>
-            
+
             <Button
                 variant="outlined"
                 sx={{ mt: 2, border: "2px solid", backgroundColor: "#1E1E1E", color: "#fff", "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" } }}
@@ -106,12 +114,12 @@ export default function RosterSummary({ roster }) {
                 {loading ? "Refreshing..." : "Refresh All Item Level"}
             </Button>
 
-            <Typography variant="body2" sx={{ mb: 2, color: 'black', textAlign:'center' }}>
+            <Typography variant="body2" sx={{ mb: 2, color: 'black', textAlign: 'center' }}>
                 (Item Level only refreshes once a day)
             </Typography>
 
             {/* Class Summary */}
-            <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mt: 1, mb: 2 }}>
+            <Stack direction="row" spacing={2} flexWrap="wrap" justifyContent={"center"} sx={{ mt: 1, mb: 2 }}>
                 {Object.entries(classCounts).map(([className, count]) => (
                     <Stack
                         direction="row"
@@ -142,8 +150,8 @@ export default function RosterSummary({ roster }) {
                                     width={24}
                                     height={24}
                                 />
-                                <Typography variant="h6">
-                                    {role} ({groupedRaiders[role].length})
+                                <Typography variant="h6" sx={{ml:2}}>
+                                    {roleDisplayMap[role]} ({groupedRaiders[role].length})
                                 </Typography>
                                 <IconButton size="small" onClick={() => toggleCollapse(role)}>
                                     {collapsed[role] ? <ExpandMoreIcon /> : <ExpandLessIcon />}

@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (req.method === "PUT") {
     const { role } = req.body;
 
-    if (!["TANK", "HEALER", "DPS"].includes(role)) {
+    if (!["TANK", "HEALER", "DPS", "MELEEDPS", "RANGEDPS"].includes(role)) {
       return res.status(400).json({ error: "Invalid role" });
     }
 

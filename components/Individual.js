@@ -27,6 +27,13 @@ export default function Individual({ raider }) {
     Evoker: "/evoker.webp",
   };
 
+  const roleDisplayMap = {
+    TANK: "TANK",
+    HEALER: "HEALER",
+    MELEEDPS: "MELEE DPS",
+    RANGEDPS: "RANGE DPS",
+  };
+
   const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
 
   useEffect(() => {
@@ -155,7 +162,7 @@ export default function Individual({ raider }) {
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2, mb: 2 }}>
           <Stack direction="column" alignItems="center">
             <Typography variant="body1">Role</Typography>
-            <Typography variant="body2" color="text.secondary">{raiderState.role}</Typography>
+            <Typography variant="body2" color="text.secondary">{roleDisplayMap[raiderState.role]}</Typography>
 
             <Typography variant="body1" sx={{ mt: 2 }}>Class</Typography>
             <Typography variant="body2" color="text.secondary">{characterClass}</Typography>
@@ -218,7 +225,8 @@ export default function Individual({ raider }) {
           {editingRole && (
             <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} size="small">
               <MenuItem value="TANK">Tank</MenuItem>
-              <MenuItem value="DPS">DPS</MenuItem>
+              <MenuItem value="MELEEDPS">MELEE DPS</MenuItem>
+              <MenuItem value="RANGEDPS">RANGE DPS</MenuItem>
               <MenuItem value="HEALER">Healer</MenuItem>
             </Select>
           )}

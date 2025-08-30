@@ -3,11 +3,20 @@
 ---
 
 **To Do**
-- Authentication for add roster??
+- Dark Mode
+- YouTube, WCL Link
+- Add => New Window not Toggle
 
 ---
 
 ## Update Log
+
+---
+
+**Aug 29 2025 v1** (Update)
+- DPS now splitted into MELEE DPS, RANGE DPS.
+    - Database updated accordingly
+    - Summary Page / Add Raider / Edit Raider Updated accordingly
 
 ---
 
