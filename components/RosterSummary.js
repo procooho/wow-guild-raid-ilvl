@@ -36,7 +36,7 @@ export default function RosterSummary({ roster }) {
         TANK: "/2.png",
         HEALER: "/3.png",
         MELEEDPS: "/1.png",
-        RANGEDPS: "/1.png",
+        RANGEDPS: "/4.png",
     };
 
     const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
@@ -124,16 +124,16 @@ export default function RosterSummary({ roster }) {
                     <Stack
                         direction="row"
                         alignItems="center"
-                        spacing={0.5}
+                        spacing={1.5}
                         key={className}
                         sx={{ mr: 2, mb: 1 }}>
                         <Image
                             src={getClassIcon(className)}
                             alt={className}
-                            width={20}
-                            height={20}
+                            width={24}
+                            height={24}
                         />
-                        <Typography variant="body2" sx={{ color: 'black' }}>{count}</Typography>
+                        <Typography variant="body1" sx={{ color: 'black' }}>{count}</Typography>
                     </Stack>
                 ))}
             </Stack>

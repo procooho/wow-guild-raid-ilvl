@@ -1,0 +1,25 @@
+import LeftNav from '@/components/LeftNav'
+import { Box, Stack, Typography } from '@mui/material'
+import React from 'react'
+
+export default function raidNotice() {
+    return (
+            <Box sx={{ display: 'flex' }}>
+                <LeftNav />
+                <Stack>
+                    <Typography variant='h2' sx={{ textAlign: 'center', color: 'black' }}>
+                        Page for Common Notice
+                    </Typography>
+                    <Typography variant='h3' sx={{ textAlign: 'center', mt: 10, color: 'black' }}>
+                        ====================
+                    </Typography>
+                    <Typography variant='h3' sx={{ textAlign: 'center', color: 'black' }}>
+                        Under Construction!!
+                    </Typography>
+                    <Typography variant='h3' sx={{ textAlign: 'center', color: 'black' }}>
+                        ====================
+                    </Typography>
+                </Stack>
+            </Box>
+    );
+}

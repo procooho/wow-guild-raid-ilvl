@@ -30,7 +30,30 @@ model ItemLevelHistory {
 enum Role {
   TANK
   HEALER
-  DPS
   MELEEDPS
   RANGEDPS
+}
+
+model OfficerPost {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  title       String
+  description String?
+
+  youtubeLinks YoutubeLink[]
+  wclLinks     WclLink[]
+}
+
+model YoutubeLink {
+  id     Int          @id @default(autoincrement())
+  url    String
+  postId Int
+  post   OfficerPost  @relation(fields: [postId], references: [id])
+}
+
+model WclLink {
+  id     Int          @id @default(autoincrement())
+  url    String
+  postId Int
+  post   OfficerPost  @relation(fields: [postId], references: [id])
 }

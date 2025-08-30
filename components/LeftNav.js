@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { Stack, Typography, Button } from '@mui/material';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import UpgradeIcon from '@mui/icons-material/Upgrade';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -63,6 +67,17 @@ export default function LeftNav() {
                     </Stack>
                 </Link>
 
+                <Link href={"/raidNotice"}>
+                    <Stack
+                        direction='row'
+                        alignItems='center'
+                        sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                    >
+                        <CampaignIcon />
+                        <Typography sx={{ ml: 2, textDecoration: 'line-through' }}>Notice (NOT REDAY)</Typography>
+                    </Stack>
+                </Link>
+
                 <Link href={"/rosterSummaryPage"}>
                     <Stack
                         direction='row'
@@ -78,7 +93,7 @@ export default function LeftNav() {
                 <Divider
                     variant="middle"
                     sx={{
-                        mt: 20,
+                        mt: 10,
                         mb: 5,
                         "&::before, &::after": { borderColor: "white" },
                         color: "white",
@@ -88,16 +103,48 @@ export default function LeftNav() {
                 </Divider>
 
                 {loggedIn ? (
-                    <Link href={"/currentGuildRoster"}>
-                        <Stack
-                            direction='row'
-                            alignItems='center'
-                            sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
-                        >
-                            <ChecklistIcon />
-                            <Typography sx={{ ml: 2 }}>Manage Raid Roster</Typography>
-                        </Stack>
-                    </Link>
+                    <>
+                        <Link href={"/officerNote"}>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                            >
+                                <EditNoteIcon />
+                                <Typography sx={{ ml: 2, textDecoration: 'line-through' }}>Officer Note (NOT REDAY)</Typography>
+                            </Stack>
+                        </Link>
+                        <Link href={"/currentGuildRoster"}>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                            >
+                                <ChecklistIcon />
+                                <Typography sx={{ ml: 2 }}>Manage Raid Roster</Typography>
+                            </Stack>
+                        </Link>
+                        <Link href={"/raidLog"}>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                            >
+                                <OndemandVideoIcon />
+                                <Typography sx={{ ml: 2, textDecoration: 'line-through' }}>Video & Log (NOT REDAY)</Typography>
+                            </Stack>
+                        </Link>
+                        <Link href={"/updateLog"}>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                            >
+                                <UpgradeIcon />
+                                <Typography sx={{ ml: 2}}>Update Log</Typography>
+                            </Stack>
+                        </Link>
+                    </>
                 ) : (
                     <>
                         <Typography sx={{ px: 2, fontStyle: "italic", color: "#ccc", textAlign: "center" }}>
@@ -110,7 +157,7 @@ export default function LeftNav() {
                 )}
 
                 {/* Login / Logout */}
-                <Box sx={{ p: 2, mt:3 }}>
+                <Box sx={{ p: 2, mt: 3 }}>
                     {loggedIn ? (
                         <>
                             <Typography sx={{ mb: 1, fontSize: "0.9rem" }}>
