@@ -9,6 +9,7 @@ export default async function handler(req, res) {
   try {
     //getting name of all raiders
     const raiders = await prisma.raider.findMany();
+    const today = new Date();
 
     //getting item level and class for all raiders
     const updatedRoster = await Promise.all(
@@ -19,8 +20,26 @@ export default async function handler(req, res) {
         try {
           const profile = await getCharacterProfile(raider.server, raider.name);
           if (profile) {
-            currentIlvl = profile.averageItemLevel || currentIlvl;
-            characterClass = profile.characterClass || "Unknown";
+            currentIlvl = profile.averageItemLevel ?? raider.currentIlvl;
+            characterClass = profile.characterClass ?? "Unknown";
+
+            // Update raider in DB
+            await prisma.raider.update({
+              where: { id: raider.id },
+              data: { currentIlvl },
+            });
+
+            // Add to history if not already recorded today
+            const lastHistory = await prisma.itemLevelHistory.findFirst({
+              where: { raiderId: raider.id },
+              orderBy: { recordedAt: "desc" },
+            });
+
+            if (!lastHistory || new Date(lastHistory.recordedAt).toDateString() !== today.toDateString()) {
+              await prisma.itemLevelHistory.create({
+                data: { raiderId: raider.id, ilvl: currentIlvl },
+              });
+            }
           }
         } catch (err) {
           console.warn(`Failed to fetch profile for ${raider.name}:`, err);

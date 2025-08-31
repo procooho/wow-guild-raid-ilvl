@@ -7,6 +7,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { useTheme } from '@mui/material/styles';
 
 import LeftNav from "../components/LeftNav";
 import AddRaider from "../components/AddRaider";
@@ -18,6 +19,9 @@ export default function CurrentGuildRoster() {
   const [roster, setRoster] = useState([]);
   const [addRaider, setAddRaider] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const theme = useTheme();
+  const darkMode = theme.palette.mode === 'dark';
 
   useEffect(() => {
     fetchRoster();

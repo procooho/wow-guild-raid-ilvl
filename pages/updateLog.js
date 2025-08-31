@@ -18,7 +18,7 @@ export default function UpdateLog() {
         <ProtectedRoute>
             <Box sx={{ display: 'flex' }}>
                 <LeftNav />
-                <Box sx={{ p: 4, color: 'black' }}>
+                <Box sx={{ p: 4 }}>
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -35,7 +35,7 @@ export default function UpdateLog() {
                                 <h2 style={{ marginBottom: '0.8rem' }} {...props} />
                             ),
                             ul: ({ node, ...props }) => (
-                                <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem',  lineHeight: '1.6' }} {...props} />
+                                <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem', lineHeight: '1.6' }} {...props} />
                             ),
                             li: ({ node, ...props }) => (
                                 <li style={{ marginBottom: '0.5rem', lineHeight: '1.6' }} {...props} />

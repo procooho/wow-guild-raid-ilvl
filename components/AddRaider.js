@@ -1,5 +1,6 @@
 import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper } from '@mui/material';
 import { useState } from 'react';
+import { useThemeContext } from "@/context/ThemeContext";
 
 //Component for add raider
 
@@ -10,6 +11,8 @@ export default function AddRaider({ onAdd }) {
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const { darkMode } = useThemeContext();
 
     //All US server lists
     const usServers = [
@@ -121,6 +124,26 @@ export default function AddRaider({ onAdd }) {
                     error={!!errors.name}
                     helperText={errors.name}
                     disabled={loading || !!success}
+                    sx={{
+                        '& .MuiInputLabel-root': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInput-underline:before': {
+                            borderBottomColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInput-underline:hover:before': {
+                            borderBottomColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInput-underline:after': {
+                            borderBottomColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& input': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                    }}
                 />
                 <Autocomplete
                     options={usServers}
@@ -139,8 +162,49 @@ export default function AddRaider({ onAdd }) {
                     )}
                     freeSolo
                     disabled={loading || !!success}
+                    sx={{
+                        '& .MuiInputLabel-root': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInput-underline:before': {
+                            borderBottomColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInput-underline:hover:before': {
+                            borderBottomColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInput-underline:after': {
+                            borderBottomColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& input': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                    }}
                 />
-                <FormControl fullWidth error={!!errors.role} disabled={loading || !!success}>
+                <FormControl
+                    fullWidth
+                    error={!!errors.role}
+                    disabled={loading || !!success}
+                    sx={{
+                        '& .MuiInputLabel-root': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiSelect-root': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: darkMode ? '#fff' : '#000',
+                        },
+                    }}
+                >
                     <InputLabel>Role</InputLabel>
                     <Select
                         value={role}
@@ -170,7 +234,12 @@ export default function AddRaider({ onAdd }) {
                         sx={{
                             backgroundColor: '#1E1E1E',
                             color: '#fff',
-                            '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' }
+                            border: `2px solid ${darkMode ? '#fff' : '#000'}`,
+                            '&:hover': {
+                                backgroundColor: '#c9c9c9ff',
+                                color: '#111',
+                                border: `2px solid ${darkMode ? '#fff' : '#000'}`,
+                            },
                         }}
                     >
                         {loading ? "Adding..." : "Add New Raider"}

@@ -94,13 +94,13 @@ export default function RosterSummary({ roster }) {
 
     return (
         <Stack spacing={2} sx={{ mb: 5 }}>
-            <Typography variant="h5" sx={{ color: 'black' }}>
+            <Typography variant="h5">
                 Guild Roster Summary - Avg. Item Level: {averageIlvl.toFixed(2)}
             </Typography>
-            <Typography variant="body2" sx={{ color: 'black' }}>
+            <Typography variant="body2">
                 Showing the average item level of the character has in the bag.
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
+            <Typography variant="body2">
                 The actual equipped item level may be lower.
             </Typography>
 
@@ -114,7 +114,7 @@ export default function RosterSummary({ roster }) {
                 {loading ? "Refreshing..." : "Refresh All Item Level"}
             </Button>
 
-            <Typography variant="body2" sx={{ mb: 2, color: 'black', textAlign: 'center' }}>
+            <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
                 (Item Level only refreshes once a day)
             </Typography>
 
@@ -133,7 +133,7 @@ export default function RosterSummary({ roster }) {
                             width={24}
                             height={24}
                         />
-                        <Typography variant="body1" sx={{ color: 'black' }}>{count}</Typography>
+                        <Typography variant="body1">{count}</Typography>
                     </Stack>
                 ))}
             </Stack>
@@ -150,7 +150,7 @@ export default function RosterSummary({ roster }) {
                                     width={24}
                                     height={24}
                                 />
-                                <Typography variant="h6" sx={{ml:2}}>
+                                <Typography variant="h6" sx={{ ml: 2 }}>
                                     {roleDisplayMap[role]} ({groupedRaiders[role].length})
                                 </Typography>
                                 <IconButton size="small" onClick={() => toggleCollapse(role)}>

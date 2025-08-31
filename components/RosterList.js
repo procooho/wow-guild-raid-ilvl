@@ -6,11 +6,14 @@ import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from 'react';
 import Image from 'next/image';
+import { useThemeContext } from "@/context/ThemeContext";
 
 //Show simple information of the raider
 
-export default function RosterList({ raider, onDelete }) {
+export default function RosterList({ raider, onDelete, selected }) {
   const [deleting, setDeleting] = useState(false);
+
+  const { darkMode } = useThemeContext();
 
   const classIconMap = {
     Warrior: "/warrior.png",
@@ -60,32 +63,48 @@ export default function RosterList({ raider, onDelete }) {
     <Card
       variant="outlined"
       sx={{
-        marginBottom: 2,
-        minWidth: 260,
-        width: '100%',
+        display: 'flex',
+        cursor: 'pointer',
+        marginBottom: 1,
+        borderRadius: 1,
+        overflow: 'hidden',
+        boxShadow: selected
+          ? darkMode
+            ? '0 0 10px #fffa6c'
+            : '0 0 10px #a6a6a6'
+          : 'none',
+        '&:hover': { backgroundColor: darkMode ? '#3a3a3a' : '#f0f0f0' },
       }}
     >
-      <Box sx={{ p: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={4}>
+      {/* Left color strip */}
+      <Box
+        sx={{
+          width: 6,
+          backgroundColor: selected ? darkMode ? '#FFD700' : '#000' : 'none',
+          flexShrink: 0,
+        }}
+      />
+
+      {/* Main content */}
+      <Box sx={{ flexGrow: 1, p: 2, pr: 3 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
           <IconButton onClick={handleDelete} disabled={deleting} color="error">
             <ClearIcon />
           </IconButton>
-          <Stack direction="row" alignItems={'center'}>
+          <Stack direction="row" alignItems="center" gap={1}>
             <Image
               src={getClassIcon(raider.characterClass)}
               alt={raider.characterClass}
               width={25}
               height={25}
             />
-            <Typography variant="h6" sx={{ml:2}}>{raider.name}</Typography>
+            <Typography variant="h6">{raider.name}</Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Stack direction="column" alignItems="center">
-              <Typography variant="body2">Item Level</Typography>
-              <Typography variant="h6" color="text.secondary">
-                {raider.currentIlvl ?? 0}
-              </Typography>
-            </Stack>
+          <Stack direction="column" alignItems="center">
+            <Typography variant="body2">Item Level</Typography>
+            <Typography variant="h6" color="text.secondary">
+              {raider.currentIlvl ?? 0}
+            </Typography>
           </Stack>
         </Stack>
       </Box>

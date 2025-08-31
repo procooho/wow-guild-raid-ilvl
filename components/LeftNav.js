@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import Link from 'next/link';
-import { Stack, Typography, Button } from '@mui/material';
+import { Stack, Typography, Button, Switch, FormControlLabel } from '@mui/material';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
@@ -13,12 +13,23 @@ import UpgradeIcon from '@mui/icons-material/Upgrade';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useThemeContext } from "@/context/ThemeContext";
+import { useEffect, useState } from "react";
 
 const drawerWidth = 240;
 
 export default function LeftNav() {
     const { loggedIn, logoutUser } = useAuth();
     const router = useRouter();
+    const theme = useThemeContext();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const darkMode = mounted && theme ? theme.darkMode : false;
+    const toggleDarkMode = theme?.toggleDarkMode || (() => { });
 
     const handleLogout = () => {
         // updates context & localStorage
@@ -55,6 +66,19 @@ export default function LeftNav() {
 
             <Box sx={{ overflow: 'auto' }}>
                 <Divider />
+
+                {/* Dark Mode Switch */}
+                <Box sx={{ p: 2 }}>
+                    <FormControlLabel
+                        control={<Switch
+                            checked={darkMode}
+                            onChange={toggleDarkMode}
+                            color="default"
+                            size="medium"
+                        />}
+                        label="Dark Mode"
+                    />
+                </Box>
 
                 <Link href={"/"}>
                     <Stack
@@ -93,8 +117,8 @@ export default function LeftNav() {
                 <Divider
                     variant="middle"
                     sx={{
-                        mt: 10,
-                        mb: 5,
+                        mt: 5,
+                        mb: 2,
                         "&::before, &::after": { borderColor: "white" },
                         color: "white",
                     }}
@@ -141,7 +165,7 @@ export default function LeftNav() {
                                 sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
                             >
                                 <UpgradeIcon />
-                                <Typography sx={{ ml: 2}}>Update Log</Typography>
+                                <Typography sx={{ ml: 2 }}>Update Log</Typography>
                             </Stack>
                         </Link>
                     </>
@@ -197,7 +221,7 @@ export default function LeftNav() {
 
                 <Divider
                     variant="middle"
-                    sx={{ mt: 5, mb: 5, borderColor: "white" }}
+                    sx={{ mt: 2, borderColor: "white" }}
                 />
             </Box>
         </Drawer>

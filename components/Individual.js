@@ -48,7 +48,9 @@ export default function Individual({ raider }) {
 
   // Fetch character info from API
   useEffect(() => {
-    if (!raiderState?.name || !raiderState?.server) return;
+    if (!raider?.name || !raider?.server) return;
+
+    let isActive = true;
 
     async function fetchCharacterInfo() {
       try {
@@ -56,28 +58,28 @@ export default function Individual({ raider }) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name: raiderState.name,
-            server: raiderState.server,
+            name: raider.name,
+            server: raider.server,
           }),
         });
 
         if (!res.ok) {
           const errorData = await res.json();
-          console.error(`Error fetching ${raiderState.name}:`, errorData.error);
+          console.error(`Error fetching ${raider.name}:`, errorData.error);
           setCharInfo(null);
           return;
         }
 
         const data = await res.json();
 
-        // Ensure the raider has a role
-        const raiderData = {
-          ...raiderState,
-          history: data.raider.history,
-          role: raiderState.role || 'DPS',
-        };
+        if (!isActive) return;
 
-        setRaider(raiderData);
+        // Ensure the raider has a role
+        setRaider(prev => ({
+          ...prev,
+          history: data.raider.history,
+          role: prev.role || 'DPS',
+        }));
         setCharInfo(data.profile);
 
         // Calculate ilvl progress
@@ -88,12 +90,16 @@ export default function Individual({ raider }) {
           setProgress(null);
         }
       } catch (err) {
+        if (!isActive) return;
         console.error('Fetch failed:', err);
         setCharInfo(null);
       }
     }
+
     fetchCharacterInfo();
-  }, [raiderState.name, raiderState.server]);
+
+    return () => { isActive = false };
+  }, [raider]);
 
   //change role and update database
   const handleRoleChange = async () => {

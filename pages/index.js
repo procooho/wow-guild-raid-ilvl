@@ -9,11 +9,11 @@ export default function Home() {
       <Box sx={{ display: 'flex' }}>
         <LeftNav />
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 10 }}>
-          <Typography variant="h2" sx={{ mb: 5, color: 'black' }}>
+          <Typography variant="h2" sx={{ mb: 5 }}>
             Raid Roster Manager
           </Typography>
           <Image src="/logo.png" alt="Logo" width={600} height={300} />
-          <Typography variant="h2" sx={{ mt: 5, color: 'black' }}>
+          <Typography variant="h2" sx={{ mt: 5 }}>
             TWW S3 Roster Updated!
           </Typography>
         </Box>

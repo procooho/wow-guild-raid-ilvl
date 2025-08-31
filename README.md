@@ -3,7 +3,7 @@
 ---
 
 **To Do**
-- Dark Mode
+
 - RaidLog: YouTube, WCL Link
 - OfficerNote
 - RaidNotice
@@ -12,6 +12,24 @@
 ---
 
 ## Update Log
+
+---
+
+**Aug 31 2025 v1** 
+(Update)
+- Refresh All Item Level button updated
+    - This button now saves item levels to the database as well
+    - (Before, clicking individual cards only saves item levels to the database)
+    - This function only saves to database once a day.
+    - This makes track item level history easy
+- Dark Mode added
+    - Manage Raid Roster page visibility increased in both dark, light mode
+    - Add Raider / Login form visibility increased in both dark, light mode
+
+(Bug Fix)
+- Manage Raid Roster
+    - Clicking multiple cards in short time period caused infinite loop on right panel
+    - Fixed by adding flag
 
 ---
 

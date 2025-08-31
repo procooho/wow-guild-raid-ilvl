@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Typography, TextField, Grid, Paper, Container, Button, Snackbar, Alert } from '@mui/material';
+import { useThemeContext } from "@/context/ThemeContext";
 import RosterList from './RosterList';
 import Individual from './Individual';
 
@@ -13,6 +14,8 @@ export default function RaidRoster({ roster }) {
 
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+
+  const { darkMode } = useThemeContext();
 
   // Sync with roster immediately
   useEffect(() => {
@@ -53,6 +56,12 @@ export default function RaidRoster({ roster }) {
     setSelectedRaider(prev => (prev?.id === id ? null : prev));
   };
 
+  // Function to select raider
+  const handleSelectRaider = (raider) => {
+    if (raider.id === selectedRaider?.id) return;
+    setSelectedRaider(raider);
+  };
+
   // Search function
   const filteredRoster = updatedRoster
     .filter((raider) => {
@@ -69,25 +78,45 @@ export default function RaidRoster({ roster }) {
 
   return (
     <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-      <Typography variant="h4" sx={{ paddingTop: 2, paddingBottom: 2, color: 'black' }}>
+      <Typography variant="h4" sx={{ paddingTop: 2, paddingBottom: 2 }}>
         Manage Current Guild Roster
       </Typography>
 
       <TextField
         label="Search"
         fullWidth
-        sx={{ width: '40%', marginBottom: 2 }}
+        sx={{
+          width: '40%',
+          marginBottom: 2,
+          '& .MuiInputLabel-root': {
+            color: darkMode ? '#fff' : '#000',
+          },
+          '& .MuiInputBase-input': {
+            color: darkMode ? '#fff' : '#000',
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: darkMode ? '#fff' : '#000',
+            },
+            '&:hover fieldset': {
+              borderColor: darkMode ? '#fff' : '#000',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: darkMode ? '#fff' : '#000', // focused border
+            },
+          },
+        }}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <Typography variant="h6" align="center" sx={{ mb: 2, color: 'black' }}>
+      <Typography variant="h6" align="center" sx={{ mb: 2 }}>
         Average Item Level of {updatedRoster.length} Raiders: {averageItemLevel.toFixed(2)}
       </Typography>
-      <Typography variant="body2" sx={{ color: 'black' }}>
+      <Typography variant="body2">
         Showing the average item level of the character has in the bag.
       </Typography>
-      <Typography variant="body2" sx={{ mb: 2, color: 'black' }}>
+      <Typography variant="body2" sx={{ mb: 2 }}>
         The actual equipped item level may be lower.
       </Typography>
 
@@ -104,7 +133,7 @@ export default function RaidRoster({ roster }) {
         {loading ? 'Refreshing...' : 'Refresh All Item Level'}
       </Button>
 
-      <Typography variant="body2" sx={{ mb: 2, color: 'black', textAlign: 'center' }}>
+      <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
         (Item Level only refreshes once a day)
       </Typography>
 
@@ -116,32 +145,34 @@ export default function RaidRoster({ roster }) {
             sx={{
               maxHeight: '70vh',
               overflowY: 'auto',
+              padding: 1,
               '&::-webkit-scrollbar': { width: '10px' },
               '&::-webkit-scrollbar-thumb': {
-                backgroundColor: '#1E1E1E',
+                backgroundColor: darkMode ? '#555' : '#1E1E1E',
                 borderRadius: '5px',
               },
               '&::-webkit-scrollbar-track': {
-                backgroundColor: '#c5c5c5ff',
+                backgroundColor: darkMode ? '#2c2c2c' : '#c5c5c5ff',
                 borderRadius: '5px',
               },
-              padding: 1
+              padding: 1,
+              backgroundColor: darkMode ? '#2a2a2a' : '#fff',
             }}
           >
             {filteredRoster.map((raider) => (
               <div
                 key={raider.id}
-                onClick={() => setSelectedRaider(raider)}
+                onClick={() => handleSelectRaider(raider)}
                 style={{
-                  cursor: 'pointer',
-                  borderRadius: '8px',
+                  marginRight: '10px',
                   marginBottom: '8px',
-                  transform: selectedRaider?.id === raider.id ? 'scale(1.02)' : 'scale(1)',
-                  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                  boxShadow: selectedRaider?.id === raider.id ? '0 8px 12px #1E1E1E' : '0 2px 6px #414247ff',
                 }}
               >
-                <RosterList raider={raider} onDelete={handleDeleteRaider} />
+                <RosterList
+                  raider={raider}
+                  onDelete={handleDeleteRaider}
+                  selected={selectedRaider?.id === raider.id}
+                />
               </div>
             ))}
           </Paper>
@@ -155,7 +186,7 @@ export default function RaidRoster({ roster }) {
             </Paper>
           ) : (
             <Paper sx={{ padding: 2 }}>
-              <Typography variant="h5" sx={{ padding: 2, color: 'black', textAlign: 'center' }}>
+              <Typography variant="h5" sx={{ padding: 2, textAlign: 'center' }}>
                 Select a raider to see details
               </Typography>
             </Paper>
