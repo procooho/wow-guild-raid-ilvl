@@ -91,6 +91,9 @@ export default function RaidRoster({ roster }) {
           '& .MuiInputLabel-root': {
             color: darkMode ? '#fff' : '#000',
           },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: darkMode ? '#fff' : '#000',
+          },
           '& .MuiInputBase-input': {
             color: darkMode ? '#fff' : '#000',
           },
@@ -102,7 +105,7 @@ export default function RaidRoster({ roster }) {
               borderColor: darkMode ? '#fff' : '#000',
             },
             '&.Mui-focused fieldset': {
-              borderColor: darkMode ? '#fff' : '#000', // focused border
+              borderColor: darkMode ? '#fff' : '#000',
             },
           },
         }}
@@ -123,19 +126,15 @@ export default function RaidRoster({ roster }) {
       <Button
         variant="outlined"
         sx={{
-          mt: 2, mb: 2, border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff',
+          mt: 2, mb: 5, border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff',
           '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' },
         }}
         fullWidth
         onClick={fetchRosterItemLevels}
         disabled={loading}
       >
-        {loading ? 'Refreshing...' : 'Refresh All Item Level'}
+        {loading ? 'Refreshing...' : 'Refresh All Item Level ( Item Level only refreshes once a day )'}
       </Button>
-
-      <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
-        (Item Level only refreshes once a day)
-      </Typography>
 
       {/* Left & Right Panels */}
       <Grid container spacing={2}>

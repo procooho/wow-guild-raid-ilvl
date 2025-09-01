@@ -4,14 +4,23 @@
 
 **To Do**
 
-- RaidLog: YouTube, WCL Link
-- OfficerNote
 - RaidNotice
 - Add => New Window not Toggle
 
 ---
 
 ## Update Log
+
+---
+
+**Sep 01 2025 v1** 
+(Update)
+- Manage Video & Log Created (Officer Only)
+    - Add, Edit, Delete, Search, Pagination
+    - Add, Edit using Modal
+- Video & Log Created (No login required)
+    - Same with Manage Video & Log, without Add, Edit, Delete
+- OfficerNote page removed
 
 ---
 

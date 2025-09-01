@@ -55,6 +55,12 @@ export default function LoginPage() {
         <Box sx={{ display: "flex" }}>
             <LeftNav />
             <Container maxWidth="sm" sx={{ mt: 8 }}>
+                <Typography variant="h5" textAlign={"center"} sx={{ mb: 2, color: darkMode ? '#fff' : '#000' }}>
+                        This page is only for Officers.
+                    </Typography>
+                <Typography variant="h5" textAlign={"center"} sx={{ mb: 5, color: darkMode ? '#fff' : '#000' }}>
+                        Please Login to view this page.
+                    </Typography>
                 <Paper sx={{ p: 4, border: '1px solid', borderColor: darkMode ? '#fff' : '#000' }}>
                     <Typography variant="h5" sx={{ mb: 2, color: darkMode ? '#fff' : '#000' }}>
                         Officer Login

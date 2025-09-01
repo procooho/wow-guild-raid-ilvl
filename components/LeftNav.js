@@ -113,6 +113,17 @@ export default function LeftNav() {
                     </Stack>
                 </Link>
 
+                <Link href={"/raidLogCommon"}>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                            >
+                                <OndemandVideoIcon />
+                                <Typography sx={{ ml: 2 }}>Video & Log</Typography>
+                            </Stack>
+                        </Link>
+
                 {/* Officer Only Section */}
                 <Divider
                     variant="middle"
@@ -128,16 +139,6 @@ export default function LeftNav() {
 
                 {loggedIn ? (
                     <>
-                        <Link href={"/officerNote"}>
-                            <Stack
-                                direction='row'
-                                alignItems='center'
-                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
-                            >
-                                <EditNoteIcon />
-                                <Typography sx={{ ml: 2, textDecoration: 'line-through' }}>Officer Note (NOT REDAY)</Typography>
-                            </Stack>
-                        </Link>
                         <Link href={"/currentGuildRoster"}>
                             <Stack
                                 direction='row'
@@ -155,7 +156,7 @@ export default function LeftNav() {
                                 sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
                             >
                                 <OndemandVideoIcon />
-                                <Typography sx={{ ml: 2, textDecoration: 'line-through' }}>Video & Log (NOT REDAY)</Typography>
+                                <Typography sx={{ ml: 2 }}>Manage Video & Log</Typography>
                             </Stack>
                         </Link>
                         <Link href={"/updateLog"}>

@@ -93,30 +93,31 @@ export default function RosterSummary({ roster }) {
     };
 
     return (
-        <Stack spacing={2} sx={{ mb: 5 }}>
-            <Typography variant="h5">
-                Guild Roster Summary - Avg. Item Level: {averageIlvl.toFixed(2)}
+        <Stack spacing={3} sx={{ mb: 5 }}>
+            <Typography variant="h4" textAlign={"center"}>
+                Guild Roster Summary
             </Typography>
-            <Typography variant="body2">
-                Showing the average item level of the character has in the bag.
+            <Typography variant="h5" textAlign={"center"}>
+                Avg. Item Level: {averageIlvl.toFixed(2)}
             </Typography>
-            <Typography variant="body2">
-                The actual equipped item level may be lower.
-            </Typography>
+            <div>
+                <Typography variant="body2" textAlign={"center"}>
+                    Showing the average item level of the character has in the bag.
+                </Typography>
+                <Typography variant="body2" textAlign={"center"}>
+                    The actual equipped item level may be lower.
+                </Typography>
+            </div>
 
             <Button
                 variant="outlined"
-                sx={{ mt: 2, border: "2px solid", backgroundColor: "#1E1E1E", color: "#fff", "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" } }}
+                sx={{ mt: 2, mb: 5, border: "2px solid", backgroundColor: "#1E1E1E", color: "#fff", "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" } }}
                 fullWidth
                 onClick={fetchRosterItemLevels}
                 disabled={loading}
             >
-                {loading ? "Refreshing..." : "Refresh All Item Level"}
+                {loading ? "Refreshing..." : "Refresh All Item Level ( Item Level only refreshes once a day )"}
             </Button>
-
-            <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
-                (Item Level only refreshes once a day)
-            </Typography>
 
             {/* Class Summary */}
             <Stack direction="row" spacing={2} flexWrap="wrap" justifyContent={"center"} sx={{ mt: 1, mb: 2 }}>
