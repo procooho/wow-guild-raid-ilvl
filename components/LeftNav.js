@@ -128,7 +128,7 @@ export default function LeftNav() {
                 <Divider
                     variant="middle"
                     sx={{
-                        mt: 5,
+                        mt: 4,
                         mb: 2,
                         "&::before, &::after": { borderColor: "white" },
                         color: "white",
@@ -182,7 +182,7 @@ export default function LeftNav() {
                 )}
 
                 {/* Login / Logout */}
-                <Box sx={{ p: 2, mt: 3 }}>
+                <Box sx={{ p: 2, mt: 2 }}>
                     {loggedIn ? (
                         <>
                             <Typography sx={{ mb: 1, fontSize: "0.9rem" }}>
@@ -224,6 +224,13 @@ export default function LeftNav() {
                     variant="middle"
                     sx={{ mt: 2, borderColor: "white" }}
                 />
+
+                <Typography textAlign={"center"} sx={{ mt: 4 }}>
+                    Made by:
+                </Typography>
+                <Typography textAlign={"center"} sx={{ mb: 4 }}>
+                    Angrybites - Tichondrius
+                </Typography>
             </Box>
         </Drawer>
     );
