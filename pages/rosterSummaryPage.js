@@ -1,6 +1,6 @@
 import LeftNav from "@/components/LeftNav";
 import RosterSummary from "@/components/RosterSummary";
-import { Box, Container, CircularProgress } from "@mui/material";
+import { Box, Container, CircularProgress, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function RosterSummaryPage() {
@@ -42,7 +42,7 @@ export default function RosterSummaryPage() {
         <main>
             <Box sx={{ display: 'flex' }}>
                 <LeftNav />
-                <Box sx={{ mt: 10, width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <RosterSummary roster={roster} />
                 </Box>
             </Box>

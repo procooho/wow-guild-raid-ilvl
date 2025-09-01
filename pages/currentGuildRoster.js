@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { Box, CircularProgress, Container, Divider, Button, Dialog } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 
 import LeftNav from "../components/LeftNav";
@@ -17,8 +10,8 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 export default function CurrentGuildRoster() {
   const [roster, setRoster] = useState([]);
-  const [addRaider, setAddRaider] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [addModalOpen, setAddModalOpen] = useState(false)
 
   const theme = useTheme();
   const darkMode = theme.palette.mode === 'dark';
@@ -59,9 +52,10 @@ export default function CurrentGuildRoster() {
         <Container sx={{ mb: 5, mt: 5 }}>
           <Divider />
 
+          {/* Add Raider Button */}
           <Button
             variant="outlined"
-            onClick={() => setAddRaider(prev => !prev)}
+            onClick={() => setAddModalOpen(true)}
             sx={{
               mt: 2,
               mb: 2,
@@ -70,36 +64,31 @@ export default function CurrentGuildRoster() {
               color: "#fff",
               "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" },
             }}
-            fullWidth
-          >
-            {addRaider ? (
-              <>
-                <ExpandLessIcon sx={{ mr: 1 }} />
-                Add Raider
-                <ExpandLessIcon sx={{ ml: 1 }} />
-              </>
-            ) : (
-              <>
-                <ExpandMoreIcon sx={{ mr: 1 }} />
-                Add Raider
-                <ExpandMoreIcon sx={{ ml: 1 }} />
-              </>
-            )}
+            fullWidth>
+            Add Raider
           </Button>
 
-          {addRaider && (
-            <Paper>
-              <AddRaider
-                onAdd={(newRaider) => {
-                  setRoster(prev => [newRaider, ...prev]);
-                  fetchRoster();
-                }}
-              />
-            </Paper>
-          )}
+          {/* Add Raider Modal */}
+          <Dialog
+            open={addModalOpen}
+            onClose={() => setAddModalOpen(false)}
+            fullWidth
+            maxWidth="sm"
+          >
+            <AddRaider
+              onAdd={(newRaider) => {
+                setRoster(prev => {
+                  if (prev.some(r => r.id === newRaider.id)) return prev;
+                  return [newRaider, ...prev];
+                });
+                setAddModalOpen(false);
+              }}
+            />
+          </Dialog>
 
           <Divider />
 
+          {/* Roster list & details */}
           <RaidRoster
             roster={roster}
             onDelete={(id) => setRoster(prev => prev.filter(r => r.id !== id))}

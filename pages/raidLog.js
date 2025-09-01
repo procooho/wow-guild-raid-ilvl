@@ -14,7 +14,7 @@ export default function RaidLog() {
     const [modalOpen, setModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const postsPerPage = 3;
+    const postsPerPage = 5;
 
     const fetchPosts = async () => {
         try {
@@ -183,7 +183,8 @@ export default function RaidLog() {
                                 count={totalPages}
                                 page={currentPage}
                                 onChange={(e, page) => setCurrentPage(page)}
-                                color="primary"
+                                variant="outlined"
+                                shape="rounded"
                             />
                         </Box>
                     )}

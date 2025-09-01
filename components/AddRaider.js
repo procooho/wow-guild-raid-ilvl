@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useThemeContext } from "@/context/ThemeContext";
 
@@ -6,10 +6,9 @@ import { useThemeContext } from "@/context/ThemeContext";
 
 export default function AddRaider({ onAdd }) {
     const [name, setName] = useState("");
-    const [server, setServer] = useState("");
+    const [server, setServer] = useState("Tichondrius");
     const [role, setRole] = useState("");
     const [errors, setErrors] = useState({});
-    const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
 
     const { darkMode } = useThemeContext();
@@ -83,8 +82,6 @@ export default function AddRaider({ onAdd }) {
         if (!validateAll()) return;
 
         setLoading(true);
-        setSuccess("");
-
         try {
             const res = await fetch("/api/roster", {
                 method: "POST",
@@ -92,17 +89,13 @@ export default function AddRaider({ onAdd }) {
                 body: JSON.stringify({ name, server, role }),
             });
 
-            const data = await res.json().catch(() => ({}));
+            const data = await res.json();
 
             if (!res.ok) {
                 setErrors({ form: data.error || "Failed to add raider" });
             } else {
-                setSuccess(`Raider "${data.raider.name}" added as Role "${data.raider.role}" successfully!`);
+                onAdd(data.raider);
                 setErrors({});
-
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
             }
         } catch (err) {
             setErrors({ form: err.message || "Unexpected error" });
@@ -113,120 +106,128 @@ export default function AddRaider({ onAdd }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <Stack spacing={3} sx={{ mt: 2, px: 5, mb: 5 }}>
-                <TextField
-                    label="Character Name (Case Insensitive)"
-                    fullWidth
-                    variant="standard"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onBlur={() => handleBlur('name', name)}
-                    error={!!errors.name}
-                    helperText={errors.name}
-                    disabled={loading || !!success}
-                    sx={{
-                        '& .MuiInputLabel-root': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:hover:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:after': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& input': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                    }}
-                />
-                <Autocomplete
-                    options={usServers}
-                    value={server}
-                    onChange={(event, newValue) => setServer(newValue)}
-                    onBlur={() => handleBlur('server', server)}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Server"
-                            variant="standard"
-                            fullWidth
-                            error={!!errors.server}
-                            helperText={errors.server}
-                        />
-                    )}
-                    freeSolo
-                    disabled={loading || !!success}
-                    sx={{
-                        '& .MuiInputLabel-root': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:hover:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:after': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& input': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                    }}
-                />
-                <FormControl
-                    fullWidth
-                    error={!!errors.role}
-                    disabled={loading || !!success}
-                    sx={{
-                        '& .MuiInputLabel-root': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiSelect-root': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: darkMode ? '#fff' : '#000',
-                        },
-                    }}
-                >
-                    <InputLabel>Role</InputLabel>
-                    <Select
-                        value={role}
-                        onChange={(event) => setRole(event.target.value)}
-                        onBlur={() => handleBlur('role', role)}
+            <Paper sx={{ p: 3, backgroundColor: darkMode ? "#424242" : "#f9f9f9" }}>
+                <Stack spacing={2}>
+                    <Typography variant="h6">
+                        Add New Raider
+                    </Typography>
+
+                    <Divider />
+
+                    <TextField
+                        label="Character Name (Case Insensitive)"
+                        fullWidth
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        onBlur={() => handleBlur('name', name)}
+                        error={!!errors.name}
+                        helperText={errors.name}
+                        sx={{
+                            '& .MuiInputLabel-root': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInput-underline:before': {
+                                borderBottomColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInput-underline:hover:before': {
+                                borderBottomColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInput-underline:after': {
+                                borderBottomColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& input': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                        }}
+                    />
+
+                    <Divider />
+
+                    <Autocomplete
+                        options={usServers}
+                        value={server}
+                        onChange={(event, newValue) => setServer(newValue)}
+                        onBlur={() => handleBlur('server', server)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Server ( Default - Tichondrius, if not select other server )"
+                                fullWidth
+                                error={!!errors.server}
+                                helperText={errors.server}
+                            />
+                        )}
+                        freeSolo
+                        sx={{
+                            '& .MuiInputLabel-root': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInput-underline:before': {
+                                borderBottomColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInput-underline:hover:before': {
+                                borderBottomColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInput-underline:after': {
+                                borderBottomColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& input': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                        }}
+                    />
+
+                    <Divider />
+
+                    <FormControl
+                        fullWidth
+                        error={!!errors.role}
+                        sx={{
+                            '& .MuiInputLabel-root': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiSelect-root': {
+                                color: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: darkMode ? '#fff' : '#000',
+                            },
+                            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderColor: darkMode ? '#fff' : '#000',
+                            },
+                        }}
                     >
-                        <MenuItem value="TANK">Tank</MenuItem>
-                        <MenuItem value="MELEEDPS">MELEE DPS</MenuItem>
-                        <MenuItem value="RANGEDPS">RANGE DPS</MenuItem>
-                        <MenuItem value="HEALER">Healer</MenuItem>
-                    </Select>
-                </FormControl>
+                        <InputLabel>Role</InputLabel>
+                        <Select
+                            value={role}
+                            onChange={(event) => setRole(event.target.value)}
+                            onBlur={() => handleBlur('role', role)}
+                        >
+                            <MenuItem value="TANK">Tank</MenuItem>
+                            <MenuItem value="MELEEDPS">MELEE DPS</MenuItem>
+                            <MenuItem value="RANGEDPS">RANGE DPS</MenuItem>
+                            <MenuItem value="HEALER">Healer</MenuItem>
+                        </Select>
+                    </FormControl>
 
-                {/* Error message */}
-                {errors.form && (
-                    <Paper sx={{ color: 'red', p: 2, mt: 2 }}>
-                        {errors.form}
-                    </Paper>
-                )}
+                    <Divider />
 
-                {/* Submit button hidden after success */}
-                {!success && (
+                    {/* Error message */}
+                    {errors.form && (
+                        <Paper sx={{ color: 'red', p: 2, mt: 2 }}>
+                            {errors.form}
+                        </Paper>
+                    )}
+
                     <Button
                         type="submit"
                         variant="outlined"
@@ -244,16 +245,8 @@ export default function AddRaider({ onAdd }) {
                     >
                         {loading ? "Adding..." : "Add New Raider"}
                     </Button>
-                )}
-
-                {/* Success message */}
-                {success && (
-                    <Paper sx={{ color: 'green', p: 2, mt: 2 }}>
-                        {success}
-                    </Paper>
-                )}
-            </Stack>
-            <Divider />
+                </Stack>
+            </Paper>
         </form>
     );
 }

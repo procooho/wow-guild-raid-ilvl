@@ -146,7 +146,8 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     multiline
-                    rows={3}
+                    minRows={3}
+                    maxRows={10}
                     fullWidth
                     error={!!errors.description}
                     helperText={errors.description}

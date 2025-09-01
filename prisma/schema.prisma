@@ -57,3 +57,27 @@ model WclLink {
   postId Int
   post   OfficerPost  @relation(fields: [postId], references: [id])
 }
+
+model Notice {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  title     String
+  note      String
+
+  links     NoticeLink[]
+
+  view      Boolean      @default(false)
+  important Boolean      @default(false)
+  isNew     Boolean      @default(true)
+}
+
+model NoticeLink {
+  id          Int     @id @default(autoincrement())
+  url         String
+  description String
+
+  noticeId    Int
+  notice      Notice  @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+}

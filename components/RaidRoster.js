@@ -19,7 +19,11 @@ export default function RaidRoster({ roster }) {
 
   // Sync with roster immediately
   useEffect(() => {
-    setUpdatedRoster(roster);
+    setUpdatedRoster(prev => {
+      const ids = new Set(prev.map(r => r.id));
+      const newItems = roster.filter(r => !ids.has(r.id));
+      return [...prev, ...newItems];
+    });
   }, [roster]);
 
   // show info snackbar on initial load

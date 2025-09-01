@@ -7,7 +7,7 @@ function capitalizeName(name) {
 }
 
 export default async function handler(req, res) {
-  
+
   //Add Raider to database with name capitalized
   if (req.method === "POST") {
     const { name, server, role } = req.body;
@@ -40,7 +40,13 @@ export default async function handler(req, res) {
         }
       });
 
-      res.status(201).json({ message: `Raider ${raiderName} : Role ${role} Created Successfully`, raider });
+      res.status(201).json({
+        message: `Raider ${raiderName} : Role ${role} Created Successfully`, 
+        raider: {
+          ...raider,
+          characterClass: profile.characterClass || "Unknown"
+        }
+      });
 
     } catch (err) {
       console.error(err);

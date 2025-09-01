@@ -93,7 +93,7 @@ export default function RosterSummary({ roster }) {
     };
 
     return (
-        <Stack spacing={3} sx={{ mb: 5 }}>
+        <Stack spacing={3} sx={{ mt: 7, mb: 5 }}>
             <Typography variant="h4" textAlign={"center"}>
                 Guild Roster Summary
             </Typography>

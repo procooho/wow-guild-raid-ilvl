@@ -98,7 +98,7 @@ export default function LeftNav() {
                         sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
                     >
                         <CampaignIcon />
-                        <Typography sx={{ ml: 2, textDecoration: 'line-through' }}>Notice (NOT REDAY)</Typography>
+                        <Typography sx={{ ml: 2 }}>Notice</Typography>
                     </Stack>
                 </Link>
 
@@ -114,15 +114,15 @@ export default function LeftNav() {
                 </Link>
 
                 <Link href={"/raidLogCommon"}>
-                            <Stack
-                                direction='row'
-                                alignItems='center'
-                                sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
-                            >
-                                <OndemandVideoIcon />
-                                <Typography sx={{ ml: 2 }}>Video & Log</Typography>
-                            </Stack>
-                        </Link>
+                    <Stack
+                        direction='row'
+                        alignItems='center'
+                        sx={{ p: 2, '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                    >
+                        <OndemandVideoIcon />
+                        <Typography sx={{ ml: 2 }}>Video & Log</Typography>
+                    </Stack>
+                </Link>
 
                 {/* Officer Only Section */}
                 <Divider

@@ -4,8 +4,7 @@
 
 **To Do**
 
-- RaidNotice
-- Add => New Window not Toggle
+
 
 ---
 
@@ -13,8 +12,37 @@
 
 ---
 
-**Sep 01 2025 v1** 
-(Update)
+**Sep 01 2025 v2** (Update)
+- Notice Updated
+    - Database schema edited
+    - Similar logic with Video & Log
+    - Add, Edit, Delete, Switch (Show hidden post(s)) only show when logged in
+    - Show all posts (including hidden)
+        - Show posts view flag false
+    - Delete: Remove from database
+    - View flag
+        - True: Visible for everyone
+        - False: Visible for officer when switch on
+    - Important / New Flag
+        - Put marker on top left
+    - Supports linebreaking for Note
+    - Collapsed by default, multiple indicator to show user it's expandable
+    - Created date / Updated date
+    - Updated date show if it's different with Created date
+
+- Manage Video & Log, Video & Log
+    - Supports linebreaking for Description
+
+- Add Raider
+    - Changed to Modal window instead of expand collapse
+    - No auto refresh, just added instantly
+    - Visibility increased
+    - API slightly changed for better process
+    - Server default value Tichondrius, since most of guild members are belong to this server
+
+---
+
+**Sep 01 2025 v1** (Update)
 - Manage Video & Log Created (Officer Only)
     - Add, Edit, Delete, Search, Pagination
     - Add, Edit using Modal

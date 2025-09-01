@@ -13,7 +13,10 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                     {new Date(post.createdAt).toLocaleDateString('en-CA')}
                 </Typography>
             </Stack>
-            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>{post.description}</Typography>
+
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, whiteSpace: 'pre-line' }}>
+                {post.description}
+            </Typography>
 
             <Divider />
 
@@ -26,7 +29,7 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                         height={30}
                     />
                     <Typography variant="subtitle1">Youtube Link(s):</Typography>
-                    <Stack direction="column" spacing={1} flexWrap="wrap">
+                    <Stack direction="row" spacing={1} flexWrap="wrap">
                         {post.youtubeLinks.length > 0 ? (
                             post.youtubeLinks.map((y, index) => (
                                 <Chip
@@ -72,14 +75,14 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
             <Divider />
 
             <Box sx={{ my: 1 }}>
-                <Stack direction="row" flexWrap="wrap" alignItems={"center"} sx={{ml: 0.4}}>
+                <Stack direction="row" flexWrap="wrap" alignItems={"center"} sx={{ ml: 0.4 }}>
                     <Image
                         src={"/wcl.png"}
                         alt="Youtube"
                         width={24}
                         height={24}
                     />
-                    <Typography variant="subtitle1" sx={{ml: 1.3, mr: 1}}>WCL(Log) Link(s):</Typography>
+                    <Typography variant="subtitle1" sx={{ ml: 1.3, mr: 1 }}>WCL(Log) Link(s):</Typography>
                     <Stack direction="column" spacing={1} flexWrap="wrap">
                         {post.wclLinks.length > 0 ? (
                             post.wclLinks.map((w, index) => (
