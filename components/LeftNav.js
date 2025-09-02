@@ -6,7 +6,6 @@ import { Stack, Typography, Button, Switch, FormControlLabel } from '@mui/materi
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
-import EditNoteIcon from '@mui/icons-material/EditNote';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import UpgradeIcon from '@mui/icons-material/Upgrade';
@@ -15,44 +14,36 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useThemeContext } from "@/context/ThemeContext";
 import { useEffect, useState } from "react";
-
-const drawerWidth = 240;
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export default function LeftNav() {
     const { loggedIn, logoutUser } = useAuth();
     const router = useRouter();
-    const theme = useThemeContext();
+    const themeContext = useThemeContext();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const [mobileOpen, setMobileOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const darkMode = mounted && theme ? theme.darkMode : false;
-    const toggleDarkMode = theme?.toggleDarkMode || (() => { });
+    const darkMode = mounted && themeContext ? themeContext.darkMode : false;
+    const toggleDarkMode = themeContext?.toggleDarkMode || (() => { });
+
+    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
     const handleLogout = () => {
-        // updates context & localStorage
         logoutUser();
-        // redirect home
         router.push("/");
     };
 
-    return (
-        <Drawer
-            variant="permanent"
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                [`& .MuiDrawer-paper`]: {
-                    width: drawerWidth,
-                    boxSizing: 'border-box',
-                    backgroundColor: '#1E1E1E',
-                    color: '#fff',
-                },
-            }}
-        >
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
+    const drawerContent = (
+        <Box sx={{ color: "#fff" }}>
+            <Box sx={{ display: "flex", justifyContent: 'center', alignItems: 'center', p: 2 }}>
                 <Link href={"/"}>
                     <Image
                         src="/logo.png"
@@ -74,12 +65,12 @@ export default function LeftNav() {
                             checked={darkMode}
                             onChange={toggleDarkMode}
                             color="default"
-                            size="medium"
                         />}
                         label="Dark Mode"
                     />
                 </Box>
 
+                {/* Home Link */}
                 <Link href={"/"}>
                     <Stack
                         direction='row'
@@ -91,6 +82,7 @@ export default function LeftNav() {
                     </Stack>
                 </Link>
 
+                {/* Notice Link */}
                 <Link href={"/raidNotice"}>
                     <Stack
                         direction='row'
@@ -102,6 +94,7 @@ export default function LeftNav() {
                     </Stack>
                 </Link>
 
+                {/* Roster Summary */}
                 <Link href={"/rosterSummaryPage"}>
                     <Stack
                         direction='row'
@@ -113,6 +106,7 @@ export default function LeftNav() {
                     </Stack>
                 </Link>
 
+                {/* Video & Log */}
                 <Link href={"/raidLogCommon"}>
                     <Stack
                         direction='row'
@@ -131,7 +125,7 @@ export default function LeftNav() {
                         mt: 4,
                         mb: 2,
                         "&::before, &::after": { borderColor: "white" },
-                        color: "white",
+                        color: "white"
                     }}
                 >
                     Officer Only
@@ -149,6 +143,7 @@ export default function LeftNav() {
                                 <Typography sx={{ ml: 2 }}>Manage Raid Roster</Typography>
                             </Stack>
                         </Link>
+
                         <Link href={"/raidLog"}>
                             <Stack
                                 direction='row'
@@ -159,6 +154,7 @@ export default function LeftNav() {
                                 <Typography sx={{ ml: 2 }}>Manage Video & Log</Typography>
                             </Stack>
                         </Link>
+
                         <Link href={"/updateLog"}>
                             <Stack
                                 direction='row'
@@ -232,6 +228,47 @@ export default function LeftNav() {
                     Angrybites - Tichondrius
                 </Typography>
             </Box>
-        </Drawer>
+        </Box>
+    );
+
+    return (
+        <>
+            {/* Hamburger Button on Mobile */}
+            {isMobile && (
+                <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    size="large"
+                    sx={{
+                        position: "fixed",
+                        top: 10,
+                        left: 20,
+                        zIndex: 1300,
+                        color: darkMode ? "#fff" : "gray",
+                    }}
+                >
+                    <MenuIcon />
+                </IconButton>
+            )}
+
+            {/* Drawer */}
+            <Drawer
+                variant={isMobile ? "temporary" : "permanent"}
+                open={isMobile ? mobileOpen : true}
+                onClose={handleDrawerToggle}
+                ModalProps={{ keepMounted: true }}
+            >
+                <Box
+                    sx={{
+                        height: "100%",
+                        backgroundColor: "#1E1E1E",
+                        color: "#fff",
+                    }}
+                >
+                    {drawerContent}
+                </Box>
+            </Drawer>
+        </>
     );
 }

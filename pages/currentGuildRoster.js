@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, CircularProgress, Container, Divider, Button, Dialog } from "@mui/material";
+import { Box, CircularProgress, Container, Divider, Button, Dialog, useMediaQuery } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 
 import LeftNav from "../components/LeftNav";
@@ -15,6 +15,7 @@ export default function CurrentGuildRoster() {
 
   const theme = useTheme();
   const darkMode = theme.palette.mode === 'dark';
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     fetchRoster();
@@ -35,8 +36,10 @@ export default function CurrentGuildRoster() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <Box sx={{ display: 'flex' }}>
-          <LeftNav />
+        <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+          <Box sx={{ width: isMobile ? 200 : 240, flexShrink: 0 }}>
+            <LeftNav />
+          </Box>
           <Container sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
             <CircularProgress />
           </Container>
@@ -47,8 +50,12 @@ export default function CurrentGuildRoster() {
 
   return (
     <ProtectedRoute>
-      <Box sx={{ display: 'flex' }}>
-        <LeftNav />
+      <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+        {!isMobile && (
+          <Box sx={{ width: 240, flexShrink: 0 }}>
+            <LeftNav />
+          </Box>
+        )}
         <Container sx={{ mb: 5, mt: 5 }}>
           <Divider />
 
@@ -94,6 +101,7 @@ export default function CurrentGuildRoster() {
             onDelete={(id) => setRoster(prev => prev.filter(r => r.id !== id))}
           />
         </Container>
+        {isMobile && <LeftNav />}
       </Box>
     </ProtectedRoute>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Box, Container, Stack, Typography, Divider, TextField, Pagination } from "@mui/material";
+import { Box, Container, Stack, Typography, TextField, Pagination, useMediaQuery } from "@mui/material";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useTheme } from '@mui/material/styles';
 
 import OfficerPostItem from "@/components/OfficerPostItem";
 import LeftNav from "@/components/LeftNav";
@@ -11,6 +12,9 @@ export default function RaidLogCommon() {
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 5;
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const fetchPosts = async () => {
         try {
@@ -48,8 +52,12 @@ export default function RaidLogCommon() {
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
     return (
-        <Box sx={{ display: "flex" }}>
-            <LeftNav />
+        <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+            {!isMobile && (
+                <Box sx={{ width: 240, flexShrink: 0 }}>
+                    <LeftNav />
+                </Box>
+            )}
             <Container maxWidth="md" sx={{ py: 4 }}>
 
                 <Typography variant="h4" textAlign={"center"} sx={{ my: 3 }}>
@@ -126,6 +134,7 @@ export default function RaidLogCommon() {
                     </Box>
                 )}
             </Container>
+            {isMobile && <LeftNav />}
         </Box>
     );
 }

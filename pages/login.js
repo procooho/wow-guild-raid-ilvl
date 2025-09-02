@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Box, Button, TextField, Typography, Container, Paper } from "@mui/material";
+import { Box, Button, TextField, Typography, Container, Paper, useMediaQuery } from "@mui/material";
 import LeftNav from "@/components/LeftNav";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 export default function LoginPage() {
     const [id, setId] = useState("");
@@ -12,6 +13,9 @@ export default function LoginPage() {
     const router = useRouter();
     const { loginUser } = useAuth();
     const { darkMode, setDarkMode } = useThemeContext();
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -52,15 +56,19 @@ export default function LoginPage() {
     };
 
     return (
-        <Box sx={{ display: "flex" }}>
-            <LeftNav />
+        <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+            {!isMobile && (
+                <Box sx={{ width: 240, flexShrink: 0 }}>
+                    <LeftNav />
+                </Box>
+            )}
             <Container maxWidth="sm" sx={{ mt: 8 }}>
                 <Typography variant="h5" textAlign={"center"} sx={{ mb: 2, color: darkMode ? '#fff' : '#000' }}>
-                        This page is only for Officers.
-                    </Typography>
+                    This page is only for Officers.
+                </Typography>
                 <Typography variant="h5" textAlign={"center"} sx={{ mb: 5, color: darkMode ? '#fff' : '#000' }}>
-                        Please Login to view this page.
-                    </Typography>
+                    Please Login to view this page.
+                </Typography>
                 <Paper sx={{ p: 4, border: '1px solid', borderColor: darkMode ? '#fff' : '#000' }}>
                     <Typography variant="h5" sx={{ mb: 2, color: darkMode ? '#fff' : '#000' }}>
                         Officer Login
@@ -106,6 +114,7 @@ export default function LoginPage() {
                     </form>
                 </Paper>
             </Container>
+            {isMobile && <LeftNav />}
         </Box>
     );
 }

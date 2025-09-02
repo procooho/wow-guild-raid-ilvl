@@ -1,12 +1,16 @@
 import LeftNav from '@/components/LeftNav';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTheme } from '@mui/material/styles';
 
 export default function UpdateLog() {
     const [content, setContent] = useState("");
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     useEffect(() => {
         fetch("./README.md")
@@ -16,8 +20,12 @@ export default function UpdateLog() {
 
     return (
         <ProtectedRoute>
-            <Box sx={{ display: 'flex' }}>
-                <LeftNav />
+            <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+                {!isMobile && (
+                    <Box sx={{ width: 240, flexShrink: 0 }}>
+                        <LeftNav />
+                    </Box>
+                )}
                 <Box sx={{ p: 4 }}>
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -46,6 +54,7 @@ export default function UpdateLog() {
                         {content}
                     </ReactMarkdown>
                 </Box>
+                {isMobile && <LeftNav />}
             </Box>
         </ProtectedRoute >
     );

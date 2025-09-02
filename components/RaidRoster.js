@@ -82,7 +82,7 @@ export default function RaidRoster({ roster }) {
 
   return (
     <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-      <Typography variant="h4" sx={{ paddingTop: 2, paddingBottom: 2 }}>
+      <Typography variant="h4" sx={{ paddingTop: 2, paddingBottom: 2, textAlign: 'center' }}>
         Manage Current Guild Roster
       </Typography>
 

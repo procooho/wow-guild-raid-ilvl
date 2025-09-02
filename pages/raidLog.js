@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Box, Container, Stack, Typography, Button, Dialog, Divider, TextField, Pagination } from "@mui/material";
+import { Box, Container, Stack, Typography, Button, Dialog, Divider, TextField, Pagination, useMediaQuery } from "@mui/material";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 import OfficerPostForm from "@/components/OfficerPostForm";
 import OfficerPostItem from "@/components/OfficerPostItem";
@@ -15,6 +16,9 @@ export default function RaidLog() {
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 5;
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const fetchPosts = async () => {
         try {
@@ -74,8 +78,12 @@ export default function RaidLog() {
 
     return (
         <ProtectedRoute>
-            <Box sx={{ display: "flex" }}>
-                <LeftNav />
+            <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+                {!isMobile && (
+                    <Box sx={{ width: 240, flexShrink: 0 }}>
+                        <LeftNav />
+                    </Box>
+                )}
                 <Container maxWidth="md" sx={{ py: 4 }}>
                     <Divider />
 
@@ -189,6 +197,7 @@ export default function RaidLog() {
                         </Box>
                     )}
                 </Container>
+                {isMobile && <LeftNav />}
             </Box>
         </ProtectedRoute>
     );

@@ -4,11 +4,19 @@
 
 **To Do**
 
-
-
 ---
 
 ## Update Log
+
+---
+
+**Sep 01 2025 v3** (Update)
+- Mobile view updated
+    - When Mobile view,
+        - Drawer toggleable
+        - Contents occpy entire screen width
+    - Normal View
+        - Some visibility improved
 
 ---
 

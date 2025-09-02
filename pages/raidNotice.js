@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Box, Container, Stack, Typography, Button, Dialog, Divider, TextField, Pagination, FormControlLabel, Switch } from "@mui/material";
+import { Box, Container, Stack, Typography, Button, Dialog, Divider, TextField, Pagination, FormControlLabel, Switch, useMediaQuery } from "@mui/material";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useTheme } from '@mui/material/styles';
 
 import NoticeForm from "@/components/NoticeForm";
 import NoticeItem from "@/components/NoticeItem";
@@ -17,6 +18,9 @@ export default function RaidNotice() {
     const [currentPage, setCurrentPage] = useState(1);
     const [showAll, setShowAll] = useState(false);
     const noticesPerPage = 5;
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const fetchNotices = async (showAll = false) => {
         try {
@@ -80,8 +84,12 @@ export default function RaidNotice() {
     const totalPages = Math.ceil(filteredNotices.length / noticesPerPage);
 
     return (
-        <Box sx={{ display: "flex" }}>
-            <LeftNav />
+        <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
+            {!isMobile && (
+                <Box sx={{ width: 240, flexShrink: 0 }}>
+                    <LeftNav />
+                </Box>
+            )}
             <Container maxWidth="md" sx={{ py: 4 }}>
 
                 {/* Add New Notice Button (only for logged-in users) */}
@@ -165,7 +173,7 @@ export default function RaidNotice() {
                     Showing {filteredNotices.length} result{filteredNotices.length !== 1 ? "s" : ""}
                 </Typography>
 
-                <Typography variant="body1" textAlign={"center"}  sx={{ mb: 2 }}>
+                <Typography variant="body1" textAlign={"center"} sx={{ mb: 2 }}>
                     ( Click post to expand )
                 </Typography>
 
@@ -205,6 +213,7 @@ export default function RaidNotice() {
                     </Box>
                 )}
             </Container>
+            {isMobile && <LeftNav />}
         </Box>
     );
 }
