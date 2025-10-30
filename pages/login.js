@@ -17,17 +17,26 @@ export default function LoginPage() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, password }),
+            });
 
-        // officer login check
-        if (id === "AwakenOfficer" && password === "AwOf1234") {
-            // sets loggedIn = true
-            loginUser();
-            // redirect to protected page
-            router.replace("/");
-        } else {
-            setError("Invalid officer credentials.");
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                loginUser();
+                router.replace("/");
+            } else {
+                setError(data.message || "Invalid officer credentials.");
+            }
+        } catch (err) {
+            console.error("Login API Error:", err);
+            setError("A network error occurred. Please try again.");
         }
     };
 
