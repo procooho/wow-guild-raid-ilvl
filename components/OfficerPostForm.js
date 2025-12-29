@@ -124,7 +124,7 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                             {editingPost ? "Modify Combat Log" : "Initialize Combat Log"}
                         </h2>
                         <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
-                            // Video & Warcraft Logs Entry
+                            {/* Video & Warcraft Logs Entry */}
                         </p>
                     </div>
                     <button onClick={onCancel} className="text-white/40 hover:text-white transition-colors">

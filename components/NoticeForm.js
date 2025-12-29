@@ -145,7 +145,7 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                             {editingNotice ? "Modify Briefing" : "Create Briefing"}
                         </h2>
                         <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
-                            // Guild Notification System
+                            {/* Guild Notification System */}
                         </p>
                     </div>
                     <button onClick={onCancel} className="text-white/40 hover:text-white transition-colors">

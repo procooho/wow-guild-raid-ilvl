@@ -192,7 +192,7 @@ const TopHeader = () => {
                                 {showDiscordModal ? 'Discord' : 'KakaoTalk'} Community
                             </h2>
                             <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider pl-1">
-                                // ACCESS_REQUEST // PROTOCOL_V2
+                                {/* ACCESS_REQUEST // PROTOCOL_V2 */}
                             </p>
                         </div>
                         <button onClick={closeModal} className="text-white/40 hover:text-white transition-colors">
@@ -271,7 +271,7 @@ const TopHeader = () => {
                                             <ul className="list-disc list-inside mt-2 space-y-1 text-red-200/70 text-xs pl-2">
                                                 <li>골드 거래 및 개인 간 거래 광고</li>
                                                 <li>금전적 요구 (골드 베깅)</li>
-                                                <li>사적인 요청 및 무리한 도움 요구 (예: "버스 태워주세요", "골드 좀 빌려주세요")</li>
+                                                <li>사적인 요청 및 무리한 도움 요구 (예: &quot;버스 태워주세요&quot;, &quot;골드 좀 빌려주세요&quot;)</li>
                                             </ul>
                                             <p className="text-red-400 mt-3 font-bold flex items-center gap-2 text-xs uppercase tracking-wider">
                                                 <WarningIcon fontSize="small" />
@@ -394,7 +394,7 @@ const TopHeader = () => {
                                 Bug Report & Suggestions
                             </h2>
                             <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider pl-1">
-                                // FEEDBACK_CHANNEL // OPEN_LINE
+                                {/* FEEDBACK_CHANNEL // OPEN_LINE */}
                             </p>
                         </div>
                         <button onClick={closeModal} className="text-white/40 hover:text-white transition-colors">

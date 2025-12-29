@@ -37,7 +37,7 @@ export default function TechConfirmModal({ isOpen, title, message, onConfirm, on
                                 {title || "CONFIRMATION REQUIRED"}
                             </h2>
                             <p className="text-[10px] text-red-500/80 font-mono tracking-[0.2em] mt-1 uppercase">
-                                // IRREVERSIBLE ACTION DETECTED
+                                {/* IRREVERSIBLE ACTION DETECTED */}
                             </p>
                         </div>
                     </div>
