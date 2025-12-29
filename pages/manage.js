@@ -76,8 +76,11 @@ export default function ManagePage() {
 
     const fetchUpdateLog = async () => {
         try {
-            const res = await fetch("./README.md");
-            if (res.ok) setLogContent(await res.text());
+            const res = await fetch("/api/readme");
+            if (res.ok) {
+                const data = await res.json();
+                setLogContent(data.content);
+            }
         } catch (err) { console.error(err); }
     };
 

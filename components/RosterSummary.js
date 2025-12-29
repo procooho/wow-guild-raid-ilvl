@@ -193,7 +193,7 @@ export default function RosterSummary({ roster }) {
             </div>
 
             {/* Role Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
                 {roles.map((role) => (
                     <div key={role} className="flex flex-col bg-black/40 border border-blue-500/20 rounded-lg p-1 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                         {/* Role Header */}

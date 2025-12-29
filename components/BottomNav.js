@@ -16,12 +16,12 @@ const NavButton = ({ label, icon: Icon, onClick, active, onMouseEnter, onMouseLe
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         className={`
-            relative flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 w-17 h-17
+            relative flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 w-20 h-20
             ${active ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'text-white/50 hover:bg-white/5 hover:text-white hover:scale-105 active:scale-95'}
         `}
     >
-        <Icon className="w-10 h-10 mb-2" />
-        <span className="text-[9px] uppercase tracking-widest font-bold">{label}</span>
+        <Icon className="w-12 h-12 mb-2" />
+        <span className="text-[12px] uppercase tracking-widest font-bold">{label}</span>
         {/* Active Indicator */}
         {active && <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_#3b82f6]" />}
     </button>
@@ -92,7 +92,7 @@ const BottomNav = () => {
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 hidden lg:flex items-end gap-6 origin-bottom">
                 <div className="flex items-end gap-6 animate-slide-up origin-bottom">
                     {/* Main Controller Bar */}
-                    <div className="relative bg-black/60 border border-blue-500/30 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-8 px-8 py-4
+                    <div className="relative bg-black/60 border border-blue-500/30 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-5 px-8 py-4
                                     before:absolute before:inset-0 before:bg-[url('https://grainy-gradients.vercel.app/noise.svg')] before:opacity-10 before:pointer-events-none
                                     "
                         style={{
@@ -103,7 +103,7 @@ const BottomNav = () => {
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px] bg-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
 
                         {/* Left: Avg Ilvl Section */}
-                        <div className="flex flex-col w-36 h-full justify-center space-y-1 mr-2 relative group">
+                        <div className="flex flex-col w-32 h-full justify-center space-y-1 mr-2 relative group">
                             <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-[2px] h-8 bg-blue-500/50 group-hover:bg-blue-400 transition-colors shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
                             <div className="flex flex-col items-start pb-1">
                                 <span className="text-[11px] text-blue-200 uppercase tracking-[0.2em] font-extrabold mb-1 flex items-center gap-2 drop-shadow-md">
@@ -150,7 +150,7 @@ const BottomNav = () => {
                         <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-blue-400/50 to-transparent shadow-[0_0_5px_rgba(96,165,250,0.5)]" />
 
                         {/* Center Right: Row of Buttons */}
-                        <div className="flex gap-3 relative">
+                        <div className="flex gap-1 relative">
                             {/* Tooltip Display - Positioning Above HUD */}
                             {hoverText && (
                                 <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-black/90 text-blue-200 text-[11px] font-mono uppercase tracking-[0.1em] font-bold px-4 py-1.5 border border-blue-500/50 whitespace-nowrap pointer-events-none animate-fade-in z-50 shadow-[0_0_20px_rgba(59,130,246,0.3)] backdrop-blur-sm"
@@ -199,17 +199,17 @@ const BottomNav = () => {
                         <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-blue-400/50 to-transparent shadow-[0_0_5px_rgba(96,165,250,0.5)]" />
 
                         {/* Right: Notices Section */}
-                        <div className="flex flex-col w-64 h-full justify-center space-y-2 relative pl-4">
+                        <div className="flex flex-col w-75 h-full justify-center space-y-1 relative pl-4">
                             <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-[2px] h-8 bg-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
 
                             <div className="flex justify-between items-center pb-1 border-b border-white/10">
-                                <span className="text-[11px] text-blue-200 uppercase tracking-[0.2em] font-extrabold drop-shadow-md">Latest Comms</span>
-                                <span className="text-[9px] text-white/90 uppercase tracking-widest font-mono bg-blue-900/40 border border-blue-500/30 px-2 py-0.5 rounded-sm shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+                                <span className="text-[13px] text-blue-200 uppercase tracking-[0.2em] font-extrabold drop-shadow-md">Latest Comms</span>
+                                <span className="text-[11px] text-white/90 uppercase tracking-widest font-mono bg-blue-900/40 border border-blue-500/30 px-2 py-0.5 rounded-sm shadow-[0_0_10px_rgba(0,0,0,0.5)]">
                                     {currentNotice ? new Date(currentNotice.createdAt).toLocaleDateString() : "NO DATA"}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-white font-bold tracking-wide truncate font-sans max-w-[160px] animate-fade-in drop-shadow-md" title={currentNotice?.title}>
+                                <span className="text-sm text-white font-bold tracking-wide truncate font-sans w-[220px] animate-fade-in drop-shadow-md" title={currentNotice?.title}>
                                     {currentNotice ? currentNotice.title : <span className="text-white/40 italic">Searching frequency...</span>}
                                 </span>
                                 <button

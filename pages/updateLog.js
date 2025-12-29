@@ -1,22 +1,14 @@
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { Box, Container, useMediaQuery } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Container, useMediaQuery } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTheme } from '@mui/material/styles';
+import fs from 'fs';
+import path from 'path';
 
-export default function UpdateLog() {
-    const [content, setContent] = useState("");
-    const [isAdmin, setIsAdmin] = useState(false);
-
+export default function UpdateLog({ content }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-    useEffect(() => {
-        fetch("./README.md")
-            .then((res) => res.text())
-            .then((text) => setContent(text));
-    }, []);
 
     return (
         // <ProtectedRoute>
@@ -49,4 +41,23 @@ export default function UpdateLog() {
             </ReactMarkdown>
         </Container>
     );
+}
+
+export async function getStaticProps() {
+    try {
+        const filePath = path.join(process.cwd(), 'README.md');
+        const content = fs.readFileSync(filePath, 'utf8');
+        return {
+            props: {
+                content,
+            },
+        };
+    } catch (error) {
+        console.error("Error reading README.md:", error);
+        return {
+            props: {
+                content: "Failed to load update log.",
+            },
+        };
+    }
 }

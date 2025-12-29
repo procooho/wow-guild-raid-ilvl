@@ -35,8 +35,8 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                 <div className="space-y-3">
                     {/* Youtube */}
                     <div className="flex items-start gap-4">
-                        <div className="w-8 h-8 flex items-center justify-center bg-red-600/20 rounded border border-red-500/20">
-                            <Image src="/youtube.png" alt="Youtube" width={20} height={20} className="rounded-sm opacity-80" />
+                        <div className="w-9 h-9 flex items-center justify-center bg-red-600/20 rounded border border-red-500/20">
+                            <Image src="/youtube.png" alt="Youtube" width={30} height={30} className="rounded-sm opacity-80" />
                         </div>
                         <div className="flex flex-wrap gap-2 items-center flex-1">
                             {post.youtubeLinks.length > 0 ? (
@@ -60,8 +60,8 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
 
                     {/* WCL */}
                     <div className="flex items-start gap-4">
-                        <div className="w-8 h-8 flex items-center justify-center bg-blue-600/20 rounded border border-blue-500/20">
-                            <Image src="/wcl.png" alt="WCL" width={20} height={20} className="rounded-sm opacity-80" />
+                        <div className="w-9 h-9 flex items-center justify-center bg-blue-600/20 rounded border border-blue-500/20">
+                            <Image src="/wcl.png" alt="WCL" width={24} height={24} className="rounded-sm opacity-80" />
                         </div>
                         <div className="flex flex-wrap gap-2 items-center flex-1">
                             {post.wclLinks.length > 0 ? (

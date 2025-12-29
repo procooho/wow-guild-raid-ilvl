@@ -210,7 +210,7 @@ export default function Individual({ raider, showToast }) {
                 {raiderState.name}
               </h2>
               <div className="text-xs text-blue-400 font-mono tracking-[0.2em] bg-blue-900/10 inline-block px-2 py-1 mt-1 border border-blue-500/20">
-                {/* {raiderState.server.toUpperCase()} */}
+                {raiderState.server.toUpperCase()}
               </div>
             </div>
           </div>
