@@ -158,7 +158,7 @@ export default function ManagePage() {
                                 Command Center
                             </h1>
                             <p className="text-blue-400/60 font-mono text-xs mt-1 tracking-[0.2em] uppercase">
-                                // ADMIN_ACCESS_GRANTED // SESSION_ACTIVE
+                                {/* ADMIN_ACCESS_GRANTED // SESSION_ACTIVE */}
                             </p>
                         </div>
                         <button

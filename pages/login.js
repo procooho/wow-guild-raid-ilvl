@@ -12,7 +12,6 @@ export default function LoginPage() {
     const { loginUser } = useAuth();
     const { darkMode } = useThemeContext();
 
-<<<<<<< Updated upstream
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -36,33 +35,6 @@ export default function LoginPage() {
         } catch (err) {
             console.error("Login API Error:", err);
             setError("A network error occurred. Please try again.");
-=======
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
-
-        try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: id, password: password }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                loginUser();
-                router.replace("/manage"); // Redirect to new Manage dashboard
-            } else {
-                setError(data.message || "Access Denied");
-            }
-        } catch (err) {
-            console.error("Login Error:", err);
-            setError("System Error: Connection Failed");
-        } finally {
-            setLoading(false);
->>>>>>> Stashed changes
         }
     };
 

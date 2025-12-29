@@ -1,0 +1,56 @@
+﻿
+> wow-guild-raid-ilvl@0.1.0 build
+> next build
+
+   ??Next.js 15.5.0
+   - Environments: .env
+
+   Linting and checking validity of types ...
+node.exe : 
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe
+" "C:\Users\proco\AppData\Roaming\ ..
+.
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe 
+   cified: (:String) [], RemoteExce  
+  ption
+    + FullyQualifiedErrorId : Native 
+   CommandError
+ 
+Failed to compile.
+
+./pages/manage.js
+160:111  Error: Comments inside child
+ren section of tag should be placed i
+nside braces  react/jsx-no-comment-te
+xtnodes
+
+./pages/raidLog.js
+9:7  Error: Parsing error: Identifier
+ 'OfficerPostItem' has already been d
+eclared. (9:7)
+
+./pages/raidLogCommon.js
+81:71  Error: Comments inside childre
+n section of tag should be placed ins
+ide braces  react/jsx-no-comment-text
+nodes
+
+./pages/raidNotice.js
+91:71  Error: Comments inside childre
+n section of tag should be placed ins
+ide braces  react/jsx-no-comment-text
+nodes
+
+./components/AddRaider.js
+122:101  Error: Comments inside child
+ren section of tag should be placed i
+nside braces  react/jsx-no-comment-te
+xtnodes
+
+info  - Need to disable some ESLint r
+ules? Learn more here: https://nextjs
+.org/docs/app/api-reference/config/es
+lint#disabling-rules
