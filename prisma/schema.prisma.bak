@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Raider {
+  id             Int                 @id @default(autoincrement())
+  name           String
+  server         String
+  role           String
+  currentIlvl    Float?
+
+  history        ItemLevelHistory[]
+
+  @@unique([name, server])
+}
+
+model ItemLevelHistory {
+  id        Int      @id @default(autoincrement())
+  raiderId  Int
+  raider    Raider   @relation(fields: [raiderId], references: [id])
+  ilvl      Float
+  recordedAt DateTime @default(now())
+}
+
+
+model OfficerPost {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  title       String
+  description String?
+
+  youtubeLinks YoutubeLink[]
+  wclLinks     WclLink[]
+}
+
+model YoutubeLink {
+  id     Int          @id @default(autoincrement())
+  url    String
+  postId Int
+  post   OfficerPost  @relation(fields: [postId], references: [id])
+}
+
+model WclLink {
+  id     Int          @id @default(autoincrement())
+  url    String
+  postId Int
+  post   OfficerPost  @relation(fields: [postId], references: [id])
+}
+
+model Notice {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  title     String
+  note      String
+
+  links     NoticeLink[]
+
+  view      Boolean      @default(false)
+  important Boolean      @default(false)
+  isNew     Boolean      @default(true)
+}
+
+model NoticeLink {
+  id          Int     @id @default(autoincrement())
+  url         String
+  description String
+
+  noticeId    Int
+  notice      Notice  @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("officer")
+}
