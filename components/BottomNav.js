@@ -222,6 +222,12 @@ const BottomNav = () => {
                         </div>
 
                     </div>
+                    {/* Fineprint - Desktop */}
+                    <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 w-[500px] text-center whitespace-nowrap">
+                        <span className="text-[10px] text-white/20 font-mono uppercase tracking-widest">
+                            Made by Angrybites - Tichondrius
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -243,17 +249,37 @@ const BottomNav = () => {
                         </span>
                     </div>
 
+                    {/* Center: Mobile Fineprint */}
+                    <div className="flex flex-col items-center justify-center opacity-80">
+                        <span className="text-[8px] text-white/30 font-mono uppercase tracking-widest text-center leading-tight">
+                            Made by Angrybites<br />Tichondrius
+                        </span>
+                    </div>
+
                     {/* Right: Menu Toggle */}
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300 active:scale-95
+                        className={`
+                            relative group overflow-hidden px-5 py-2 transition-all duration-300
                             ${expanded
-                                ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]'
-                                : 'bg-white/5 border-white/10 text-blue-200 hover:bg-white/10'
-                            }`}
+                                ? 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.6)]'
+                                : 'bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/30'}
+                        `}
+                        style={{ clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" }}
                     >
-                        <span className="text-[10px] uppercase font-bold tracking-widest">{expanded ? 'CLOSE' : 'MENU'}</span>
-                        <KeyboardArrowUpIcon className={`transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} />
+                        {/* Inner Tech Lines */}
+                        <div className={`absolute top-0 right-0 w-[2px] h-3 bg-blue-400/50 transition-all ${expanded ? 'bg-white' : ''}`} />
+                        <div className={`absolute bottom-0 left-0 w-[2px] h-3 bg-blue-400/50 transition-all ${expanded ? 'bg-white' : ''}`} />
+
+                        <div className="flex items-center gap-2 relative z-10">
+                            <span className={`text-[10px] uppercase font-bold tracking-[0.2em] ${expanded ? 'text-white' : 'text-blue-200'}`}>
+                                {expanded ? 'CLOSE' : 'MENU'}
+                            </span>
+                            <KeyboardArrowUpIcon
+                                sx={{ fontSize: 18 }}
+                                className={`transition-transform duration-500 ${expanded ? 'rotate-180 text-white' : 'text-blue-400 group-hover:-translate-y-0.5'}`}
+                            />
+                        </div>
                     </button>
                 </div>
 
@@ -316,6 +342,7 @@ const BottomNav = () => {
                             {currentNotice ? currentNotice.title : "No recent communications"}
                         </p>
                     </div>
+
                 </div>
             </div>
 

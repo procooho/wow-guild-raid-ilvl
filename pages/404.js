@@ -26,7 +26,7 @@ export default function Custom404() {
                 </h2>
 
                 <p className="text-red-300/60 font-mono text-sm max-w-lg mb-10 leading-relaxed tracking-wide">
-                    // SYSTEM ERROR: TARGET COORDINATES NOT FOUND.<br />
+                    {`// SYSTEM ERROR: TARGET COORDINATES NOT FOUND.`}<br />
                     The requested vector leads to void space. Rerouting navigation protocols recommended.
                 </p>
 

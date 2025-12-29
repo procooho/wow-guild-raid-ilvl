@@ -153,7 +153,7 @@ const TopHeader = () => {
 
 
                     {/* System Icons Panel */}
-                    <div className="flex items-center bg-black/60 backdrop-blur-md border border-blue-500/30 p-1.5 shadow-[0_0_20px_rgba(37,99,235,0.1)] gap-1 z-10"
+                    <div className="flex items-center bg-black/60 backdrop-blur-md border border-blue-500/30 p-1.5 pl-3 shadow-[0_0_20px_rgba(37,99,235,0.1)] gap-2 z-10"
                         style={{ clipPath: "polygon(15% 0, 100% 0, 100% 100%, 0% 100%)" }}
                     >
                         {/* Left Decorative Border */}
@@ -485,8 +485,11 @@ const TopHeader = () => {
                     </div>
 
                     {/* Footer */}
-                    <div className="border-t border-blue-500/20 pt-4 mt-2 flex justify-end shrink-0">
-                        <button onClick={closeModal} className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white transition-all font-bold uppercase text-xs tracking-[0.2em] shadow-[0_0_20px_rgba(37,99,235,0.3)]">
+                    <div className="border-t border-blue-500/20 pt-4 mt-2 flex justify-between items-center shrink-0">
+                        <span className="text-[10px] text-white/20 font-mono uppercase tracking-widest pl-2">
+                            Made by Angrybites - Tichondrius
+                        </span>
+                        <button onClick={closeModal} className="px-8 py-3 mr-2 bg-blue-600 hover:bg-blue-500 text-white transition-all font-bold uppercase text-xs tracking-[0.2em] shadow-[0_0_20px_rgba(37,99,235,0.3)]">
                             CLOSE
                         </button>
                     </div>

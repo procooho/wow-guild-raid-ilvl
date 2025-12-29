@@ -9,6 +9,7 @@ export default function LoginPage() {
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { loginUser } = useAuth();
@@ -19,6 +20,8 @@ export default function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError(""); // Clear previous errors
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
@@ -27,10 +30,14 @@ export default function LoginPage() {
             });
 
             const data = await response.json();
+            setLoading(false);
 
             if (response.ok && data.success) {
+                setSuccess(true);
                 loginUser();
-                router.replace("/");
+                setTimeout(() => {
+                    router.replace("/");
+                }, 1500);
             } else {
                 setError(data.message || "Invalid officer credentials.");
             }
@@ -95,11 +102,18 @@ export default function LoginPage() {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            disabled={loading}
-                            className="bg-blue-600/80 hover:bg-blue-600 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all border border-blue-400/50 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                            disabled={loading || success}
+                            className={`
+                                w-full font-bold py-3 uppercase tracking-[0.2em] transition-all border mt-2
+                                ${success
+                                    ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.4)]'
+                                    : 'bg-blue-600/80 hover:bg-blue-600 text-white border-blue-400/50 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] disabled:opacity-50 disabled:cursor-not-allowed'
+                                }
+                            `}
                         >
-                            {loading ? "Authenticating..." : "Initialize Session"}
+                            {loading ? "Authenticating..." : success ? "Access Granted" : "Initialize Session"}
                         </button>
+
                     </form>
 
                     {/* Decorative Corner Accents */}
