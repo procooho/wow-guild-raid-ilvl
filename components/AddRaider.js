@@ -120,7 +120,7 @@ export default function AddRaider({ onAdd }) {
                         Initialize New Unit
                     </h2>
                     <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
-                        // Unit Registration Protocol
+                        {'//'} Unit Registration Protocol
                     </p>
                 </div>
 

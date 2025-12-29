@@ -89,7 +89,7 @@ export default function RaidNotice() {
                 {/* Results Meta */}
                 <div className="flex justify-between items-end mb-4 px-2 border-b border-white/10 pb-2">
                     <span className="text-xs font-mono text-blue-400">
-                        // RECORDS_FOUND: {filteredNotices.length}
+                        {'//'} RECORDS_FOUND: {filteredNotices.length}
                     </span>
                     <span className="text-[10px] text-white/30 uppercase tracking-widest">
                         Click Entry to Decrypt
