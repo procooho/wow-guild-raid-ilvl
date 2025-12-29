@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Paper, Stack, TextField, Typography, Button, Divider } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCancel }) {
     const [title, setTitle] = useState("");
@@ -33,7 +35,6 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
         const newErrors = { title: "", description: "", youtube: [], wcl: [] };
         let hasError = false;
 
-        // Required fields
         if (!title.trim()) {
             newErrors.title = "Title is required";
             hasError = true;
@@ -43,7 +44,6 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
             hasError = true;
         }
 
-        // Link validation
         youtubeLinks.forEach((url, i) => {
             if (url && !url.startsWith("https://youtu.be")) {
                 newErrors.youtube[i] = "Must start with https://youtu.be";
@@ -96,228 +96,183 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
         }
     };
 
+    const removeLink = (index, type) => {
+        if (type === 'youtube') {
+            setYoutubeLinks(prev => prev.filter((_, i) => i !== index));
+        } else {
+            setWclLinks(prev => prev.filter((_, i) => i !== index));
+        }
+    };
+
     return (
-        <Paper sx={{ p: 3, backgroundColor: darkMode ? "#424242" : "#f9f9f9" }}>
-            <Stack spacing={2}>
-                <Typography variant="h6">
-                    {editingPost ? "Edit Post" : "Add New Officer Post"}
-                </Typography>
+        <div className="bg-black/95 border border-blue-500/30 p-6 relative overflow-hidden">
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500" />
+            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-500" />
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-500" />
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500" />
 
-                <Divider />
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 pointer-events-none" />
 
-                <TextField
-                    label="Title"
-                    placeholder="E.g. TWW - S3 Manaforge 7/8 Heroic"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    fullWidth
-                    error={!!errors.title}
-                    helperText={errors.title}
-                    sx={{
-                        backgroundColor: darkMode ? "#333" : "#fff",
-                        '& .MuiInputLabel-root': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:hover:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:after': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& input': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                    }}
-                    required
-                />
-                <Typography variant="body2">
-                    (E.g. TWW S3 - Manaforge 7/8 (Heroic))
-                </Typography>
+            <div className="relative z-10 space-y-6">
+                {/* Header */}
+                {/* Header */}
+                <div className="border-b border-blue-500/20 pb-4 flex justify-between items-start">
+                    <div>
+                        <h2 className="text-xl font-black text-white uppercase tracking-widest">
+                            {editingPost ? "Modify Combat Log" : "Initialize Combat Log"}
+                        </h2>
+                        <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
+                            // Video & Warcraft Logs Entry
+                        </p>
+                    </div>
+                    <button onClick={onCancel} className="text-white/40 hover:text-white transition-colors">
+                        <CloseIcon />
+                    </button>
+                </div>
 
-                <TextField
-                    label="Description"
-                    placeholder="Boss Informations, Other Informations"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    multiline
-                    minRows={3}
-                    maxRows={10}
-                    fullWidth
-                    error={!!errors.description}
-                    helperText={errors.description}
-                    sx={{
-                        backgroundColor: darkMode ? "#333" : "#fff",
-                        '& .MuiInputLabel-root': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:hover:before': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& .MuiInput-underline:after': {
-                            borderBottomColor: darkMode ? '#fff' : '#000',
-                        },
-                        '& input': {
-                            color: darkMode ? '#fff' : '#000',
-                        },
-                    }}
-                    required
-                />
-                <Typography variant="body2">
-                    (E.g. Nexus-King Salhadaar(H) - First Kill / Dimensius(H) - Progress)
-                </Typography>
-
-                <Typography variant="body2">
-                    * Please keep the Title and Description format for easy search in the future.
-                </Typography>
-
-                <Divider />
-
-                <Typography variant="subtitle1">Youtube Links</Typography>
-                {youtubeLinks.map((link, i) => (
-                    <TextField
-                        label="Starting with: https://youtu.be"
-                        key={i}
-                        value={link}
-                        onChange={(e) => {
-                            const copy = [...youtubeLinks];
-                            copy[i] = e.target.value;
-                            setYoutubeLinks(copy);
-                        }}
-                        fullWidth
-                        error={!!errors.youtube[i]}
-                        helperText={errors.youtube[i] || ""}
-                        sx={{
-                            backgroundColor: darkMode ? "#333" : "#fff",
-                            '& .MuiInputLabel-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:hover:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:after': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& input': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                        }}
+                {/* Title */}
+                <div className="space-y-2">
+                    <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                        Mission Title *
+                    </label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="E.g. TWW - S3 Manaforge 7/8 Heroic"
+                        className={`w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider
+                            ${errors.title ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}`}
                     />
-                ))}
-                <Button
-                    onClick={() => setYoutubeLinks([...youtubeLinks, ""])}
-                    variant="outlined"
-                    sx={{
-                        backgroundColor: '#1E1E1E',
-                        color: '#fff',
-                        '&:hover': {
-                            backgroundColor: '#c9c9c9ff',
-                            color: '#111',
-                        },
-                    }}
-                >
-                    Add More Youtube Link
-                </Button>
+                    {errors.title && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.title}</span>}
+                    <p className="text-[9px] text-gray-500 font-mono ml-1">FORMAT: TWW S3 - Manaforge 7/8 (Heroic)</p>
+                </div>
 
-                <Typography variant="subtitle1">WCL Links</Typography>
-                {wclLinks.map((link, i) => (
-                    <TextField
-                        label="Starting with: https://www.warcraftlogs.com/"
-                        key={i}
-                        value={link}
-                        onChange={(e) => {
-                            const copy = [...wclLinks];
-                            copy[i] = e.target.value;
-                            setWclLinks(copy);
-                        }}
-                        fullWidth
-                        error={!!errors.wcl[i]}
-                        helperText={errors.wcl[i] || ""}
-                        sx={{
-                            backgroundColor: darkMode ? "#333" : "#fff",
-                            '& .MuiInputLabel-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:hover:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:after': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& input': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                        }}
+                {/* Description */}
+                <div className="space-y-2">
+                    <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                        Mission Brief *
+                    </label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Boss Information, Strategy Notes, Other Details..."
+                        rows={4}
+                        className={`w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider resize-none
+                            ${errors.description ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}`}
                     />
-                ))}
-                <Button
-                    onClick={() => setWclLinks([...wclLinks, ""])}
-                    variant="outlined"
-                    sx={{
-                        backgroundColor: '#1E1E1E',
-                        color: '#fff',
-                        '&:hover': {
-                            backgroundColor: '#c9c9c9ff',
-                            color: '#111',
-                        },
-                    }}
-                >
-                    Add More WCL Link
-                </Button>
+                    {errors.description && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.description}</span>}
+                    <p className="text-[9px] text-gray-500 font-mono ml-1">E.g. Nexus-King Salhadaar(H) - First Kill / Dimensius(H) - Progress</p>
+                </div>
 
-                <Stack direction="row" spacing={2}>
-                    <Button
-                        variant="contained"
+                <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+
+                {/* YouTube Links */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs text-blue-300 font-black uppercase tracking-widest">
+                            YouTube Links
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setYoutubeLinks([...youtubeLinks, ""])}
+                            className="flex items-center gap-1 px-3 py-1 border border-blue-500/30 hover:bg-blue-500/10 text-blue-400 text-[10px] font-mono uppercase tracking-wider transition-all"
+                        >
+                            <AddIcon fontSize="small" /> Add
+                        </button>
+                    </div>
+                    {youtubeLinks.map((link, i) => (
+                        <div key={i} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={link}
+                                onChange={(e) => {
+                                    const copy = [...youtubeLinks];
+                                    copy[i] = e.target.value;
+                                    setYoutubeLinks(copy);
+                                }}
+                                placeholder="https://youtu.be/..."
+                                className={`flex-1 bg-black/50 border text-white px-4 py-2 font-mono text-xs focus:outline-none transition-colors
+                                    ${errors.youtube[i] ? 'border-red-500' : 'border-white/10 focus:border-blue-500'}`}
+                            />
+                            {youtubeLinks.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => removeLink(i, 'youtube')}
+                                    className="px-3 border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-all"
+                                >
+                                    <DeleteIcon fontSize="small" />
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* WCL Links */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs text-blue-300 font-black uppercase tracking-widest">
+                            Warcraft Logs Links
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setWclLinks([...wclLinks, ""])}
+                            className="flex items-center gap-1 px-3 py-1 border border-blue-500/30 hover:bg-blue-500/10 text-blue-400 text-[10px] font-mono uppercase tracking-wider transition-all"
+                        >
+                            <AddIcon fontSize="small" /> Add
+                        </button>
+                    </div>
+                    {wclLinks.map((link, i) => (
+                        <div key={i} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={link}
+                                onChange={(e) => {
+                                    const copy = [...wclLinks];
+                                    copy[i] = e.target.value;
+                                    setWclLinks(copy);
+                                }}
+                                placeholder="https://www.warcraftlogs.com/..."
+                                className={`flex-1 bg-black/50 border text-white px-4 py-2 font-mono text-xs focus:outline-none transition-colors
+                                    ${errors.wcl[i] ? 'border-red-500' : 'border-white/10 focus:border-blue-500'}`}
+                            />
+                            {wclLinks.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => removeLink(i, 'wcl')}
+                                    className="px-3 border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-all"
+                                >
+                                    <DeleteIcon fontSize="small" />
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-2">
+                    <button
+                        type="button"
                         onClick={handleSave}
-                        sx={{
-                            backgroundColor: '#1E1E1E',
-                            color: '#fff',
-                            '&:hover': {
-                                backgroundColor: '#c9c9c9ff',
-                                color: '#111',
-                            },
-                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
+                        style={{ clipPath: "polygon(5% 0, 100% 0, 100% 80%, 95% 100%, 0 100%, 0 20%)" }}
                     >
-                        {editingPost ? "Update Post" : "Create Post"}
-                    </Button>
-                    {editingPost &&
-                        <Button
-                            variant="outlined"
+                        {editingPost ? "Update Log" : "Deploy Log"}
+                    </button>
+                    {editingPost && (
+                        <button
+                            type="button"
                             onClick={onCancel}
-                            sx={{
-                                backgroundColor: '#1E1E1E',
-                                color: '#fff',
-                                '&:hover': {
-                                    backgroundColor: '#c9c9c9ff',
-                                    color: '#111',
-                                },
-                            }}
-                        >Cancel</Button>}
-                </Stack>
-            </Stack>
-        </Paper>
+                            className="px-6 border border-white/20 hover:bg-white/10 text-gray-300 font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
+                        >
+                            Abort
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }

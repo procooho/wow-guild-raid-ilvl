@@ -1,18 +1,15 @@
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from 'react';
 import Image from 'next/image';
+import ClearIcon from '@mui/icons-material/Clear'; // Keeping Icon for now, wrapping in standard button
 import { useThemeContext } from "@/context/ThemeContext";
+
+import TechConfirmModal from './TechConfirmModal';
 
 //Show simple information of the raider
 
-export default function RosterList({ raider, onDelete, selected }) {
+export default function RosterList({ raider, onDelete, selected, showToast }) {
   const [deleting, setDeleting] = useState(false);
-
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const { darkMode } = useThemeContext();
 
   const classIconMap = {
@@ -33,11 +30,14 @@ export default function RosterList({ raider, onDelete, selected }) {
 
   const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
 
-  const handleDelete = async (event) => {
+  const handleDeleteClick = (event) => {
     event.stopPropagation();
-    if (!confirm(`Are you sure you want to delete ${raider.name}?`)) return;
+    setConfirmOpen(true);
+  };
 
-    // Clear right panel immediately when delete
+  const proceedDelete = async () => {
+    setConfirmOpen(false);
+
     if (typeof onDelete === "function") onDelete(raider.id, true);
 
     setDeleting(true);
@@ -47,67 +47,78 @@ export default function RosterList({ raider, onDelete, selected }) {
       const data = await res.json().catch(() => ({ message: 'Raider deleted successfully' }));
 
       if (!res.ok) {
-        alert(data.error || 'Failed to delete raider');
+        if (showToast) showToast(data.error || 'Failed to delete raider', 'error');
       } else {
-        alert(data.message || 'Raider deleted successfully');
+        if (showToast) showToast('Raider deleted successfully', 'success');
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to delete raider');
+      if (showToast) showToast('Failed to delete raider', 'error');
     } finally {
       setDeleting(false);
     }
   };
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        display: 'flex',
-        cursor: 'pointer',
-        marginBottom: 1,
-        borderRadius: 1,
-        overflow: 'hidden',
-        boxShadow: selected
-          ? darkMode
-            ? '0 0 10px #fffa6c'
-            : '0 0 10px #a6a6a6'
-          : 'none',
-        '&:hover': { backgroundColor: darkMode ? '#3a3a3a' : '#f0f0f0' },
-      }}
+    <div
+      className={`
+        relative flex items-center justify-between p-3 mb-2 cursor-pointer transition-all duration-300 border-l-4 group overflow-hidden
+        ${selected
+          ? 'bg-blue-900/20 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+          : 'bg-black/40 border-white/10 hover:bg-white/5 hover:border-white/30'}
+      `}
     >
-      {/* Left color strip */}
-      <Box
-        sx={{
-          width: 6,
-          backgroundColor: selected ? darkMode ? '#FFD700' : '#000' : 'none',
-          flexShrink: 0,
-        }}
-      />
+      {/* Background Accents */}
+      <div className={`absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-black/50 to-transparent pointer-events-none`} />
 
-      {/* Main content */}
-      <Box sx={{ flexGrow: 1, p: 2, pr: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
-          <IconButton onClick={handleDelete} disabled={deleting} color="error">
-            <ClearIcon />
-          </IconButton>
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Image
-              src={getClassIcon(raider.characterClass)}
-              alt={raider.characterClass}
-              width={25}
-              height={25}
-            />
-            <Typography variant="h6">{raider.name}</Typography>
-          </Stack>
-          <Stack direction="column" alignItems="center">
-            <Typography variant="body2">Item Level</Typography>
-            <Typography variant="h6" color="text.secondary">
-              {raider.currentIlvl ?? 0}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
-    </Card>
+      {/* Left Section: Icon & Name */}
+      <div className="flex items-center gap-4 z-10">
+        <button
+          onClick={handleDeleteClick}
+          disabled={deleting}
+          className="text-red-500/50 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-500/10"
+          title="Delete Unit"
+        >
+          <ClearIcon fontSize="small" />
+        </button>
+
+        <div className="relative">
+          <Image
+            src={getClassIcon(raider.characterClass)}
+            alt={raider.characterClass}
+            width={32}
+            height={32}
+            className="drop-shadow-md"
+          />
+          {/* Active Indicator Dot */}
+          {selected && <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-blue-400 rounded-full shadow-[0_0_5px_#60a5fa] animate-pulse" />}
+        </div>
+
+        <div className="flex flex-col">
+          <span className={`text-sm font-bold uppercase tracking-wider ${selected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+            {raider.name}
+          </span>
+        </div>
+      </div>
+
+      {/* Right Section: ILVL */}
+      <div className="flex flex-col items-end z-10">
+        <span className="text-[9px] text-blue-400/80 font-mono uppercase tracking-widest">
+          Item Lvl
+        </span>
+        <span className={`font-mono font-bold text-lg ${selected ? 'text-blue-300' : 'text-gray-400'}`}>
+          {raider.currentIlvl ?? 0}
+        </span>
+      </div>
+
+      <TechConfirmModal
+        isOpen={confirmOpen}
+        title="TERMINATE UNIT?"
+        message={`Are you sure you want to permanently delete ${raider.name} from the database? This action cannot be undone.`}
+        onConfirm={proceedDelete}
+        onCancel={(e) => { e.stopPropagation(); setConfirmOpen(false); }}
+        confirmText="TERMINATE"
+      />
+    </div>
   );
 }

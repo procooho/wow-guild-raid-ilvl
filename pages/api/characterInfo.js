@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { getCharacterProfile } from "@/utils/api/blizzard";
 
 //For get detailed information from api
@@ -16,15 +16,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`🔍 Fetching character info for ${name} on ${server}...`);
+
     // Fetch profile from Blizzard API
     const profile = await getCharacterProfile(server, name);
 
     // Show error when there's no match
     if (!profile) {
+      console.error(`❌ Character "${name}" not found on server "${server}"`);
       return res
         .status(404)
         .json({ error: `Character "${name}" not found on server "${server}"` });
     }
+
+    console.log(`✅ Got profile for ${name}:`, profile);
 
     // Capitalize first letter of name
     const formattedName = profile.name.charAt(0).toUpperCase() + profile.name.slice(1);
@@ -48,6 +53,7 @@ export default async function handler(req, res) {
           currentIlvl,
         },
       });
+      console.log(`📝 Created new raider: ${formattedName}`);
     } else {
       // Update existing raider
       raider = await prisma.raider.update({
@@ -57,6 +63,7 @@ export default async function handler(req, res) {
           role: raider.role,
         },
       });
+      console.log(`📝 Updated raider: ${formattedName}`);
     }
 
     // Fetch last item level history
@@ -87,7 +94,7 @@ export default async function handler(req, res) {
       take: 2,
     });
 
-    res.status(200).json({
+    const response = {
       raider: {
         name: raider.name,
         server: raider.server,
@@ -102,9 +109,22 @@ export default async function handler(req, res) {
         characterClass: profile.characterClass ?? "Unknown",
         race: profile.race ?? "Unknown",
       },
-    });
+    };
+
+    console.log(`✅ Sending character info for ${name}`);
+    res.status(200).json(response);
   } catch (err) {
-    console.error("Error updating raider ilvl:", err);
-    return res.status(500).json({ error: err.message });
+    console.error("❌ Error in characterInfo API:", err);
+    console.error("Error details:", {
+      name,
+      server,
+      role,
+      message: err.message,
+      stack: err.stack
+    });
+    return res.status(500).json({
+      error: err.message,
+      details: `Failed to fetch character info for ${name} on ${server}`
+    });
   }
 }

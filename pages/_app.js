@@ -3,6 +3,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
 import CssBaseline from "@mui/material/CssBaseline";
+import Layout from "@/components/Layout";
 
 function ThemeConsumerWrapper({ children }) {
   const { darkMode } = useThemeContext();
@@ -24,7 +25,9 @@ export default function App({ Component, pageProps }) {
     <ThemeProvider> {/* your context */}
       <AuthProvider>
         <ThemeConsumerWrapper>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </ThemeConsumerWrapper>
       </AuthProvider>
     </ThemeProvider>

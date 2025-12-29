@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { getCharacterProfile } from '@/utils/api/blizzard';
 
 function capitalizeName(name) {
@@ -19,16 +19,26 @@ export default async function handler(req, res) {
     try {
       const raiderName = capitalizeName(name);
 
-      // Validate character exists
-      const profile = await getCharacterProfile(server, name);
-      if (!profile) {
-        return res.status(404).json({ error: `Character "${name}" not found on server "${server}"` });
-      }
-
       // Check if raider already exists
       const existing = await prisma.raider.findFirst({ where: { name: raiderName, server } });
       if (existing) {
         return res.status(409).json({ error: `Raider "${raiderName}" on "${server}" already exists.` });
+      }
+
+      // Try to validate character with Blizzard API (optional)
+      let profile = null;
+      let ilvl = 0;
+      let characterClass = "Unknown";
+
+      try {
+        profile = await getCharacterProfile(server, name);
+        if (profile) {
+          ilvl = profile.averageItemLevel || 0;
+          characterClass = profile.characterClass || "Unknown";
+        }
+      } catch (apiError) {
+        console.warn(`Blizzard API unavailable, creating raider without validation:`, apiError.message);
+        // Continue without API validation
       }
 
       const raider = await prisma.raider.create({
@@ -36,15 +46,15 @@ export default async function handler(req, res) {
           name: raiderName,
           server,
           role,
-          currentIlvl: profile.averageItemLevel || 0,
+          currentIlvl: ilvl,
         }
       });
 
       res.status(201).json({
-        message: `Raider ${raiderName} : Role ${role} Created Successfully`, 
+        message: `Raider ${raiderName} : Role ${role} Created Successfully`,
         raider: {
           ...raider,
-          characterClass: profile.characterClass || "Unknown"
+          characterClass: characterClass
         }
       });
 
@@ -69,21 +79,27 @@ export default async function handler(req, res) {
         orderBy: { name: 'asc' },
       });
 
+      console.log(`📊 Fetching roster data for ${raiders.length} raiders...`);
+
       // Enrich with Blizzard API class
       const enriched = await Promise.all(
         raiders.map(async (r) => {
           try {
+            console.log(`🔍 Fetching profile for ${r.name} on ${r.server}...`);
             const profile = await getCharacterProfile(r.server, r.name);
+            console.log(`✅ Got profile for ${r.name}:`, profile?.characterClass || 'Unknown');
             return {
               ...r,
               characterClass: profile?.characterClass || "Unknown",
             };
-          } catch {
+          } catch (error) {
+            console.error(`❌ Failed to fetch profile for ${r.name}:`, error.message);
             return { ...r, characterClass: "Unknown" };
           }
         })
       );
 
+      console.log(`✅ Returning ${enriched.length} enriched raiders`);
       return res.status(200).json(enriched);
 
     } catch (err) {

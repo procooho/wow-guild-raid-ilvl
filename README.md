@@ -10,6 +10,11 @@
 
 ---
 
+**Dec 28 2025 v4** (Update)
+- Overall UI updated
+
+---
+
 **Sep 01 2025 v3** (Update)
 - Mobile view updated
     - When Mobile view,

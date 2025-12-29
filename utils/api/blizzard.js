@@ -11,13 +11,17 @@ export async function getBlizzardToken() {
 
   //if there's saved token, token is not expired when its exist, use saved token, or get new one
   if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
+    console.log('🔑 Using cached Blizzard token');
     return cachedToken;
   }
 
   //throw error when any credential is missing
   if (!clientId || !clientSecret) {
+    console.error('❌ Blizzard credentials missing! CLIENT_ID:', !!clientId, 'CLIENT_SECRET:', !!clientSecret);
     throw new Error("Blizzard credentials missing!");
   }
+
+  console.log('🔑 Fetching new Blizzard token...');
 
   //get new token
   const res = await fetch("https://oauth.battle.net/token", {
@@ -31,11 +35,17 @@ export async function getBlizzardToken() {
 
   const data = await res.json();
 
+  if (!res.ok || !data.access_token) {
+    console.error('❌ Failed to get Blizzard token:', data);
+    throw new Error("Failed to get Blizzard token");
+  }
+
   //save token for future use
   cachedToken = data.access_token;
   //get expiry and change to seconds by *1000, -30000 to get new token before expire
   tokenExpiry = Date.now() + (data.expires_in * 1000) - 30000;
 
+  console.log('✅ Blizzard token obtained successfully');
   return cachedToken;
 }
 

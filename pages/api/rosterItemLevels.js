@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { getCharacterProfile } from "@/utils/api/blizzard";
 
 //For getting item level and class

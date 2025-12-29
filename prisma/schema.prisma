@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -11,7 +11,7 @@ model Raider {
   id             Int                 @id @default(autoincrement())
   name           String
   server         String
-  role           Role
+  role           String
   currentIlvl    Float?
 
   history        ItemLevelHistory[]
@@ -27,12 +27,6 @@ model ItemLevelHistory {
   recordedAt DateTime @default(now())
 }
 
-enum Role {
-  TANK
-  HEALER
-  MELEEDPS
-  RANGEDPS
-}
 
 model OfficerPost {
   id          Int          @id @default(autoincrement())
@@ -80,4 +74,11 @@ model NoticeLink {
 
   noticeId    Int
   notice      Notice  @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("officer")
 }

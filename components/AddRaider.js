@@ -1,8 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Autocomplete, Divider, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useThemeContext } from "@/context/ThemeContext";
-
-//Component for add raider
 
 export default function AddRaider({ onAdd }) {
     const [name, setName] = useState("");
@@ -10,10 +6,9 @@ export default function AddRaider({ onAdd }) {
     const [role, setRole] = useState("");
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [serverListOpen, setServerListOpen] = useState(false);
 
-    const { darkMode } = useThemeContext();
-
-    //All US server lists
+    // All US server lists
     const usServers = [
         "Aegwynn", "Aerie Peak", "Agamaggan", "Aggramar", "Akama", "Alexstrasza", "Alleria", "Altar of Storms",
         "Alterac Mountains", "Andorhal", "Anetheron", "Antonidas", "Anub’arak", "Anvilmar", "Arathor",
@@ -51,7 +46,6 @@ export default function AddRaider({ onAdd }) {
         "Zangarmarsh", "Zul’jin", "Zuluhed"
     ];
 
-    //validate form when submit
     const validateField = (field, value) => {
         switch (field) {
             case 'name': return value.trim() ? '' : 'Character name is required';
@@ -61,12 +55,10 @@ export default function AddRaider({ onAdd }) {
         }
     };
 
-    //validate form when user leaves field
     const handleBlur = (field, value) => {
         setErrors(prev => ({ ...prev, [field]: validateField(field, value) }));
     };
 
-    //validate form when submit
     const validateAll = () => {
         const newErrors = {
             name: validateField('name', name),
@@ -95,6 +87,9 @@ export default function AddRaider({ onAdd }) {
                 setErrors({ form: data.error || "Failed to add raider" });
             } else {
                 onAdd(data.raider);
+                setName("");
+                setRole("");
+                setServer("Tichondrius");
                 setErrors({});
             }
         } catch (err) {
@@ -104,149 +99,144 @@ export default function AddRaider({ onAdd }) {
         }
     };
 
+    // Filter servers for autocomplete feel
+    const filteredServers = usServers.filter(s => s.toLowerCase().includes(server.toLowerCase()));
+
     return (
-        <form onSubmit={handleSubmit}>
-            <Paper sx={{ p: 3, backgroundColor: darkMode ? "#424242" : "#f9f9f9" }}>
-                <Stack spacing={2}>
-                    <Typography variant="h6">
-                        Add New Raider
-                    </Typography>
+        <div className="bg-black/95 border border-blue-500/30 p-6 relative overflow-hidden">
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500" />
+            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-500" />
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-500" />
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500" />
 
-                    <Divider />
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 pointer-events-none" />
 
-                    <TextField
-                        label="Character Name (Case Insensitive)"
-                        fullWidth
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        onBlur={() => handleBlur('name', name)}
-                        error={!!errors.name}
-                        helperText={errors.name}
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:hover:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:after': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& input': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                        }}
-                    />
+            <div className="relative z-10 space-y-6">
+                {/* Header */}
+                <div className="border-b border-blue-500/20 pb-4">
+                    <h2 className="text-xl font-black text-white uppercase tracking-widest">
+                        Initialize New Unit
+                    </h2>
+                    <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
+                        // Unit Registration Protocol
+                    </p>
+                </div>
 
-                    <Divider />
+                <form onSubmit={handleSubmit} className="space-y-6">
 
-                    <Autocomplete
-                        options={usServers}
-                        value={server}
-                        onChange={(event, newValue) => setServer(newValue)}
-                        onBlur={() => handleBlur('server', server)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Server ( Default - Tichondrius, if not select other server )"
-                                fullWidth
-                                error={!!errors.server}
-                                helperText={errors.server}
+                    {/* Character Name */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                            Unit Identification (Name) *
+                        </label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            onBlur={() => handleBlur('name', name)}
+                            className={`
+                                w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider
+                                ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}
+                            `}
+                            placeholder="Enter character name..."
+                        />
+                        {errors.name && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.name}</span>}
+                    </div>
+
+                    {/* Server Selection (Custom Autocomplete) */}
+                    <div className="space-y-2 relative">
+                        <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                            Realm Assignment (Server) *
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={server}
+                                onChange={(e) => {
+                                    setServer(e.target.value);
+                                    setServerListOpen(true);
+                                }}
+                                onFocus={() => setServerListOpen(true)}
+                                onBlur={() => {
+                                    handleBlur('server', server);
+                                    setTimeout(() => setServerListOpen(false), 200);
+                                }}
+                                className={`
+                                    w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider
+                                    ${errors.server ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}
+                                `}
+                                placeholder="Select or type server name..."
                             />
-                        )}
-                        freeSolo
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:hover:before': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInput-underline:after': {
-                                borderBottomColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& input': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                        }}
-                    />
+                            {serverListOpen && filteredServers.length > 0 && (
+                                <div className="absolute top-full left-0 w-full max-h-48 overflow-y-auto bg-black border border-blue-500/30 z-50 mt-1 custom-scrollbar">
+                                    {filteredServers.map(s => (
+                                        <div
+                                            key={s}
+                                            onClick={() => { setServer(s); setServerListOpen(false); }}
+                                            className="px-4 py-2 hover:bg-blue-900/50 cursor-pointer text-xs text-gray-300 font-mono uppercase border-b border-white/5 last:border-b-0"
+                                        >
+                                            {s}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        {errors.server && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.server}</span>}
+                    </div>
 
-                    <Divider />
+                    {/* Role Allocation */}
+                    <div className="space-y-3">
+                        <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                            Combat Role Allocation *
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            {[
+                                { id: 'TANK', label: 'Tank' },
+                                { id: 'HEALER', label: 'Healer' },
+                                { id: 'MELEEDPS', label: 'Melee DPS' },
+                                { id: 'RANGEDPS', label: 'Ranged DPS' }
+                            ].map((r) => (
+                                <button
+                                    key={r.id}
+                                    type="button"
+                                    onClick={() => setRole(r.id)}
+                                    className={`
+                                        px-4 py-3 border text-xs font-bold uppercase tracking-widest transition-all
+                                        ${role === r.id
+                                            ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]'
+                                            : 'bg-black/30 border-white/10 text-white/50 hover:bg-white/5 hover:text-white hover:border-blue-500/30'}
+                                    `}
+                                >
+                                    {r.label}
+                                </button>
+                            ))}
+                        </div>
+                        {errors.role && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.role}</span>}
+                    </div>
 
-                    <FormControl
-                        fullWidth
-                        error={!!errors.role}
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiSelect-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                borderColor: darkMode ? '#fff' : '#000',
-                            },
-                        }}
-                    >
-                        <InputLabel>Role</InputLabel>
-                        <Select
-                            value={role}
-                            onChange={(event) => setRole(event.target.value)}
-                            onBlur={() => handleBlur('role', role)}
-                        >
-                            <MenuItem value="TANK">Tank</MenuItem>
-                            <MenuItem value="MELEEDPS">MELEE DPS</MenuItem>
-                            <MenuItem value="RANGEDPS">RANGE DPS</MenuItem>
-                            <MenuItem value="HEALER">Healer</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
 
-                    <Divider />
-
-                    {/* Error message */}
+                    {/* Error Banner */}
                     {errors.form && (
-                        <Paper sx={{ color: 'red', p: 2, mt: 2 }}>
-                            {errors.form}
-                        </Paper>
+                        <div className="bg-red-500/10 border border-red-500/50 p-3 text-center animate-pulse">
+                            <span className="text-red-200 text-xs font-mono uppercase tracking-wide">⚠ {errors.form}</span>
+                        </div>
                     )}
 
-                    <Button
+                    {/* Submit Button */}
+                    <button
                         type="submit"
-                        variant="outlined"
                         disabled={loading}
-                        sx={{
-                            backgroundColor: '#1E1E1E',
-                            color: '#fff',
-                            border: `2px solid ${darkMode ? '#fff' : '#000'}`,
-                            '&:hover': {
-                                backgroundColor: '#c9c9c9ff',
-                                color: '#111',
-                                border: `2px solid ${darkMode ? '#fff' : '#000'}`,
-                            },
-                        }}
+                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ clipPath: "polygon(5% 0, 100% 0, 100% 80%, 95% 100%, 0 100%, 0 20%)" }}
                     >
-                        {loading ? "Adding..." : "Add New Raider"}
-                    </Button>
-                </Stack>
-            </Paper>
-        </form>
+                        {loading ? "PROCESSING..." : "REGISTER UNIT"}
+                    </button>
+
+                </form>
+            </div>
+        </div>
     );
 }

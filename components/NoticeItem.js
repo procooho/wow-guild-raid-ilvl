@@ -1,186 +1,141 @@
-import { Paper, Typography, Stack, Chip, Box, Divider, Button, Collapse, IconButton } from "@mui/material";
+import { useState } from "react";
 import LinkIcon from '@mui/icons-material/Link';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { useState } from "react";
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 export default function NoticeItem({ notice, darkMode, onEdit, onDelete, showActions = true }) {
     const [expanded, setExpanded] = useState(false);
 
     const getCollapsedNote = (text) => {
         const lines = text.split("\n");
-        return lines.slice(0, 3).join("\n") + (lines.length > 3 ? ". . . . . . . . ." : "");
+        return lines.slice(0, 3).join("\n") + (lines.length > 3 ? "..." : "");
     };
 
     const formatDate = (date) => new Date(date).toLocaleDateString('en-CA');
-
     const isUpdatedDifferent = formatDate(notice.updatedAt) !== formatDate(notice.createdAt);
 
     return (
-        <Paper
-            sx={{
-                p: 2,
-                backgroundColor: expanded ? (darkMode ? "#333" : "#f5f5f5") : (darkMode ? "#2b2b2b" : "#fafafa"),
-                position: "relative",
-                cursor: "pointer",
-                border: expanded ? "2px solid #1976d2" : "1px solid #ccc",
-                transition: "all 0.2s ease",
-                opacity: expanded ? 1 : 0.85
+        <div
+            className={`
+                relative w-full overflow-hidden transition-all duration-300
+                bg-black/40 backdrop-blur-md border 
+                ${expanded ? 'border-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.2)]' : 'border-white/10 hover:border-white/30'}
+                group
+            `}
+            style={{
+                clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)",
+                marginBottom: '1rem'
             }}
             onClick={() => setExpanded(prev => !prev)}
         >
-            {/* Labels in top-left corner */}
-            <Box sx={{ position: "absolute", top: 8, left: 8, display: "flex", gap: 1 }}>
-                {notice.important &&
-                    <Chip
-                        label="Important"
-                        size="small"
-                        sx={{ backgroundColor: "#d32f2f", color: "#fff", fontWeight: "bold" }}
-                    />}
-                {notice.isNew &&
-                    <Chip
-                        label="New"
-                        size="small"
-                        sx={{ backgroundColor: "#1976d2", color: "#fff", fontWeight: "bold" }}
-                    />}
-                {!notice.view &&
-                    <Chip
-                        label="Removed From View"
-                        size="small"
-                        sx={{ backgroundColor: "#949494ff", color: "#fff", fontWeight: "bold" }}
-                    />}
-            </Box>
+            {/* Left Accent Bar */}
+            <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${expanded ? 'bg-blue-500' : 'bg-white/10 group-hover:bg-blue-500/50'}`} />
 
-            {/* Collapsed indicator */}
-            {!expanded && (
-                <Chip
-                    label="Collapsed"
-                    size="small"
-                    sx={{ position: "absolute", top: 8, right: 8, fontStyle: "italic" }}
-                />
-            )}
+            <div className="p-5 pl-8">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+                    <div className="flex flex-col gap-2">
+                        {/* Tags Row */}
+                        <div className="flex flex-wrap gap-2 items-center">
+                            {notice.important && (
+                                <span className="px-2 py-0.5 bg-red-500/20 border border-red-500/50 text-red-200 text-[10px] font-bold uppercase tracking-wider rounded-sm animate-pulse">
+                                    CRITICAL
+                                </span>
+                            )}
+                            {notice.isNew && (
+                                <span className="px-2 py-0.5 bg-blue-500/20 border border-blue-500/50 text-blue-200 text-[10px] font-bold uppercase tracking-wider rounded-sm">
+                                    NEW ENTRY
+                                </span>
+                            )}
+                            {!notice.view && (
+                                <span className="px-2 py-0.5 bg-gray-500/20 border border-gray-500/50 text-gray-300 text-[10px] font-bold uppercase tracking-wider rounded-sm">
+                                    ARCHIVED
+                                </span>
+                            )}
+                        </div>
 
-            {/* Title and dates */}
-            <Stack
-                direction="row"
-                spacing={1}
-                flexWrap="wrap"
-                alignItems={"center"}
-                justifyContent={"space-between"}
-                sx={{ mt: 3 }}
-            >
-                <Typography variant="h5">{notice.title}</Typography>
-                <Stack>
-                    <Typography variant="subtitle1">
-                        Originally Created: {formatDate(notice.createdAt)}
-                    </Typography>
-                    {/* Show updated date if it's different with created date */}
-                    {notice.updatedAt && isUpdatedDifferent && (
-                        <Typography variant="subtitle1">
-                            Last Updated: {formatDate(notice.updatedAt)}
-                        </Typography>
-                    )}
-                </Stack>
-            </Stack>
+                        {/* Title */}
+                        <h3 className="text-xl md:text-2xl font-black text-white tracking-wide uppercase leading-tight font-sans drop-shadow-md">
+                            {notice.title}
+                        </h3>
+                    </div>
 
-            {/* Notes */}
-            <Typography
-                variant="subtitle1"
-                sx={{
-                    mt: 1,
-                    whiteSpace: 'pre-line',
-                    fontStyle: !expanded ? 'italic' : 'normal',
-                    color: !expanded ? 'grayText' : 'inherit'
-                }}
-            >
-                {expanded ? notice.note : getCollapsedNote(notice.note)}
-            </Typography>
+                    {/* Metadata (Dates) */}
+                    <div className="flex flex-col items-end text-xs font-mono text-blue-200/50 gap-0.5 min-w-fit">
+                        <span>INIT: {formatDate(notice.createdAt)}</span>
+                        {notice.updatedAt && isUpdatedDifferent && (
+                            <span className="text-blue-400">UPD: {formatDate(notice.updatedAt)}</span>
+                        )}
+                    </div>
+                </div>
 
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-                <IconButton
-                    size="small"
-                    onClick={(e) => { e.stopPropagation(); setExpanded(prev => !prev); }}
-                    sx={{ color: darkMode ? "#fff" : "#000" }}
-                >
-                    {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-            </Box>
+                {/* Content Body */}
+                <div className={`
+                    text-sm md:text-base leading-relaxed text-gray-300 font-sans border-l-2 border-white/5 pl-4 transition-all duration-300
+                    ${expanded ? 'opacity-100 max-h-[1000px]' : 'opacity-70 max-h-[100px] overflow-hidden'}
+                `}>
+                    <p className="whitespace-pre-line">
+                        {expanded ? notice.note : getCollapsedNote(notice.note)}
+                    </p>
+                </div>
 
-            <Collapse in={expanded}>
-                <Divider sx={{ my: 1 }} />
+                {/* Expand Toggle & Links Section (Only Visible if Expanded) */}
+                <div className={`mt-4 transition-all duration-500 overflow-hidden ${expanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
 
-                <Box sx={{ my: 1 }}>
-                    <Stack direction="row" spacing={1} flexWrap="wrap" alignItems={"center"}>
-                        <Typography variant="subtitle1">Link(s):</Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                    <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-blue-500/30 to-transparent my-4" />
+
+                    {/* Links */}
+                    <div className="flex flex-col gap-2 mb-6">
+                        <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">ATTACHED DATA LINKS</span>
+                        <div className="flex flex-wrap gap-3">
                             {notice.links.length > 0 ? (
                                 notice.links.map((l, index) => (
-                                    <Chip
+                                    <a
                                         key={l.id}
-                                        label={l.description || `Link ${index + 1}`}
-                                        component="a"
                                         href={l.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        clickable
-                                        variant={darkMode ? "filled" : "outlined"}
-                                        icon={<LinkIcon />}
-                                        sx={{
-                                            mb: 0.5,
-                                            fontSize: "0.9rem",
-                                            color: "#111",
-                                            backgroundColor: darkMode ? "#cdc57b" : "#fff",
-                                            "& .MuiChip-icon": { color: darkMode ? "#333" : "#555" },
-                                            "&:hover": {
-                                                color: darkMode ? "#fff" : "#111",
-                                                backgroundColor: darkMode ? "#817b5dff" : "#1976d262",
-                                                "& .MuiChip-icon": { color: darkMode ? "#fff" : "#111" },
-                                            },
-                                        }}
-                                    />
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-blue-900/20 border border-blue-500/30 text-blue-200 text-xs font-mono hover:bg-blue-500/20 hover:border-blue-400 transition-colors rounded-sm group/link"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <LinkIcon fontSize="small" className="text-blue-500 group-hover/link:text-white transition-colors" />
+                                        <span>{l.description || `LINK_0${index + 1}`}</span>
+                                    </a>
                                 ))
                             ) : (
-                                <Chip
-                                    label="No Links"
-                                    variant={darkMode ? "filled" : "outlined"}
-                                    icon={<ClearIcon />}
-                                    sx={{ mb: 0.5, fontSize: "0.9rem" }}
-                                />
+                                <span className="text-xs text-white/30 italic">NO EXTERNAL LINKS DETECTED</span>
                             )}
-                        </Stack>
-                    </Stack>
-                </Box>
+                        </div>
+                    </div>
 
-                {showActions && (
-                    <Stack direction="row" justifyContent={"center"} spacing={1} sx={{ mt: 2 }}>
-                        <Button
-                            variant="contained"
-                            onClick={() => onEdit(notice)}
-                            sx={{
-                                width: '40%',
-                                backgroundColor: '#1E1E1E',
-                                color: '#fff',
-                                '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' }
-                            }}
-                        >
-                            Edit
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={() => onDelete(notice.id)}
-                            sx={{
-                                width: '40%',
-                                backgroundColor: '#1E1E1E',
-                                color: '#fff',
-                                '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' }
-                            }}
-                        >
-                            Delete (Remove From Database)
-                        </Button>
-                    </Stack>
-                )}
-            </Collapse>
-        </Paper>
+                    {/* Admin Actions */}
+                    {showActions && (
+                        <div className="flex justify-end gap-3 mt-4">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onEdit(notice); }}
+                                className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 hover:bg-yellow-500/20 text-xs font-bold uppercase tracking-widest transition-all"
+                            >
+                                <EditIcon fontSize="small" /> EDIT
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onDelete(notice.id); }}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-200 hover:bg-red-500/20 text-xs font-bold uppercase tracking-widest transition-all"
+                            >
+                                <DeleteForeverIcon fontSize="small" /> DELETE
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Bottom Expansion Indicator */}
+                <div className="flex justify-center mt-2 group-hover:text-blue-400 text-white/20 transition-colors">
+                    {expanded ? <KeyboardArrowUpIcon /> : <ExpandMoreIcon />}
+                </div>
+
+            </div>
+        </div>
     );
 }

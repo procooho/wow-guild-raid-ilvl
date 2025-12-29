@@ -1,30 +1,24 @@
 import { useEffect, useState } from "react";
-import { Box, Container, Stack, Typography, Button, Dialog, Divider, TextField, Pagination, FormControlLabel, Switch, useMediaQuery } from "@mui/material";
+import { Box, Container, Stack, Typography, Pagination, FormControlLabel, Switch, useMediaQuery } from "@mui/material";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useTheme } from '@mui/material/styles';
 
-import NoticeForm from "@/components/NoticeForm";
 import NoticeItem from "@/components/NoticeItem";
-import LeftNav from "@/components/LeftNav";
+
 import { useAuth } from "@/context/AuthContext";
 
 export default function RaidNotice() {
     const { darkMode } = useThemeContext();
     const { loggedIn } = useAuth();
     const [notices, setNotices] = useState([]);
-    const [editingNotice, setEditingNotice] = useState(null);
-    const [modalOpen, setModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [showAll, setShowAll] = useState(false);
     const noticesPerPage = 5;
 
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-    const fetchNotices = async (showAll = false) => {
+    const fetchNotices = async () => {
         try {
-            const res = await fetch(`/api/notice${showAll ? "?showAll=true" : ""}`);
+            // Public page always fetches only visible notices
+            const res = await fetch("/api/notice");
             if (!res.ok) {
                 const text = await res.text();
                 console.error("Failed to fetch notices:", text);
@@ -38,43 +32,22 @@ export default function RaidNotice() {
     };
 
     useEffect(() => {
-        fetchNotices(loggedIn ? showAll : false);
-    }, [loggedIn, showAll]);
+        fetchNotices();
+    }, []);
 
-    const handleDelete = async (id) => {
-        if (!confirm("Are you sure you want to delete this notice?")) return;
-        try {
-            const res = await fetch(`/api/notice/${id}`, { method: "DELETE" });
-            if (!res.ok) {
-                const text = await res.text();
-                console.error("Failed to delete notice:", text);
-                return;
-            }
-            fetchNotices(loggedIn ? showAll : false);
-        } catch (err) {
-            console.error("Network error:", err);
-        }
-    };
-
-    const handleOpenModal = () => setModalOpen(true);
-    const handleCloseModal = () => {
-        setModalOpen(false);
-        setEditingNotice(null);
-    };
-
-    // Filter notices by search and view
+    // Filter notices by search
     const filteredNotices = notices.filter((n) => {
         const query = searchQuery.trim().toLowerCase();
 
-        const matchesQuery =
+        // API already filters by view=true, but we double check or just trust API.
+        // If API returns only visible, n.view should be true.
+        // We'll trust the API default behavior (which returns view: true only unless showAll=true).
+
+        return (
             n.title.toLowerCase().includes(query) ||
             (n.note && n.note.toLowerCase().includes(query)) ||
-            new Date(n.createdAt).toLocaleDateString("en-CA").includes(query);
-
-        // showAll switch only for logged-in users
-        const matchesView = !loggedIn || showAll || n.view;
-
-        return matchesQuery && matchesView;
+            new Date(n.createdAt).toLocaleDateString("en-CA").includes(query)
+        );
     });
 
     // Pagination
@@ -84,136 +57,102 @@ export default function RaidNotice() {
     const totalPages = Math.ceil(filteredNotices.length / noticesPerPage);
 
     return (
-        <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
-            {!isMobile && (
-                <Box sx={{ width: 240, flexShrink: 0 }}>
-                    <LeftNav />
-                </Box>
-            )}
-            <Container maxWidth="md" sx={{ py: 4 }}>
+        <div className="min-h-full pt-10 pb-10 px-4 md:px-8 bg-transparent">
+            <div className="max-w-4xl mx-auto">
 
-                {/* Add New Notice Button (only for logged-in users) */}
-                {loggedIn && (
-                    <>
-                        <Divider />
-                        <Button
-                            variant="contained"
-                            onClick={handleOpenModal}
-                            fullWidth
-                            sx={{
-                                mt: 2,
-                                mb: 2,
-                                border: "2px solid",
-                                backgroundColor: "#1E1E1E",
-                                color: "#fff",
-                                "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" },
+                {/* Page Header */}
+                <div className="relative mb-12 text-center">
+                    <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/10 tracking-tighter uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                        Mission Briefings
+                    </h1>
+                    <div className="h-1 w-24 bg-blue-500 mx-auto mt-4 rounded-full shadow-[0_0_15px_#3b82f6]" />
+                    <p className="text-blue-300/50 font-mono text-xs tracking-[0.5em] mt-2 uppercase">Official Guild Communications</p>
+                </div>
+
+                {/* Search Bar */}
+                <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between bg-black/40 backdrop-blur-sm border border-white/5 p-4 rounded-xl">
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1);
                             }}
-                        >
-                            Add New Notice
-                        </Button>
-                        <Divider />
-                    </>
-                )}
+                            placeholder="SEARCH DATABASE (TITLE, NOTE, DATE)..."
+                            className="w-full bg-black/50 border border-white/10 focus:border-blue-500/50 text-white font-mono text-sm px-4 py-3 outline-none transition-all placeholder:text-white/20 uppercase tracking-wider"
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500/50 animate-pulse rounded-full" />
+                    </div>
+                </div>
 
-                {/* Modal */}
-                <Dialog open={modalOpen || !!editingNotice} onClose={handleCloseModal} fullWidth maxWidth="md">
-                    <NoticeForm
-                        darkMode={darkMode}
-                        editingNotice={editingNotice}
-                        onSaved={() => {
-                            handleCloseModal();
-                            fetchNotices();
-                        }}
-                        onCancel={handleCloseModal}
-                    />
-                </Dialog>
-
-                <Typography variant="h4" textAlign={"center"} sx={{ mt: 3 }}>
-                    Notices
-                </Typography>
-
-                {/* Search */}
-                <TextField
-                    label="Search by Title, Note, Date"
-                    value={searchQuery}
-                    onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setCurrentPage(1);
-                    }}
-                    fullWidth
-                    sx={{
-                        my: 2,
-                        backgroundColor: darkMode ? "#333" : "#fff",
-                        '& .MuiInputLabel-root': { color: darkMode ? '#fff' : '#000' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: darkMode ? '#fff' : '#000' },
-                        '& .MuiInputBase-input': { color: darkMode ? '#fff' : '#000' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: darkMode ? '#fff' : '#000' },
-                            '&:hover fieldset': { borderColor: darkMode ? '#fff' : '#000' },
-                            '&.Mui-focused fieldset': { borderColor: darkMode ? '#fff' : '#000' },
-                        },
-                    }}
-                />
-
-                {/* Show all / filter switch for logged-in users */}
-                {loggedIn && (
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                checked={showAll}
-                                onChange={(e) => setShowAll(e.target.checked)}
-                                color="default"
-                            />
-                        }
-                        label="Show hidden post(s)"
-                    />
-                )}
-
-                <Typography variant="subtitle1" textAlign={"center"}>
-                    Showing {filteredNotices.length} result{filteredNotices.length !== 1 ? "s" : ""}
-                </Typography>
-
-                <Typography variant="body1" textAlign={"center"} sx={{ mb: 2 }}>
-                    ( Click post to expand )
-                </Typography>
+                {/* Results Meta */}
+                <div className="flex justify-between items-end mb-4 px-2 border-b border-white/10 pb-2">
+                    <span className="text-xs font-mono text-blue-400">
+                        // RECORDS_FOUND: {filteredNotices.length}
+                    </span>
+                    <span className="text-[10px] text-white/30 uppercase tracking-widest">
+                        Click Entry to Decrypt
+                    </span>
+                </div>
 
                 {/* List of Notices */}
-                <Stack spacing={2}>
+                <div className="flex flex-col gap-4">
                     {currentNotices.length > 0 ? (
                         currentNotices.map((n) => (
                             <NoticeItem
                                 key={n.id}
                                 notice={n}
                                 darkMode={darkMode}
-                                showActions={loggedIn}
-                                onEdit={(n) => {
-                                    setEditingNotice(n);
-                                    setModalOpen(true);
-                                }}
-                                onDelete={handleDelete}
+                                showActions={false}
                             />
                         ))
                     ) : (
-                        <Typography variant="h6" textAlign="center">
-                            No Notices found
-                        </Typography>
+                        <div className="py-20 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
+                            <Typography variant="h6" className="text-white/40 font-mono uppercase tracking-widest">
+                                No Records Found
+                            </Typography>
+                        </div>
                     )}
-                </Stack>
+                </div>
 
-                {/* Pagination */}
+                {/* Pagination (Custom Tech Buttons) */}
                 {totalPages > 1 && (
-                    <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-                        <Pagination
-                            count={totalPages}
-                            page={currentPage}
-                            onChange={(e, page) => setCurrentPage(page)}
-                            variant="outlined"
-                            shape="rounded"
-                        />
-                    </Box>
+                    <div className="flex justify-center items-center gap-6 mt-12 mb-8">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-6 py-2 bg-black/40 border border-white/10 text-white/70 hover:text-white hover:border-blue-500/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all uppercase text-xs font-bold tracking-widest"
+                            style={{ clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0% 100%)" }}
+                        >
+                            &lt; PREV
+                        </button>
+
+                        <div className="flex flex-col items-center">
+                            <span className="text-2xl font-black text-white italic">
+                                {currentPage} <span className="text-sm text-white/30 not-italic font-normal">/ {totalPages}</span>
+                            </span>
+                            <div className="w-12 h-1 bg-blue-500/20 mt-1 rounded-full">
+                                <div
+                                    className="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6] transition-all duration-300 relative"
+                                    style={{ width: `${(currentPage / totalPages) * 100}%` }}
+                                >
+                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-lg" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-6 py-2 bg-black/40 border border-white/10 text-white/70 hover:text-white hover:border-blue-500/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all uppercase text-xs font-bold tracking-widest"
+                            style={{ clipPath: "polygon(0 0, 90% 0, 100% 100%, 0% 100%)" }}
+                        >
+                            NEXT &gt;
+                        </button>
+                    </div>
                 )}
-            </Container>
-            {isMobile && <LeftNav />}
-        </Box>
+            </div>
+        </div>
     );
 }

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Paper, Stack, TextField, Typography, Button, Divider, FormControlLabel, Checkbox } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel }) {
     const [title, setTitle] = useState("");
@@ -69,7 +71,6 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
             view,
             important,
             isNew,
-            // only include non-empty urls
             links: links.filter(l => l.url),
         };
 
@@ -107,105 +108,179 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
         setLinks(copy);
     };
 
+    const removeLink = (index) => {
+        setLinks(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const ToggleSwitch = ({ checked, onChange, label }) => (
+        <div className="flex items-center justify-between p-3 bg-black/30 border border-white/10 hover:border-blue-500/30 transition-colors">
+            <span className="text-xs text-gray-300 font-mono uppercase tracking-wider">{label}</span>
+            <button
+                type="button"
+                onClick={() => onChange(!checked)}
+                className={`relative w-12 h-6 rounded-full transition-colors ${checked ? 'bg-blue-600' : 'bg-gray-700'}`}
+            >
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${checked ? 'translate-x-7' : 'translate-x-1'}`} />
+            </button>
+        </div>
+    );
+
     return (
-        <Paper sx={{ p: 3, backgroundColor: darkMode ? "#424242" : "#f9f9f9" }}>
-            <Stack spacing={2}>
-                <Typography variant="h6">{editingNotice ? "Edit Notice" : "Add New Notice"}</Typography>
+        <div className="bg-black/95 border border-blue-500/30 p-6 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500" />
+            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-500" />
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-500" />
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500" />
 
-                <Divider />
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 pointer-events-none" />
 
-                <TextField
-                    label="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    fullWidth
-                    error={!!errors.title}
-                    helperText={errors.title}
-                    required
-                    sx={{ backgroundColor: darkMode ? "#333" : "#fff" }}
-                />
+            <div className="relative z-10 space-y-6">
+                {/* Header */}
+                {/* Header */}
+                <div className="border-b border-blue-500/20 pb-4 flex justify-between items-start">
+                    <div>
+                        <h2 className="text-xl font-black text-white uppercase tracking-widest">
+                            {editingNotice ? "Modify Briefing" : "Create Briefing"}
+                        </h2>
+                        <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
+                            // Guild Notification System
+                        </p>
+                    </div>
+                    <button onClick={onCancel} className="text-white/40 hover:text-white transition-colors">
+                        <CloseIcon />
+                    </button>
+                </div>
 
-                <TextField
-                    label="Note"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    multiline
-                    minRows={3}
-                    maxRows={10}
-                    fullWidth
-                    error={!!errors.note}
-                    helperText={errors.note}
-                    required
-                    sx={{ backgroundColor: darkMode ? "#333" : "#fff" }}
-                />
+                {/* Title */}
+                <div className="space-y-2">
+                    <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                        Briefing Title *
+                    </label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Enter notification title..."
+                        className={`w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider
+                            ${errors.title ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}`}
+                    />
+                    {errors.title && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.title}</span>}
+                </div>
 
-                <Divider />
+                {/* Note */}
+                <div className="space-y-2">
+                    <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
+                        Message Content *
+                    </label>
+                    <textarea
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder="Enter detailed message..."
+                        rows={5}
+                        className={`w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider resize-none
+                            ${errors.note ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}`}
+                    />
+                    {errors.note && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.note}</span>}
+                </div>
 
-                <Typography variant="subtitle1">Links</Typography>
-                {links.map((l, i) => (
-                    <Stack key={i} direction="row" spacing={1}>
-                        <TextField
-                            label="URL"
-                            value={l.url}
-                            onChange={(e) => updateLink(i, "url", e.target.value)}
-                            fullWidth
-                            error={!!errors.links[i]?.url}
-                            helperText={errors.links[i]?.url}
-                            sx={{ backgroundColor: darkMode ? "#333" : "#fff" }}
-                        />
-                        <TextField
-                            label="Description ( Required if URL exists )"
-                            value={l.description}
-                            onChange={(e) => updateLink(i, "description", e.target.value)}
-                            fullWidth
-                            error={!!errors.links[i]?.description}
-                            helperText={errors.links[i]?.description}
-                            sx={{ backgroundColor: darkMode ? "#333" : "#fff" }}
-                        />
-                    </Stack>
-                ))}
-                <Button
-                    onClick={() => setLinks([...links, { url: "", description: "" }])}
-                    variant="outlined"
-                    sx={{ backgroundColor: '#1E1E1E', color: '#fff', '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
-                >
-                    Add More Link
-                </Button>
+                <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
 
-                <Divider />
-
-                <FormControlLabel
-                    control={<Checkbox checked={view} onChange={(e) => setView(e.target.checked)} />}
-                    label="Visible ( Make only logged in officer can see this post )"
-                />
-                <FormControlLabel
-                    control={<Checkbox checked={important} onChange={(e) => setImportant(e.target.checked)} />}
-                    label="Important ( Mark as Important )"
-                />
-                <FormControlLabel
-                    control={<Checkbox checked={isNew} onChange={(e) => setIsNew(e.target.checked)} />}
-                    label="New ( Mark as New )"
-                />
-
-                <Stack direction="row" spacing={2}>
-                    <Button
-                        variant="contained"
-                        onClick={handleSave}
-                        sx={{ backgroundColor: '#1E1E1E', color: '#fff', '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
-                    >
-                        {editingNotice ? "Update Notice" : "Create Notice"}
-                    </Button>
-                    {editingNotice && (
-                        <Button
-                            variant="outlined"
-                            onClick={onCancel}
-                            sx={{ backgroundColor: '#1E1E1E', color: '#fff', '&:hover': { backgroundColor: '#c9c9c9ff', color: '#111' } }}
+                {/* Links */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs text-blue-300 font-black uppercase tracking-widest">
+                            Reference Links
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setLinks([...links, { url: "", description: "" }])}
+                            className="flex items-center gap-1 px-3 py-1 border border-blue-500/30 hover:bg-blue-500/10 text-blue-400 text-[10px] font-mono uppercase tracking-wider transition-all"
                         >
-                            Cancel
-                        </Button>
+                            <AddIcon fontSize="small" /> Add Link
+                        </button>
+                    </div>
+                    {links.map((l, i) => (
+                        <div key={i} className="space-y-2 p-3 bg-black/20 border border-white/5">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={l.url}
+                                    onChange={(e) => updateLink(i, "url", e.target.value)}
+                                    placeholder="https://..."
+                                    className={`flex-1 bg-black/50 border text-white px-3 py-2 font-mono text-xs focus:outline-none transition-colors
+                                        ${errors.links[i]?.url ? 'border-red-500' : 'border-white/10 focus:border-blue-500'}`}
+                                />
+                                {links.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeLink(i)}
+                                        className="px-3 border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-all"
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </button>
+                                )}
+                            </div>
+                            <input
+                                type="text"
+                                value={l.description}
+                                onChange={(e) => updateLink(i, "description", e.target.value)}
+                                placeholder="Link description (required if URL provided)"
+                                className={`w-full bg-black/50 border text-white px-3 py-2 font-mono text-xs focus:outline-none transition-colors
+                                    ${errors.links[i]?.description ? 'border-red-500' : 'border-white/10 focus:border-blue-500'}`}
+                            />
+                        </div>
+                    ))}
+                </div>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+
+                {/* Toggles */}
+                <div className="space-y-2">
+                    <label className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 block">
+                        Briefing Parameters
+                    </label>
+                    <ToggleSwitch
+                        checked={view}
+                        onChange={setView}
+                        label="Visible to All Members"
+                    />
+                    <ToggleSwitch
+                        checked={important}
+                        onChange={setImportant}
+                        label="Mark as Critical Priority"
+                    />
+                    <ToggleSwitch
+                        checked={isNew}
+                        onChange={setIsNew}
+                        label="Flag as New Briefing"
+                    />
+                </div>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-2">
+                    <button
+                        type="button"
+                        onClick={handleSave}
+                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
+                        style={{ clipPath: "polygon(5% 0, 100% 0, 100% 80%, 95% 100%, 0 100%, 0 20%)" }}
+                    >
+                        {editingNotice ? "Update Briefing" : "Deploy Briefing"}
+                    </button>
+                    {editingNotice && (
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            className="px-6 border border-white/20 hover:bg-white/10 text-gray-300 font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
+                        >
+                            Abort
+                        </button>
                     )}
-                </Stack>
-            </Stack>
-        </Paper>
+                </div>
+            </div>
+        </div>
     );
 }

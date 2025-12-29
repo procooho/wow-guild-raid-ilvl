@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Box, Card, Stack, Typography, Button, Select, MenuItem, Divider } from '@mui/material';
 import Image from 'next/image';
 
 //Show Individual Radier's Details
 
-export default function Individual({ raider }) {
+export default function Individual({ raider, showToast }) {
   const [raiderState, setRaider] = useState(raider);
   const [charInfo, setCharInfo] = useState(null);
   const [progress, setProgress] = useState(null);
   const [editingRole, setEditingRole] = useState(false);
-  const [newRole, setNewRole] = useState(raider?.role || 'DPS');
+  const [newRole, setNewRole] = useState(raider.role || '');
+
+  useEffect(() => {
+    setRaider(raider);
+    setNewRole(raider.role || '');
+  }, [raider]);
+
+  // Custom image loader to skip domain configuration for now
+  const customLoader = ({ src }) => {
+    return src;
+  };
 
   const classIconMap = {
     Warrior: "/warrior.png",
@@ -28,23 +37,27 @@ export default function Individual({ raider }) {
   };
 
   const roleDisplayMap = {
-    TANK: "TANK",
-    HEALER: "HEALER",
-    MELEEDPS: "MELEE DPS",
-    RANGEDPS: "RANGE DPS",
+    TANK: "This Unit is a TANK",
+    HEALER: "This Unit is a HEALER",
+    MELEEDPS: "This Unit is MELEE DPS",
+    RANGEDPS: "This Unit is RANGED DPS",
   };
 
-  const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
+  const shortRoleMap = {
+    TANK: "TANK",
+    HEALER: "HEALER",
+    MELEEDPS: "MELEE",
+    RANGEDPS: "RANGED",
+  };
 
-  useEffect(() => {
-    setRaider({
-      ...raider,
-      role: raider?.role || 'DPS',
-    });
-    setNewRole(raider?.role || 'DPS');
-    setProgress(null);
-    setCharInfo(null);
-  }, [raider]);
+  const roleOptions = [
+    { value: "TANK", label: "Tank" },
+    { value: "HEALER", label: "Healer" },
+    { value: "MELEEDPS", label: "Melee DPS" },
+    { value: "RANGEDPS", label: "Ranged DPS" },
+  ];
+
+  const getClassIcon = (className) => classIconMap[className] || "/unknown.png";
 
   // Fetch character info from API
   useEffect(() => {
@@ -64,13 +77,25 @@ export default function Individual({ raider }) {
         });
 
         if (!res.ok) {
-          const errorData = await res.json();
-          console.error(`Error fetching ${raider.name}:`, errorData.error);
+          let errorMsg = `Failed to fetch character info (${res.status})`;
+          try {
+            const errorData = await res.json();
+            errorMsg = errorData.error || errorMsg;
+          } catch (e) {
+            // Failed to parse error JSON
+          }
+          console.error(`Error fetching ${raider.name}:`, errorMsg);
           setCharInfo(null);
           return;
         }
 
         const data = await res.json();
+
+        if (!data || !data.raider || !data.profile) {
+          console.error(`Invalid data structure for ${raider.name}`);
+          setCharInfo(null);
+          return;
+        }
 
         if (!isActive) return;
 
@@ -115,16 +140,17 @@ export default function Individual({ raider }) {
       if (!res.ok) {
         const text = await res.text();
         console.error('Error updating role:', text);
-        alert(`Failed to update role: ${text}`);
+        if (showToast) showToast(`Failed to update role: ${text}`, 'error');
         return;
       }
 
       const updatedRaider = await res.json();
       setRaider(prev => ({ ...prev, role: updatedRaider.role }));
       setEditingRole(false);
+      if (showToast) showToast('Role updated successfully', 'success');
     } catch (err) {
       console.error('Error updating role:', err);
-      alert('Error updating role. See console for details.');
+      if (showToast) showToast('Error updating role. See console for details.', 'error');
     }
   };
 
@@ -149,121 +175,152 @@ export default function Individual({ raider }) {
   const wclLink = `https://www.warcraftlogs.com/character/us/${raiderState.server.toLowerCase()}/${raiderState.name.toLowerCase()}`;
   const raiderIoLink = `https://raider.io/characters/us/${raiderState.server.toLowerCase()}/${raiderState.name.toLowerCase()}`;
 
+  const StatRow = ({ label, value, subValue }) => (
+    <div className="flex justify-between items-center border-b border-white/5 py-2 hover:bg-white/5 px-2 transition-colors">
+      <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">{label}</span>
+      <div className="text-right">
+        <div className="text-sm font-bold text-gray-200">{value}</div>
+        {subValue && <div className="text-[10px] text-blue-400 font-mono">{subValue}</div>}
+      </div>
+    </div>
+  );
+
   return (
-    <Card variant="outlined" sx={{ minWidth: 400, width: '100%' }}>
-      <Box sx={{ p: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Stack direction="row" alignItems={'center'}>
-            <Image
-              src={getClassIcon(characterClass)}
-              alt={characterClass}
-              width={30}
-              height={30}
-            />
-            <Typography variant="h6" sx={{ ml: 2 }}>{raiderState.name}</Typography>
-          </Stack>
-          <Typography variant="body2" color="text.secondary">{raiderState.server}</Typography>
-        </Stack>
-        <Divider />
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2, mb: 2 }}>
-          <Stack direction="column" alignItems="center">
-            <Typography variant="body1">Role</Typography>
-            <Typography variant="body2" color="text.secondary">{roleDisplayMap[raiderState.role]}</Typography>
+    <div className="w-full bg-black/40 border border-white/10 relative overflow-hidden group">
+      {/* Decorative corners */}
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-blue-500" />
+      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-blue-500" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-blue-500" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-blue-500" />
 
-            <Typography variant="body1" sx={{ mt: 2 }}>Class</Typography>
-            <Typography variant="body2" color="text.secondary">{characterClass}</Typography>
-          </Stack>
+      {/* Header Section */}
+      <div className="p-6 pb-0 relative">
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center gap-4">
+            <div className="relative w-16 h-16 border-2 border-blue-500/30 rounded-full overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+              <Image
+                src={getClassIcon(characterClass)}
+                alt={characterClass}
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-white uppercase tracking-widest">
+                {raiderState.name}
+              </h2>
+              <div className="text-xs text-blue-400 font-mono tracking-[0.2em] bg-blue-900/10 inline-block px-2 py-1 mt-1 border border-blue-500/20">
+                            // {raiderState.server.toUpperCase()}
+              </div>
+            </div>
+          </div>
 
-          <Stack direction="column" alignItems="center">
-            <Typography variant="body1">Race</Typography>
-            <Typography variant="body2" color="text.secondary">{race}</Typography>
-
-            <Typography variant="body1" sx={{ mt: 2 }}>Faction</Typography>
-            <Typography variant="body2" color="text.secondary">{faction}</Typography>
-          </Stack>
-
-          <Stack direction="column" alignItems="center">
-            <Typography variant="h5">Item Level</Typography>
-            <Typography variant="body2" color="text.secondary">{raiderState.currentIlvl ?? 0}</Typography>
-
+          {/* ILVL Big Display */}
+          <div className="text-right">
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-1">Current Item Level</div>
+            <div className="text-4xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              {raiderState.currentIlvl ?? 0}
+            </div>
             {progress !== null && (
-              <>
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  Since last check
-                </Typography>
-                <Typography variant="body2">
-                  ({raiderState?.history?.[1]?.recordedAt
-                    ? new Date(raiderState.history[1].recordedAt).toLocaleDateString()
-                    : "N/A"}):
-                </Typography>
-                <Typography variant="body2" color={progress >= 0 ? 'green' : 'red'}>
-                  {progress >= 0 ? `+${progress}` : progress}
-                </Typography>
-              </>
+              <div className={`font-mono text-xs font-bold mt-1 ${progress >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {progress > 0 ? '+' : ''}{progress} VARIANCE
+              </div>
             )}
-          </Stack>
-        </Stack>
-        <Divider />
-        <Typography variant="body1" sx={{ mt: 2 }}>Links</Typography>
-        <Stack direction="row" justifyContent={'space-between'} spacing={1} sx={{ mt: 2, mb: 2 }}>
-          <Button variant="outlined" size="small" href={armoryLink} target="_blank" sx={{
-            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
-              backgroundColor: '#c9c9c9ff',
-              color: '#111'
-            },
-          }}>WoW Armory</Button>
-          <Button variant="outlined" size="small" href={wclLink} target="_blank" sx={{
-            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
-              backgroundColor: '#c9c9c9ff',
-              color: '#111'
-            },
-          }}>WCL</Button>
-          <Button variant="outlined" size="small" href={raiderIoLink} target="_blank" sx={{
-            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
-              backgroundColor: '#c9c9c9ff',
-              color: '#111'
-            },
-          }}>Raider.IO</Button>
-        </Stack>
-        <Divider sx={{ mb: 2 }} />
-        <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>Edit Role</Typography>
-        <Stack direction="column" spacing={1} sx={{ mb: 2 }}>
-          {editingRole && (
-            <Select value={newRole} onChange={(e) => setNewRole(e.target.value)} size="small">
-              <MenuItem value="TANK">Tank</MenuItem>
-              <MenuItem value="MELEEDPS">MELEE DPS</MenuItem>
-              <MenuItem value="RANGEDPS">RANGE DPS</MenuItem>
-              <MenuItem value="HEALER">Healer</MenuItem>
-            </Select>
-          )}
-          {editingRole && <Button size="small" variant="contained" onClick={handleRoleChange} sx={{
-            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
-              backgroundColor: '#c9c9c9ff',
-              color: '#111'
-            },
-          }}>Save</Button>}
-          {editingRole && <Button size="small" variant="outlined" onClick={() => setEditingRole(false)} sx={{
-            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff', '&:hover': {
-              backgroundColor: '#c9c9c9ff',
-              color: '#111'
-            },
-          }}>Cancel</Button>}
-          {!editingRole && <Button variant="outlined" size="small" onClick={() => setEditingRole(true)} sx={{
-            border: '2px solid', backgroundColor: '#1E1E1E', color: '#fff',
-            '&:hover': {
-              backgroundColor: '#c9c9c9ff',
-              color: '#111'
-            }, '&.Mui-disabled': {
-              backgroundColor: '#555',
-              color: '#fff',
-            },
-          }}>Edit Role</Button>}
-        </Stack>
-        <Divider />
-        <Typography variant="caption" sx={{ mt: 2, display: 'block', textAlign: 'right' }}>
-          Recently checked: {lastCheckedDate}
-        </Typography>
-      </Box>
-    </Card>
+          </div>
+        </div>
+
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+      </div>
+
+      {/* Info Grid */}
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+
+        {/* Column 1: Core Stats */}
+        <div className="space-y-1">
+          <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500">
+            Core Metadata
+          </div>
+          <StatRow label="Class" value={characterClass} />
+          <StatRow label="Combat Role" value={shortRoleMap[raiderState.role]} />
+          <StatRow label="Race" value={race} />
+          <StatRow label="Faction" value={faction} />
+        </div>
+
+        {/* Column 2: Actions & Links */}
+        <div className="space-y-4">
+          <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500">
+            Protocol Links
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            <a href={armoryLink} target="_blank" rel="noreferrer"
+              className="block text-center px-4 py-2 border border-white/10 hover:border-blue-400/50 bg-white/5 hover:bg-blue-600/20 text-xs font-mono uppercase tracking-wider text-gray-300 hover:text-white transition-all">
+              Blizzard Armory
+            </a>
+            <a href={wclLink} target="_blank" rel="noreferrer"
+              className="block text-center px-4 py-2 border border-white/10 hover:border-blue-400/50 bg-white/5 hover:bg-blue-600/20 text-xs font-mono uppercase tracking-wider text-gray-300 hover:text-white transition-all">
+              Warcraft Logs
+            </a>
+            <a href={raiderIoLink} target="_blank" rel="noreferrer"
+              className="block text-center px-4 py-2 border border-white/10 hover:border-blue-400/50 bg-white/5 hover:bg-blue-600/20 text-xs font-mono uppercase tracking-wider text-gray-300 hover:text-white transition-all">
+              Raider.IO
+            </a>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-white/5">
+            <div className="flex justify-between items-center mb-2">
+              <div className="text-xs text-blue-300 font-black uppercase tracking-widest pl-2 border-l-2 border-blue-500">
+                Role Override
+              </div>
+            </div>
+
+            {!editingRole ? (
+              <button
+                onClick={() => setEditingRole(true)}
+                className="w-full text-center px-4 py-2 border border-dashed border-gray-600 hover:border-white text-gray-400 hover:text-white text-xs font-mono uppercase tracking-wider transition-all"
+              >
+                Modify Combat Role
+              </button>
+            ) : (
+              <div className="space-y-2 animate-fade-in">
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  className="w-full bg-black border border-blue-500 text-white text-xs p-2 font-mono focus:outline-none uppercase"
+                >
+                  <option value="TANK">TANK</option>
+                  <option value="MELEEDPS">MELEE DPS</option>
+                  <option value="RANGEDPS">RANGED DPS</option>
+                  <option value="HEALER">HEALER</option>
+                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleRoleChange}
+                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 uppercase tracking-wider"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingRole(false)}
+                    className="border border-white/20 hover:bg-white/10 text-gray-300 text-xs font-bold py-2 uppercase tracking-wider"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-black/80 p-3 border-t border-white/10 flex justify-between items-center">
+        <div className="text-[9px] text-gray-600 font-mono uppercase">
+          Secure Connection Established
+        </div>
+        <div className="text-[9px] text-blue-500/60 font-mono uppercase">
+          Last Sync: {lastCheckedDate}
+        </div>
+      </div>
+    </div>
   );
 }

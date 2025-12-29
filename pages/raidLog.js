@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 
 import OfficerPostForm from "@/components/OfficerPostForm";
 import OfficerPostItem from "@/components/OfficerPostItem";
-import LeftNav from "@/components/LeftNav";
+import OfficerPostItem from "@/components/OfficerPostItem";
 
 export default function RaidLog() {
     const { darkMode } = useThemeContext();
@@ -78,127 +78,119 @@ export default function RaidLog() {
 
     return (
         <ProtectedRoute>
-            <Box sx={{ display: "flex", ...(!isMobile && { ml: 7 }) }}>
-                {!isMobile && (
-                    <Box sx={{ width: 240, flexShrink: 0 }}>
-                        <LeftNav />
+            <Container maxWidth="md" sx={{ py: 4 }}>
+                <Divider />
+
+                {/* Add New Post Button */}
+                <Button
+                    variant="contained"
+                    onClick={handleOpenModal}
+                    fullWidth
+                    sx={{
+                        mt: 2,
+                        mb: 2,
+                        border: "2px solid",
+                        backgroundColor: "#1E1E1E",
+                        color: "#fff",
+                        "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" },
+                    }}
+                >
+                    Add New Video / Log
+                </Button>
+
+                <Divider />
+
+                {/* Modal */}
+                <Dialog open={modalOpen || !!editingPost} onClose={handleCloseModal} fullWidth maxWidth="md">
+                    <OfficerPostForm
+                        darkMode={darkMode}
+                        editingPost={editingPost}
+                        onSaved={() => {
+                            handleCloseModal();
+                            fetchPosts();
+                        }}
+                        onCancel={handleCloseModal}
+                    />
+                </Dialog>
+
+                <Typography variant="h4" textAlign={"center"} sx={{ my: 3 }}>
+                    Raid Recordings & Logs
+                </Typography>
+
+                {/* Search */}
+                <TextField
+                    label="Search by Title, Description, Date"
+                    value={searchQuery}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    fullWidth
+                    sx={{
+                        my: 2,
+                        backgroundColor: darkMode ? "#333" : "#fff",
+                        '& .MuiInputLabel-root': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiInputBase-input': {
+                            color: darkMode ? '#fff' : '#000',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: darkMode ? '#fff' : '#000',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: darkMode ? '#fff' : '#000',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: darkMode ? '#fff' : '#000',
+                            },
+                        },
+                    }}
+                />
+
+                <Typography variant="subtitle1" textAlign="center" sx={{ mb: 2 }}>
+                    Showing {filteredPosts.length} result{filteredPosts.length !== 1 ? "s" : ""}
+                </Typography>
+
+                {/* List of Posts */}
+                <Stack spacing={2}>
+                    {currentPosts.length > 0 ? (
+                        currentPosts.map((post) => (
+                            <OfficerPostItem
+                                key={post.id}
+                                post={post}
+                                darkMode={darkMode}
+                                onEdit={(post) => {
+                                    setEditingPost(post);
+                                    setModalOpen(true);
+                                }}
+                                onDelete={handleDelete}
+                            />
+                        ))
+                    ) : (
+                        <Typography variant="h6" textAlign="center">
+                            No Logs found
+                        </Typography>
+                    )}
+                </Stack>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                        <Pagination
+                            count={totalPages}
+                            page={currentPage}
+                            onChange={(e, page) => setCurrentPage(page)}
+                            variant="outlined"
+                            shape="rounded"
+                        />
                     </Box>
                 )}
-                <Container maxWidth="md" sx={{ py: 4 }}>
-                    <Divider />
-
-                    {/* Add New Post Button */}
-                    <Button
-                        variant="contained"
-                        onClick={handleOpenModal}
-                        fullWidth
-                        sx={{
-                            mt: 2,
-                            mb: 2,
-                            border: "2px solid",
-                            backgroundColor: "#1E1E1E",
-                            color: "#fff",
-                            "&:hover": { backgroundColor: "#c9c9c9ff", color: "#111" },
-                        }}
-                    >
-                        Add New Video / Log
-                    </Button>
-
-                    <Divider />
-
-                    {/* Modal */}
-                    <Dialog open={modalOpen || !!editingPost} onClose={handleCloseModal} fullWidth maxWidth="md">
-                        <OfficerPostForm
-                            darkMode={darkMode}
-                            editingPost={editingPost}
-                            onSaved={() => {
-                                handleCloseModal();
-                                fetchPosts();
-                            }}
-                            onCancel={handleCloseModal}
-                        />
-                    </Dialog>
-
-                    <Typography variant="h4" textAlign={"center"} sx={{ my: 3 }}>
-                        Raid Recordings & Logs
-                    </Typography>
-
-                    {/* Search */}
-                    <TextField
-                        label="Search by Title, Description, Date"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        fullWidth
-                        sx={{
-                            my: 2,
-                            backgroundColor: darkMode ? "#333" : "#fff",
-                            '& .MuiInputLabel-root': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiInputBase-input': {
-                                color: darkMode ? '#fff' : '#000',
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: darkMode ? '#fff' : '#000',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: darkMode ? '#fff' : '#000',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: darkMode ? '#fff' : '#000',
-                                },
-                            },
-                        }}
-                    />
-
-                    <Typography variant="subtitle1" textAlign="center" sx={{ mb: 2 }}>
-                        Showing {filteredPosts.length} result{filteredPosts.length !== 1 ? "s" : ""}
-                    </Typography>
-
-                    {/* List of Posts */}
-                    <Stack spacing={2}>
-                        {currentPosts.length > 0 ? (
-                            currentPosts.map((post) => (
-                                <OfficerPostItem
-                                    key={post.id}
-                                    post={post}
-                                    darkMode={darkMode}
-                                    onEdit={(post) => {
-                                        setEditingPost(post);
-                                        setModalOpen(true);
-                                    }}
-                                    onDelete={handleDelete}
-                                />
-                            ))
-                        ) : (
-                            <Typography variant="h6" textAlign="center">
-                                No Logs found
-                            </Typography>
-                        )}
-                    </Stack>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-                            <Pagination
-                                count={totalPages}
-                                page={currentPage}
-                                onChange={(e, page) => setCurrentPage(page)}
-                                variant="outlined"
-                                shape="rounded"
-                            />
-                        </Box>
-                    )}
-                </Container>
-                {isMobile && <LeftNav />}
-            </Box>
+            </Container>
         </ProtectedRoute>
     );
 }
