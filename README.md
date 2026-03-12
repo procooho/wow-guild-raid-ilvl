@@ -7,6 +7,11 @@
 ---
 
 ## Update Log
+---
+
+**Mar 11 2026 v1** (Fix)
+- Mobile Notification Bug Fix
+    - Fixed issue in mobile view, when the item is expanded, the text is overflowing from its box.
 
 ---
 
