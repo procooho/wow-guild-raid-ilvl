@@ -75,7 +75,7 @@ export default function NoticeItem({ notice, darkMode, onEdit, onDelete, showAct
                 {/* Content Body */}
                 <div className={`
                     text-sm md:text-base leading-relaxed text-gray-300 font-sans border-l-2 border-white/5 pl-4 transition-all duration-300
-                    ${expanded ? 'opacity-100 max-h-[1000px]' : 'opacity-70 max-h-[100px] overflow-hidden'}
+                    ${expanded ? 'opacity-100 max-h-[1000px] overflow-y-auto pr-2' : 'opacity-70 max-h-[100px] overflow-hidden'}
                 `}>
                     <p className="whitespace-pre-line">
                         {expanded ? notice.note : getCollapsedNote(notice.note)}
