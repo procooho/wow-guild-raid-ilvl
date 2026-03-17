@@ -42,8 +42,10 @@ const BottomNav = () => {
         fetch('/api/notice')
             .then(res => res.json())
             .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    setNotices(data);
+                if (Array.isArray(data)) {
+                    // Filter out archived notices (view === false)
+                    const activeNotices = data.filter(notice => notice.view);
+                    setNotices(activeNotices);
                 }
             })
             .catch(err => console.error("Failed to fetch notices:", err));

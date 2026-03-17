@@ -6,11 +6,13 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function RosterSummary({ roster }) {
     // --- State ---
     const [collapsed, setCollapsed] = useState({ TANK: false, HEALER: false, MELEEDPS: false, RANGEDPS: false });
     const [updatedRoster, setUpdatedRoster] = useState([]);
+    const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(false);
 
     // Custom Toast State
@@ -57,6 +59,21 @@ export default function RosterSummary({ roster }) {
             showToast("System initialized. Data loaded.", "info");
         }
     }, [roster]);
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const res = await fetch("/api/rosterHistory");
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    setChartData(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch roster history:", err);
+            }
+        };
+        fetchHistory();
+    }, []);
 
     // Toast Timer
     useEffect(() => {
@@ -150,6 +167,53 @@ export default function RosterSummary({ roster }) {
                         *Calculated based on max potential ilvl in inventory
                     </span>
                 </div>
+
+                {/* Avg History Chart */}
+                {chartData.length > 1 && (
+                    <div className="max-w-4xl mx-auto mt-8 p-4 bg-black/50 border border-white/5 rounded-sm relative z-10 w-full h-48 md:h-64">
+                        <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500 text-left">
+                            Squadron Average History
+                        </div>
+                        <div className="w-full h-[calc(100%-2rem)]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={chartData}>
+                                    <XAxis
+                                        dataKey="date"
+                                        stroke="#4b5563"
+                                        fontSize={10}
+                                        tickMargin={8}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        domain={['dataMin - 1', 'dataMax + 1']}
+                                        stroke="#4b5563"
+                                        fontSize={10}
+                                        tickMargin={8}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        width={40}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(59,130,246,0.3)', borderRadius: '4px' }}
+                                        itemStyle={{ color: '#60a5fa', fontSize: '12px', fontWeight: 'bold' }}
+                                        labelStyle={{ color: '#9ca3af', fontSize: '10px', marginBottom: '4px' }}
+                                        cursor={{ stroke: 'rgba(59,130,246,0.2)', strokeWidth: 2 }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="ilvl"
+                                        stroke="#3b82f6"
+                                        strokeWidth={2}
+                                        dot={{ r: 3, fill: '#000', stroke: '#3b82f6', strokeWidth: 2 }}
+                                        activeDot={{ r: 5, fill: '#60a5fa', stroke: '#fff' }}
+                                        isAnimationActive={true}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Action Bar */}

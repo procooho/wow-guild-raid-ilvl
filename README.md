@@ -1,12 +1,21 @@
 # Guild Raid Roster / Item Level Check
 
 ---
-
-**To Do**
-
 ---
 
 ## Update Log
+---
+
+**Mar 17 2026 v1** (Update & Fix)
+- Avg History Chart added to Raid Summary page and Manage Raid Roster page
+- Individual Item Level History Graph added to Individual Detail Card
+- Add Raider
+    - Character name input field now auto-suggests character names from the guild roster
+    - Error check of server name improved
+    - Bug Fix related to server name
+- Bug Fix for Individual Detail Card
+    - Item level history graph now shows the correct item level history
+- Latest Comms is not showing the archived posts anymore
 ---
 
 **Mar 11 2026 v1** (Fix)

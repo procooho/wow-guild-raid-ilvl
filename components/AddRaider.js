@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function AddRaider({ onAdd }) {
     const [name, setName] = useState("");
@@ -7,6 +7,28 @@ export default function AddRaider({ onAdd }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [serverListOpen, setServerListOpen] = useState(false);
+    
+    // Guild auto-complete states
+    const [guildNames, setGuildNames] = useState([]);
+    const [nameListOpen, setNameListOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchNames = async () => {
+            try {
+                // Fetch defaults: Tichondrius & Awaken Reunited via the API endpoint
+                const res = await fetch("/api/guildNames");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        setGuildNames(data);
+                    }
+                }
+            } catch (err) {
+                console.error("Could not fetch guild names", err);
+            }
+        };
+        fetchNames();
+    }, []);
 
     // All US server lists
     const usServers = [
@@ -49,7 +71,7 @@ export default function AddRaider({ onAdd }) {
     const validateField = (field, value) => {
         switch (field) {
             case 'name': return value.trim() ? '' : 'Character name is required';
-            case 'server': return value && usServers.includes(value) ? '' : 'Please select a valid server';
+            case 'server': return value && usServers.some(s => s.toLowerCase() === value.toLowerCase()) ? '' : 'Please select a valid server';
             case 'role': return value ? '' : 'Role is required';
             default: return '';
         }
@@ -102,6 +124,9 @@ export default function AddRaider({ onAdd }) {
     // Filter servers for autocomplete feel
     const filteredServers = usServers.filter(s => s.toLowerCase().includes(server.toLowerCase()));
 
+    // Filter guild names for autocomplete feel
+    const filteredNames = guildNames.filter(n => n.toLowerCase().includes(name.toLowerCase()) && n.toLowerCase() !== name.toLowerCase());
+
     return (
         <div className="bg-black/95 border border-blue-500/30 p-6 relative overflow-hidden">
             {/* Decorative corners */}
@@ -126,22 +151,50 @@ export default function AddRaider({ onAdd }) {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
 
-                    {/* Character Name */}
-                    <div className="space-y-2">
+                    {/* Character Name (Custom Autocomplete) */}
+                    <div className="space-y-2 relative">
                         <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
                             Unit Identification (Name) *
                         </label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            onBlur={() => handleBlur('name', name)}
-                            className={`
-                                w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider
-                                ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}
-                            `}
-                            placeholder="Enter character name..."
-                        />
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => {
+                                    setName(e.target.value);
+                                    setNameListOpen(true);
+                                }}
+                                onFocus={() => setNameListOpen(true)}
+                                onBlur={() => {
+                                    handleBlur('name', name);
+                                    setTimeout(() => setNameListOpen(false), 200);
+                                }}
+                                className={`
+                                    w-full bg-black/50 border text-white px-4 py-3 font-mono text-sm focus:outline-none transition-colors tracking-wider
+                                    ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-blue-500'}
+                                `}
+                                placeholder="Enter character name..."
+                                autoComplete="off"
+                            />
+                            {nameListOpen && filteredNames.length > 0 && name.length >= 2 && (
+                                <div className="absolute top-full left-0 w-full max-h-48 overflow-y-auto bg-black border border-blue-500/30 z-50 mt-1 custom-scrollbar">
+                                    {filteredNames.slice(0, 20).map(n => (
+                                        <div
+                                            key={n}
+                                            onMouseDown={(e) => e.preventDefault()}
+                                            onClick={() => { 
+                                                setName(n); 
+                                                setErrors(prev => ({ ...prev, name: '' }));
+                                                setNameListOpen(false); 
+                                            }}
+                                            className="px-4 py-2 hover:bg-blue-900/50 cursor-pointer text-xs text-gray-300 font-mono uppercase border-b border-white/5 last:border-b-0"
+                                        >
+                                            {n}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         {errors.name && <span className="text-red-400 text-[10px] font-mono uppercase ml-1">{errors.name}</span>}
                     </div>
 
@@ -174,7 +227,12 @@ export default function AddRaider({ onAdd }) {
                                     {filteredServers.map(s => (
                                         <div
                                             key={s}
-                                            onClick={() => { setServer(s); setServerListOpen(false); }}
+                                            onMouseDown={(e) => e.preventDefault()}
+                                            onClick={() => { 
+                                                setServer(s); 
+                                                setErrors(prev => ({ ...prev, server: '' }));
+                                                setServerListOpen(false); 
+                                            }}
                                             className="px-4 py-2 hover:bg-blue-900/50 cursor-pointer text-xs text-gray-300 font-mono uppercase border-b border-white/5 last:border-b-0"
                                         >
                                             {s}

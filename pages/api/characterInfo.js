@@ -92,11 +92,11 @@ export default async function handler(req, res) {
       recordedToday = true;
     }
 
-    // Get recent histories to find distinct days
+    // Get recent histories to find distinct days (up to 30 for the graph)
     const rawHistory = await prisma.itemLevelHistory.findMany({
       where: { raiderId: raider.id },
       orderBy: { recordedAt: "desc" },
-      take: 10,
+      take: 30,
     });
 
     // Deduplicate history by date string to ensure variance is calculated correctly
@@ -108,7 +108,7 @@ export default async function handler(req, res) {
         uniqueHistoryMap.set(dateStr, h);
       }
     }
-    const history = Array.from(uniqueHistoryMap.values()).slice(0, 2);
+    const history = Array.from(uniqueHistoryMap.values());
 
     const response = {
       raider: {

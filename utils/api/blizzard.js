@@ -79,3 +79,29 @@ export async function getCharacterProfile(realm, name) {
     averageItemLevel: data.average_item_level ?? 0
   };
 }
+
+// Get guild roster
+export async function getGuildRoster(realm, guildName) {
+  const token = await getBlizzardToken();
+
+  const realmSlug = realm.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+  const guildSlug = guildName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '');
+
+  const res = await fetch(
+    `https://us.api.blizzard.com/data/wow/guild/${realmSlug}/${guildSlug}/roster?namespace=profile-us&locale=en_US`,
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+
+  if (!res.ok) {
+    console.error("Blizzard API Guild response:", res.status, await res.text());
+    return null;
+  }
+
+  const data = await res.json();
+  
+  if (!data.members) return [];
+
+  return data.members.map(m => m.character.name);
+}
