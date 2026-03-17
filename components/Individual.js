@@ -110,7 +110,7 @@ export default function Individual({ raider, showToast }) {
         // Calculate ilvl progress
         if (data.raider.history?.length >= 2) {
           const diff = data.raider.history[0].ilvl - data.raider.history[1].ilvl;
-          setProgress(diff);
+          setProgress(Number(diff.toFixed(2)));
         } else {
           setProgress(null);
         }

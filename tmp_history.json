@@ -1,0 +1,32 @@
+[
+  {
+    "id": 624,
+    "raiderId": 46,
+    "ilvl": 242,
+    "recordedAt": "2026-03-17T15:16:01.239Z"
+  },
+  {
+    "id": 625,
+    "raiderId": 46,
+    "ilvl": 242,
+    "recordedAt": "2026-03-17T15:16:01.239Z"
+  },
+  {
+    "id": 614,
+    "raiderId": 46,
+    "ilvl": 239,
+    "recordedAt": "2026-03-17T03:19:16.243Z"
+  },
+  {
+    "id": 583,
+    "raiderId": 46,
+    "ilvl": 239,
+    "recordedAt": "2026-03-16T00:40:38.138Z"
+  },
+  {
+    "id": 562,
+    "raiderId": 46,
+    "ilvl": 239,
+    "recordedAt": "2026-03-15T00:01:23.890Z"
+  }
+]

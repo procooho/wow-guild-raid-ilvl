@@ -84,15 +84,31 @@ export default async function handler(req, res) {
         },
       });
     } else {
+      // Update the existing record for today so we capture same-day ilvl growth
+      await prisma.itemLevelHistory.update({
+        where: { id: lastHistory.id },
+        data: { ilvl: currentIlvl }
+      });
       recordedToday = true;
     }
 
-    // Get the 2 most recent histories
-    const history = await prisma.itemLevelHistory.findMany({
+    // Get recent histories to find distinct days
+    const rawHistory = await prisma.itemLevelHistory.findMany({
       where: { raiderId: raider.id },
       orderBy: { recordedAt: "desc" },
-      take: 2,
+      take: 10,
     });
+
+    // Deduplicate history by date string to ensure variance is calculated correctly
+    // across different days, avoiding 0 variance from duplicate same-day records.
+    const uniqueHistoryMap = new Map();
+    for (const h of rawHistory) {
+      const dateStr = new Date(h.recordedAt).toDateString();
+      if (!uniqueHistoryMap.has(dateStr)) {
+        uniqueHistoryMap.set(dateStr, h);
+      }
+    }
+    const history = Array.from(uniqueHistoryMap.values()).slice(0, 2);
 
     const response = {
       raider: {
