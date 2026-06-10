@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -12,7 +12,8 @@ export default function RosterSummary({ roster }) {
     // --- State ---
     const [collapsed, setCollapsed] = useState({ TANK: false, HEALER: false, MELEEDPS: false, RANGEDPS: false });
     const [updatedRoster, setUpdatedRoster] = useState([]);
-    const [chartData, setChartData] = useState([]);
+    const [rawChartData, setRawChartData] = useState([]);
+    const [timeRange, setTimeRange] = useState("1M");
     const [loading, setLoading] = useState(false);
 
     // Custom Toast State
@@ -66,7 +67,7 @@ export default function RosterSummary({ roster }) {
                 const res = await fetch("/api/rosterHistory");
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    setChartData(data);
+                    setRawChartData(data);
                 }
             } catch (err) {
                 console.error("Failed to fetch roster history:", err);
@@ -74,6 +75,30 @@ export default function RosterSummary({ roster }) {
         };
         fetchHistory();
     }, []);
+
+    // Filter chart data by selected time range
+    const filteredChartData = useMemo(() => {
+        if (!rawChartData || rawChartData.length === 0) return [];
+        if (timeRange === "ALL") return rawChartData;
+
+        const cutoffDate = new Date();
+        if (timeRange === "2W") {
+            cutoffDate.setDate(cutoffDate.getDate() - 14);
+        } else if (timeRange === "1M") {
+            cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+        } else if (timeRange === "3M") {
+            cutoffDate.setMonth(cutoffDate.getMonth() - 3);
+        } else if (timeRange === "1Y") {
+            cutoffDate.setFullYear(cutoffDate.getFullYear() - 1);
+        } else {
+            return rawChartData;
+        }
+
+        return rawChartData.filter(item => {
+            const itemDate = new Date(item.fullDate + "T00:00:00");
+            return itemDate >= cutoffDate;
+        });
+    }, [rawChartData, timeRange]);
 
     // Toast Timer
     useEffect(() => {
@@ -169,48 +194,109 @@ export default function RosterSummary({ roster }) {
                 </div>
 
                 {/* Avg History Chart */}
-                {chartData.length > 1 && (
-                    <div className="max-w-4xl mx-auto mt-8 p-4 bg-black/50 border border-white/5 rounded-sm relative z-10 w-full h-48 md:h-64">
-                        <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500 text-left">
-                            Squadron Average History
+                {rawChartData.length > 1 && (
+                    <div className="max-w-4xl mx-auto mt-8 p-4 bg-black/50 border border-white/5 rounded-sm relative z-10 w-full h-[320px] md:h-[380px]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pl-2 border-l-2 border-blue-500">
+                            <span className="text-xs text-blue-300 font-black uppercase tracking-widest text-left">
+                                Squadron Average History
+                            </span>
+                            
+                            {/* Date Filter Buttons */}
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                                {[
+                                    { label: "2 WEEKS", value: "2W" },
+                                    { label: "1 MONTH", value: "1M" },
+                                    { label: "3 MONTHS", value: "3M" },
+                                    { label: "1 YEAR", value: "1Y" },
+                                    { label: "ALL", value: "ALL" }
+                                ].map((r) => {
+                                    const isActive = timeRange === r.value;
+                                    return (
+                                        <button
+                                            key={r.value}
+                                            onClick={() => setTimeRange(r.value)}
+                                            className={`
+                                                relative px-3 py-1.5 text-[10px] tracking-wider uppercase font-mono transition-all duration-200
+                                                border select-none outline-none overflow-hidden active:scale-95 active:translate-y-[1px]
+                                                ${isActive 
+                                                    ? 'bg-cyan-500/20 border-cyan-400 text-cyan-100 shadow-[0_0_15px_rgba(6,182,212,0.4)]' 
+                                                    : 'bg-blue-950/20 border-blue-900/40 text-blue-400 hover:bg-blue-900/20 hover:border-blue-500 hover:text-white'
+                                                }
+                                            `}
+                                            style={{
+                                                clipPath: "polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)"
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-1.5 z-10 relative">
+                                                {/* Glowing LED Dot */}
+                                                <span className={`
+                                                    w-1.5 h-1.5 rounded-full transition-all duration-300
+                                                    ${isActive 
+                                                        ? 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,1)] animate-pulse' 
+                                                        : 'bg-transparent border border-blue-800'
+                                                    }
+                                                `} />
+                                                <span className="font-bold">{r.label}</span>
+                                            </div>
+                                            
+                                            {/* Sheen animation indicator */}
+                                            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent translate-x-[-100%] hover:animate-shine pointer-events-none" />
+                                            
+                                            {/* Active Glow Accent underlay */}
+                                            {isActive && (
+                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.15)_0%,transparent_70%)] pointer-events-none" />
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        <div className="w-full h-[calc(100%-2rem)]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={chartData}>
-                                    <XAxis
-                                        dataKey="date"
-                                        stroke="#4b5563"
-                                        fontSize={10}
-                                        tickMargin={8}
-                                        tickLine={false}
-                                        axisLine={false}
-                                    />
-                                    <YAxis
-                                        domain={['dataMin - 1', 'dataMax + 1']}
-                                        stroke="#4b5563"
-                                        fontSize={10}
-                                        tickMargin={8}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        width={40}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(59,130,246,0.3)', borderRadius: '4px' }}
-                                        itemStyle={{ color: '#60a5fa', fontSize: '12px', fontWeight: 'bold' }}
-                                        labelStyle={{ color: '#9ca3af', fontSize: '10px', marginBottom: '4px' }}
-                                        cursor={{ stroke: 'rgba(59,130,246,0.2)', strokeWidth: 2 }}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="ilvl"
-                                        stroke="#3b82f6"
-                                        strokeWidth={2}
-                                        dot={{ r: 3, fill: '#000', stroke: '#3b82f6', strokeWidth: 2 }}
-                                        activeDot={{ r: 5, fill: '#60a5fa', stroke: '#fff' }}
-                                        isAnimationActive={true}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
+
+                        <div className="w-full h-[calc(100%-3.5rem)]">
+                            {filteredChartData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={filteredChartData}>
+                                        <XAxis
+                                            dataKey="date"
+                                            stroke="#4b5563"
+                                            fontSize={10}
+                                            tickMargin={8}
+                                            tickLine={false}
+                                            axisLine={false}
+                                        />
+                                        <YAxis
+                                            domain={['dataMin - 1', 'dataMax + 1']}
+                                            stroke="#4b5563"
+                                            fontSize={10}
+                                            tickMargin={8}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            width={40}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(59,130,246,0.3)', borderRadius: '4px' }}
+                                            itemStyle={{ color: '#60a5fa', fontSize: '12px', fontWeight: 'bold' }}
+                                            labelStyle={{ color: '#9ca3af', fontSize: '10px', marginBottom: '4px' }}
+                                            cursor={{ stroke: 'rgba(59,130,246,0.2)', strokeWidth: 2 }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="ilvl"
+                                            stroke="#3b82f6"
+                                            strokeWidth={2}
+                                            dot={{ r: 3, fill: '#000', stroke: '#3b82f6', strokeWidth: 2 }}
+                                            activeDot={{ r: 5, fill: '#60a5fa', stroke: '#fff' }}
+                                            isAnimationActive={true}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center border border-dashed border-blue-500/20 bg-black/30 rounded-sm">
+                                    <span className="font-mono text-xs text-blue-400/50 tracking-widest uppercase animate-pulse">
+                                        [ No data points recorded in this timeframe ]
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

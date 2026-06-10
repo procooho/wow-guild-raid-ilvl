@@ -6,6 +6,14 @@
 ## Update Log
 ---
 
+**June 10 2026 v1** (Update)
+- Avg History Chart filter by time frame added
+    - Raid Summary page
+    - Manage Raid Roster page
+- Individual Item Level History Graph filter by time frame added
+    - Individual Detail Card
+---
+
 **Mar 17 2026 v1** (Update & Fix)
 - Avg History Chart added to Raid Summary page and Manage Raid Roster page
 - Individual Item Level History Graph added to Individual Detail Card
