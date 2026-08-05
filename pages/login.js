@@ -70,7 +70,7 @@ export default function LoginPage() {
                     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                         {/* ID Input */}
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] text-blue-300 tracking-widest font-bold ml-1">Officer ID</label>
+                            <label className="text-[10px] text-blue-300 tracking-widest font-bold ml-1">Username</label>
                             <input
                                 type="text"
                                 value={id}
@@ -82,7 +82,7 @@ export default function LoginPage() {
 
                         {/* Password Input */}
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] text-blue-300 tracking-widest font-bold ml-1">Passcode</label>
+                            <label className="text-[10px] text-blue-300 tracking-widest font-bold ml-1">Password</label>
                             <input
                                 type="password"
                                 value={password}
@@ -111,7 +111,7 @@ export default function LoginPage() {
                                 }
                             `}
                         >
-                            {loading ? "Authenticating..." : success ? "Access Granted" : "Initialize Session"}
+                            {loading ? "Authenticating..." : success ? "Access Granted" : "Login"}
                         </button>
 
                     </form>

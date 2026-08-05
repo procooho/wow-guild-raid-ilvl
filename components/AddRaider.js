@@ -142,10 +142,10 @@ export default function AddRaider({ onAdd }) {
                 {/* Header */}
                 <div className="border-b border-blue-500/20 pb-4">
                     <h2 className="text-xl font-black text-white uppercase tracking-widest">
-                        Initialize New Unit
+                        Add New Raider
                     </h2>
                     <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
-                        {'//'} Unit Registration Protocol
+                        {'//'} Character Registration
                     </p>
                 </div>
 
@@ -154,7 +154,7 @@ export default function AddRaider({ onAdd }) {
                     {/* Character Name (Custom Autocomplete) */}
                     <div className="space-y-2 relative">
                         <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
-                            Unit Identification (Name) *
+                            Character Name *
                         </label>
                         <div className="relative">
                             <input
@@ -201,7 +201,7 @@ export default function AddRaider({ onAdd }) {
                     {/* Server Selection (Custom Autocomplete) */}
                     <div className="space-y-2 relative">
                         <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
-                            Realm Assignment (Server) *
+                            Realm (Server) *
                         </label>
                         <div className="relative">
                             <input
@@ -247,7 +247,7 @@ export default function AddRaider({ onAdd }) {
                     {/* Role Allocation */}
                     <div className="space-y-3">
                         <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
-                            Combat Role Allocation *
+                            Combat Role *
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                             {[
@@ -290,7 +290,7 @@ export default function AddRaider({ onAdd }) {
                         className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{ clipPath: "polygon(5% 0, 100% 0, 100% 80%, 95% 100%, 0 100%, 0 20%)" }}
                     >
-                        {loading ? "PROCESSING..." : "REGISTER UNIT"}
+                        {loading ? "PROCESSING..." : "ADD RAIDER"}
                     </button>
 
                 </form>

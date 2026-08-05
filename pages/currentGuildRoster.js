@@ -53,7 +53,7 @@ export default function CurrentGuildRoster() {
             </h1>
             <div className="h-1 w-24 bg-blue-500 mx-auto rounded-full shadow-[0_0_15px_#3b82f6] mb-3" />
             <p className="text-blue-300/50 font-mono text-xs tracking-[0.5em] uppercase">
-              Guild Unit Database
+              Guild Raider Database
             </p>
           </div>
 
@@ -63,7 +63,7 @@ export default function CurrentGuildRoster() {
             className="w-full mb-8 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 uppercase tracking-[0.2em] transition-all text-sm border-2 border-blue-400/30"
             style={{ clipPath: "polygon(2% 0, 100% 0, 100% 80%, 98% 100%, 0 100%, 0 20%)" }}
           >
-            + Register New Unit
+            + Add New Raider
           </button>
 
           {/* Add Raider Modal */}

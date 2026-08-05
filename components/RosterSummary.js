@@ -134,16 +134,16 @@ export default function RosterSummary({ roster }) {
 
     const fetchRosterItemLevels = async () => {
         setLoading(true);
-        showToast("Initiating scan protocols...", "info");
+        showToast("Refreshing roster...", "info");
         try {
             const res = await fetch("/api/rosterItemLevels");
             if (!res.ok) throw new Error(`Status ${res.status}`);
             const data = await res.json();
             setUpdatedRoster(data);
-            showToast("Scan complete. Roster updated.", "success");
+            showToast("Roster updated successfully.", "success");
         } catch (err) {
-            console.error("Scan failed:", err);
-            showToast("Scan failed. Connection interrupted.", "error");
+            console.error("Refresh failed:", err);
+            showToast("Failed to refresh roster.", "error");
         } finally {
             setLoading(false);
         }
@@ -184,7 +184,7 @@ export default function RosterSummary({ roster }) {
                     <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-blue-500" />
                     <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-blue-500" />
 
-                    <span className="text-xs text-blue-400 uppercase tracking-widest mb-2 font-mono">Squadron Average</span>
+                    <span className="text-xs text-blue-400 uppercase tracking-widest mb-2 font-mono">Raid Average</span>
                     <div className="text-5xl font-mono font-black text-white drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]">
                         {averageIlvl.toFixed(2)}
                     </div>
@@ -198,7 +198,7 @@ export default function RosterSummary({ roster }) {
                     <div className="max-w-4xl mx-auto mt-8 p-4 bg-black/50 border border-white/5 rounded-sm relative z-10 w-full h-[320px] md:h-[380px]">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pl-2 border-l-2 border-blue-500">
                             <span className="text-xs text-blue-300 font-black uppercase tracking-widest text-left">
-                                Squadron Average History
+                                Raid Average History
                             </span>
                             
                             {/* Date Filter Buttons */}
@@ -316,7 +316,7 @@ export default function RosterSummary({ roster }) {
                 >
                     <div className="flex items-center gap-3 relative z-10">
                         <RefreshIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-                        <span>{loading ? "Scanning Datalinks..." : "Refresh Protocol (Daily)"}</span>
+                        <span>{loading ? "Refreshing Roster..." : "Refresh Roster (Daily)"}</span>
                     </div>
                     {/* Button Scan Line Effect */}
                     <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-blue-400/10 to-transparent group-hover:animate-shine pointer-events-none" />
@@ -410,7 +410,7 @@ export default function RosterSummary({ roster }) {
             {/* Empty State / Loading Overlay if needed */}
             {!roster && (
                 <div className="text-center text-white/50 mt-20 font-mono animate-pulse">
-                    ESTABLISHING CONNECTION TO DATABASE...
+                    Loading database...
                 </div>
             )}
         </div>

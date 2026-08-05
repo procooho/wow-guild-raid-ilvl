@@ -69,7 +69,7 @@ export default function RaidLogCommon() {
                                 setSearchQuery(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            placeholder="SEARCH DATABASE (TITLE, DESCRIPTION, DATE)..."
+                            placeholder="Search Logs (Title, Description, Date)..."
                             className="w-full bg-black/50 border border-white/10 focus:border-blue-500/50 text-white font-mono text-sm px-4 py-3 outline-none transition-all placeholder:text-white/20 uppercase tracking-wider"
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500/50 animate-pulse rounded-full" />
@@ -79,7 +79,7 @@ export default function RaidLogCommon() {
                 {/* Results Meta */}
                 <div className="flex justify-between items-end mb-4 px-2 border-b border-white/10 pb-2">
                     <span className="text-xs font-mono text-blue-400">
-                        {'//'} RECORDS_FOUND: {filteredPosts.length}
+                        {'//'} LOGS FOUND: {filteredPosts.length}
                     </span>
                     <span className="text-[10px] text-white/30 uppercase tracking-widest">
                         Click Entry to View Details

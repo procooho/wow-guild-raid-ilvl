@@ -121,7 +121,7 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                 <div className="border-b border-blue-500/20 pb-4 flex justify-between items-start">
                     <div>
                         <h2 className="text-xl font-black text-white uppercase tracking-widest">
-                            {editingPost ? "Modify Combat Log" : "Initialize Combat Log"}
+                            {editingPost ? "Edit Raid Log" : "Add Raid Log"}
                         </h2>
                         <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
                             {/* Video & Warcraft Logs Entry */}
@@ -135,7 +135,7 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                 {/* Title */}
                 <div className="space-y-2">
                     <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
-                        Mission Title *
+                        Raid / Log Title *
                     </label>
                     <input
                         type="text"
@@ -152,7 +152,7 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                 {/* Description */}
                 <div className="space-y-2">
                     <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
-                        Mission Brief *
+                        Raid Summary / Notes *
                     </label>
                     <textarea
                         value={description}
@@ -260,7 +260,7 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                         className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
                         style={{ clipPath: "polygon(5% 0, 100% 0, 100% 80%, 95% 100%, 0 100%, 0 20%)" }}
                     >
-                        {editingPost ? "Update Log" : "Deploy Log"}
+                        {editingPost ? "Update Log" : "Add Log"}
                     </button>
                     {editingPost && (
                         <button
@@ -268,7 +268,7 @@ export default function OfficerPostForm({ darkMode, onSaved, editingPost, onCanc
                             onClick={onCancel}
                             className="px-6 border border-white/20 hover:bg-white/10 text-gray-300 font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
                         >
-                            Abort
+                            Cancel
                         </button>
                     )}
                 </div>

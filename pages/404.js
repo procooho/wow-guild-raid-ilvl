@@ -22,19 +22,19 @@ export default function Custom404() {
                 <div className="h-0.5 w-24 bg-red-500/50 my-8 shadow-[0_0_15px_#ef4444]" />
 
                 <h2 className="text-3xl text-red-100 font-black uppercase tracking-[0.5em] mb-4 drop-shadow-md">
-                    Signal Lost
+                    Page Not Found
                 </h2>
 
                 <p className="text-red-300/60 font-mono text-sm max-w-lg mb-10 leading-relaxed tracking-wide">
-                    {`// SYSTEM ERROR: TARGET COORDINATES NOT FOUND.`}<br />
-                    The requested vector leads to void space. Rerouting navigation protocols recommended.
+                    {`// ERROR: PAGE NOT FOUND.`}<br />
+                    The requested page does not exist. Returning to the homepage is recommended.
                 </p>
 
                 <Link href="/" className="group relative px-10 py-4 bg-red-950/30 border border-red-500/30 text-red-400 font-bold uppercase tracking-[0.2em] hover:bg-red-500/20 hover:text-white hover:border-red-400 transition-all hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]"
                     style={{ clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
                 >
                     <span className="relative z-10 flex items-center gap-2">
-                        <span className="text-xl">«</span> Return to Command
+                        <span className="text-xl">«</span> Return to Home
                     </span>
                     {/* Button Scan Line */}
                     <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-red-500/10 to-transparent group-hover:animate-shine pointer-events-none" />

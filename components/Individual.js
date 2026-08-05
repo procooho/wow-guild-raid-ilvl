@@ -39,10 +39,10 @@ export default function Individual({ raider, showToast }) {
   };
 
   const roleDisplayMap = {
-    TANK: "This Unit is a TANK",
-    HEALER: "This Unit is a HEALER",
-    MELEEDPS: "This Unit is MELEE DPS",
-    RANGEDPS: "This Unit is RANGED DPS",
+    TANK: "TANK",
+    HEALER: "HEALER",
+    MELEEDPS: "MELEE DPS",
+    RANGEDPS: "RANGED DPS",
   };
 
   const shortRoleMap = {
@@ -281,7 +281,7 @@ export default function Individual({ raider, showToast }) {
         {/* Column 1: Core Stats */}
         <div className="space-y-1">
           <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500">
-            Core Metadata
+            Character Information
           </div>
           <StatRow label="Class" value={characterClass} />
           <StatRow label="Combat Role" value={shortRoleMap[raiderState.role]} />
@@ -292,7 +292,7 @@ export default function Individual({ raider, showToast }) {
         {/* Column 2: Actions & Links */}
         <div className="space-y-4">
           <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500">
-            Protocol Links
+            External Profile Links
           </div>
           <div className="grid grid-cols-1 gap-2">
             <a href={armoryLink} target="_blank" rel="noreferrer"
@@ -321,7 +321,7 @@ export default function Individual({ raider, showToast }) {
                 onClick={() => setEditingRole(true)}
                 className="w-full text-center px-4 py-2 border border-dashed border-gray-600 hover:border-white text-gray-400 hover:text-white text-xs font-mono uppercase tracking-wider transition-all"
               >
-                Modify Combat Role
+                Edit Combat Role
               </button>
             ) : (
               <div className="space-y-2 animate-fade-in">
@@ -466,7 +466,7 @@ export default function Individual({ raider, showToast }) {
       {/* Footer */}
       <div className="bg-black/80 p-3 border-t border-white/10 flex justify-between items-center">
         <div className="text-[9px] text-gray-600 font-mono uppercase">
-          Secure Connection Established
+          Database Connected
         </div>
         <div className="text-[9px] text-blue-500/60 font-mono uppercase">
           Last Sync: {lastCheckedDate}

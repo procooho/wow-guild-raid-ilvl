@@ -142,7 +142,7 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                 <div className="border-b border-blue-500/20 pb-4 flex justify-between items-start">
                     <div>
                         <h2 className="text-xl font-black text-white uppercase tracking-widest">
-                            {editingNotice ? "Modify Briefing" : "Create Briefing"}
+                            {editingNotice ? "Edit Notice" : "Create Notice"}
                         </h2>
                         <p className="text-xs text-blue-400/60 font-mono mt-1 uppercase tracking-wider">
                             {/* Guild Notification System */}
@@ -156,7 +156,7 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                 {/* Title */}
                 <div className="space-y-2">
                     <label className="text-[10px] text-blue-300 font-mono uppercase tracking-widest ml-1">
-                        Briefing Title *
+                        Notice Title *
                     </label>
                     <input
                         type="text"
@@ -239,7 +239,7 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                 {/* Toggles */}
                 <div className="space-y-2">
                     <label className="text-xs text-blue-300 font-black uppercase tracking-widest mb-3 block">
-                        Briefing Parameters
+                        Notice Settings
                     </label>
                     <ToggleSwitch
                         checked={view}
@@ -249,12 +249,12 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                     <ToggleSwitch
                         checked={important}
                         onChange={setImportant}
-                        label="Mark as Critical Priority"
+                        label="Mark as Important"
                     />
                     <ToggleSwitch
                         checked={isNew}
                         onChange={setIsNew}
-                        label="Flag as New Briefing"
+                        label="Flag as New"
                     />
                 </div>
 
@@ -268,7 +268,7 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                         className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
                         style={{ clipPath: "polygon(5% 0, 100% 0, 100% 80%, 95% 100%, 0 100%, 0 20%)" }}
                     >
-                        {editingNotice ? "Update Briefing" : "Deploy Briefing"}
+                        {editingNotice ? "Update Notice" : "Post Notice"}
                     </button>
                     {editingNotice && (
                         <button
@@ -276,7 +276,7 @@ export default function NoticeForm({ darkMode, editingNotice, onSaved, onCancel 
                             onClick={onCancel}
                             className="px-6 border border-white/20 hover:bg-white/10 text-gray-300 font-bold py-3 uppercase tracking-[0.2em] transition-all text-sm"
                         >
-                            Abort
+                            Cancel
                         </button>
                     )}
                 </div>

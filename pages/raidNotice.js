@@ -63,7 +63,7 @@ export default function RaidNotice() {
                 {/* Page Header */}
                 <div className="relative mb-12 text-center">
                     <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/10 tracking-tighter uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-                        Mission Briefings
+                        Guild Notices
                     </h1>
                     <div className="h-1 w-24 bg-blue-500 mx-auto mt-4 rounded-full shadow-[0_0_15px_#3b82f6]" />
                     <p className="text-blue-300/50 font-mono text-xs tracking-[0.5em] mt-2 uppercase">Official Guild Communications</p>
@@ -79,7 +79,7 @@ export default function RaidNotice() {
                                 setSearchQuery(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            placeholder="SEARCH DATABASE (TITLE, NOTE, DATE)..."
+                            placeholder="Search Notices (Title, Note, Date)..."
                             className="w-full bg-black/50 border border-white/10 focus:border-blue-500/50 text-white font-mono text-sm px-4 py-3 outline-none transition-all placeholder:text-white/20 uppercase tracking-wider"
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500/50 animate-pulse rounded-full" />
@@ -89,10 +89,10 @@ export default function RaidNotice() {
                 {/* Results Meta */}
                 <div className="flex justify-between items-end mb-4 px-2 border-b border-white/10 pb-2">
                     <span className="text-xs font-mono text-blue-400">
-                        {'//'} RECORDS_FOUND: {filteredNotices.length}
+                        {'//'} NOTICES FOUND: {filteredNotices.length}
                     </span>
                     <span className="text-[10px] text-white/30 uppercase tracking-widest">
-                        Click Entry to Decrypt
+                        Click Entry to Expand
                     </span>
                 </div>
 

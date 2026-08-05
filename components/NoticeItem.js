@@ -42,12 +42,12 @@ export default function NoticeItem({ notice, darkMode, onEdit, onDelete, showAct
                         <div className="flex flex-wrap gap-2 items-center">
                             {notice.important && (
                                 <span className="px-2 py-0.5 bg-red-500/20 border border-red-500/50 text-red-200 text-[10px] font-bold uppercase tracking-wider rounded-sm animate-pulse">
-                                    CRITICAL
+                                    IMPORTANT
                                 </span>
                             )}
                             {notice.isNew && (
                                 <span className="px-2 py-0.5 bg-blue-500/20 border border-blue-500/50 text-blue-200 text-[10px] font-bold uppercase tracking-wider rounded-sm">
-                                    NEW ENTRY
+                                    NEW
                                 </span>
                             )}
                             {!notice.view && (
@@ -65,9 +65,9 @@ export default function NoticeItem({ notice, darkMode, onEdit, onDelete, showAct
 
                     {/* Metadata (Dates) */}
                     <div className="flex flex-col items-end text-xs font-mono text-blue-200/50 gap-0.5 min-w-fit">
-                        <span>INIT: {formatDate(notice.createdAt)}</span>
+                        <span>CREATED: {formatDate(notice.createdAt)}</span>
                         {notice.updatedAt && isUpdatedDifferent && (
-                            <span className="text-blue-400">UPD: {formatDate(notice.updatedAt)}</span>
+                            <span className="text-blue-400">UPDATED: {formatDate(notice.updatedAt)}</span>
                         )}
                     </div>
                 </div>
@@ -89,7 +89,7 @@ export default function NoticeItem({ notice, darkMode, onEdit, onDelete, showAct
 
                     {/* Links */}
                     <div className="flex flex-col gap-2 mb-6">
-                        <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">ATTACHED DATA LINKS</span>
+                        <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">ATTACHED LINKS</span>
                         <div className="flex flex-wrap gap-3">
                             {notice.links.length > 0 ? (
                                 notice.links.map((l, index) => (
@@ -106,7 +106,7 @@ export default function NoticeItem({ notice, darkMode, onEdit, onDelete, showAct
                                     </a>
                                 ))
                             ) : (
-                                <span className="text-xs text-white/30 italic">NO EXTERNAL LINKS DETECTED</span>
+                                <span className="text-xs text-white/30 italic">NO ATTACHED LINKS</span>
                             )}
                         </div>
                     </div>

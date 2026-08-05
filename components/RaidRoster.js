@@ -167,7 +167,7 @@ export default function RaidRoster({ roster, onDelete }) {
         <div className="mb-8 p-4 bg-black/50 border border-white/5 rounded-sm relative z-10 w-full h-[320px] md:h-[380px]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pl-2 border-l-2 border-blue-500">
             <span className="text-xs text-blue-300 font-black uppercase tracking-widest text-left">
-              Fleet Average History
+              Guild Average History
             </span>
             
             {/* Date Filter Buttons */}
@@ -281,20 +281,20 @@ export default function RaidRoster({ roster, onDelete }) {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="ENTER UNIT NAME..."
+            placeholder="Search raider by name..."
             className="w-full bg-black/50 border border-white/10 text-white px-4 py-3 font-mono text-sm focus:border-blue-500 focus:outline-none transition-all tracking-wider"
           />
         </div>
 
         <div className="flex flex-col items-end">
           <div className="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-1">
-            Fleet Average (ILVL)
+            Guild Average (ILVL)
           </div>
           <div className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">
             {averageItemLevel.toFixed(2)}
           </div>
           <div className="text-[9px] text-gray-600 font-mono uppercase mt-1">
-            Based on {updatedRoster.length} Active Units
+            Based on {updatedRoster.length} active raiders
           </div>
         </div>
       </div>
@@ -315,7 +315,7 @@ export default function RaidRoster({ roster, onDelete }) {
         {/* Left Column: Roster List */}
         <div className="md:col-span-5 lg:col-span-4 flex flex-col h-full bg-black/20 border-r border-white/5 pr-2">
           <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-4 pl-2 border-l-2 border-blue-500">
-            Active Units ({filteredRoster.length})
+            Active Raiders ({filteredRoster.length})
           </div>
 
           <div className="overflow-y-auto pr-2 custom-scrollbar flex-1 max-h-[700px]">
@@ -331,7 +331,7 @@ export default function RaidRoster({ roster, onDelete }) {
             ))}
             {filteredRoster.length === 0 && (
               <div className="p-8 text-center border border-dashed border-white/10 text-white/30 font-mono text-xs uppercase">
-                No matching units found in database.
+                No matching raiders found.
               </div>
             )}
           </div>
@@ -340,7 +340,7 @@ export default function RaidRoster({ roster, onDelete }) {
         {/* Right Column: Details Panel */}
         <div className="md:col-span-7 lg:col-span-8">
           <div className="text-xs text-blue-300 font-black uppercase tracking-widest mb-4 pl-2 border-l-2 border-blue-500">
-            Unit Detail View
+            Raider Details
           </div>
 
           {selectedRaider ? (
@@ -352,7 +352,7 @@ export default function RaidRoster({ roster, onDelete }) {
               <div className="w-16 h-16 border-2 border-dashed border-current rounded-full flex items-center justify-center mb-4 animate-pulse">
                 <SearchIcon fontSize="large" />
               </div>
-              <p className="font-mono text-sm uppercase tracking-widest">Select a unit to view dossier</p>
+              <p className="font-mono text-sm uppercase tracking-widest">Select a raider to view details</p>
             </div>
           )}
         </div>

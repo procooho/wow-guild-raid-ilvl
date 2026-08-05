@@ -105,7 +105,7 @@ export default function ManagePage() {
             isOpen: true,
             type: 'post',
             id,
-            title: "DELETE LOG?",
+            title: "DELETE RAID LOG?",
             message: "Are you sure you want to delete this video/log entry? Data loss is permanent."
         });
     };
@@ -116,7 +116,7 @@ export default function ManagePage() {
             type: 'notice',
             id,
             title: "DELETE NOTICE?",
-            message: "Are you sure you want to remove this briefing? It will be removed from all terminals."
+            message: "Are you sure you want to remove this notice? It will be deleted permanently."
         });
     };
 
@@ -158,7 +158,7 @@ export default function ManagePage() {
                     <div className="mb-8 flex items-end justify-between border-b border-white/10 pb-4">
                         <div>
                             <h1 className="text-3xl font-black text-white tracking-widest uppercase drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]">
-                                Command Center
+                                Officer Dashboard
                             </h1>
                             <p className="text-blue-400/60 font-mono text-xs mt-1 tracking-[0.2em] uppercase">
                                 {/* ADMIN_ACCESS_GRANTED // SESSION_ACTIVE */}
@@ -169,7 +169,7 @@ export default function ManagePage() {
                             className="px-4 py-2 pl-6 border border-red-500/30 text-red-600 bg-red-500/10 hover:bg-red-600/10 hover:text-red-300 text-xs font-bold uppercase tracking-widest transition-all clip-path-polygon backdrop-blur-sm"
                             style={{ clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0% 100%)" }}
                         >
-                            LOGOUT Session
+                            Logout
                         </button>
                     </div>
 
@@ -178,7 +178,7 @@ export default function ManagePage() {
                         <TabButton id="video" label="Video & Logs" icon={VideocamIcon} />
                         <TabButton id="notice" label="Notifications" icon={CampaignIcon} />
                         <TabButton id="roster" label="Roster Management" icon={GroupsIcon} />
-                        <TabButton id="update" label="System Update Log" icon={HistoryIcon} />
+                        <TabButton id="update" label="Update Log" icon={HistoryIcon} />
                     </div>
 
                     {/* Content Area */}
@@ -222,7 +222,7 @@ export default function ManagePage() {
                                 <div className="flex justify-between items-center bg-black/40 p-4 border border-white/10 rounded-lg">
                                     <div className="flex items-center gap-4">
                                         <span className="text-xs text-blue-300 font-mono uppercase tracking-widest">
-                                            Total Briefings: {notices.length}
+                                            Total Notices: {notices.length}
                                         </span>
                                         <div className="flex items-center gap-2 px-2 py-1 bg-white/5 rounded border border-white/5">
                                             <span className="text-[10px] text-white/50 uppercase font-bold">Show Archived</span>
@@ -238,7 +238,7 @@ export default function ManagePage() {
                                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-widest transition-all"
                                         style={{ clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0% 100%)" }}
                                     >
-                                        <AddIcon fontSize="small" /> Create Briefing
+                                        <AddIcon fontSize="small" /> Create Notice
                                     </button>
                                 </div>
 
@@ -256,7 +256,7 @@ export default function ManagePage() {
                                                 showViewStatus={true}
                                             />
                                         ))}
-                                    {notices.length === 0 && <p className="text-white/30 italic text-center py-10">No briefings found.</p>}
+                                    {notices.length === 0 && <p className="text-white/30 italic text-center py-10">No notices found.</p>}
                                 </div>
                             </div>
                         )}
@@ -320,7 +320,7 @@ export default function ManagePage() {
                         onConfirm={handleProceedDelete}
                         onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
                         confirmText="DELETE"
-                        cancelText="ABORT"
+                        cancelText="CANCEL"
                     />
 
                 </div>

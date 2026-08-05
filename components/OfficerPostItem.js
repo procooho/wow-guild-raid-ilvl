@@ -22,7 +22,7 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                         {post.title}
                     </h3>
                     <span className="text-xs text-blue-300 font-mono tracking-widest bg-blue-900/20 px-2 py-1 rounded border border-blue-500/20">
-                        LOG_DATE: {formatDate(post.createdAt)}
+                        RECORDED: {formatDate(post.createdAt)}
                     </span>
                 </div>
 
@@ -49,11 +49,11 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                                         className="flex items-center gap-2 px-3 py-1.5 bg-red-900/10 border border-red-500/30 text-red-200 text-xs font-mono hover:bg-red-500/20 transition-colors rounded-sm group/link"
                                     >
                                         <LinkIcon className="w-3 h-3 text-red-400 group-hover/link:text-white" />
-                                        <span>VIDEO_FEED_{index + 1}</span>
+                                        <span>VIDEO_LINK_{index + 1}</span>
                                     </a>
                                 ))
                             ) : (
-                                <span className="text-xs text-white/20 italic">NO_VIDEO_DATA</span>
+                                <span className="text-xs text-white/20 italic">NO VIDEOS</span>
                             )}
                         </div>
                     </div>
@@ -78,7 +78,7 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                                     </a>
                                 ))
                             ) : (
-                                <span className="text-xs text-white/20 italic">NO_LOG_DATA</span>
+                                <span className="text-xs text-white/20 italic">NO LOGS</span>
                             )}
                         </div>
                     </div>
@@ -91,13 +91,13 @@ export default function OfficerPostItem({ post, darkMode, onEdit, onDelete, show
                             onClick={() => onEdit(post)}
                             className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 hover:bg-yellow-500/20 text-xs font-bold uppercase tracking-widest transition-all"
                         >
-                            <EditIcon fontSize="small" /> Edit Data
+                            <EditIcon fontSize="small" /> Edit
                         </button>
                         <button
                             onClick={() => onDelete(post.id)}
                             className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-200 hover:bg-red-500/20 text-xs font-bold uppercase tracking-widest transition-all"
                         >
-                            <DeleteForeverIcon fontSize="small" /> Delete Data
+                            <DeleteForeverIcon fontSize="small" /> Delete
                         </button>
                     </div>
                 )}

@@ -77,7 +77,7 @@ export default function RosterList({ raider, onDelete, selected, showToast }) {
           onClick={handleDeleteClick}
           disabled={deleting}
           className="text-red-500/50 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-500/10"
-          title="Delete Unit"
+          title="Remove Raider"
         >
           <ClearIcon fontSize="small" />
         </button>
@@ -113,11 +113,11 @@ export default function RosterList({ raider, onDelete, selected, showToast }) {
 
       <TechConfirmModal
         isOpen={confirmOpen}
-        title="TERMINATE UNIT?"
+        title="REMOVE RAIDER?"
         message={`Are you sure you want to permanently delete ${raider.name} from the database? This action cannot be undone.`}
         onConfirm={proceedDelete}
         onCancel={(e) => { e.stopPropagation(); setConfirmOpen(false); }}
-        confirmText="TERMINATE"
+        confirmText="REMOVE"
       />
     </div>
   );
