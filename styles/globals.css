@@ -83,3 +83,9 @@ body {
 .animate-scanline {
     animation: scanline 8s linear infinite;
 }
+
+/* Custom Cursor Active Rule */
+body.custom-cursor-active,
+body.custom-cursor-active * {
+    cursor: none !important;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import TopHeader from './TopHeader';
 import BottomNav from './BottomNav';
 import LoadingScreen from './LoadingScreen';
+import CustomCursor from './CustomCursor';
 import { useRouter } from 'next/router';
 
 // Reusable Corner Component for perfect alignment
@@ -59,6 +60,7 @@ export default function Layout({ children }) {
             {/* --- UI LAYERS --- */}
             <TopHeader />
             <BottomNav />
+            <CustomCursor />
 
             {/* --- MAIN MONITOR FRAME --- */}
             <main className={`relative top-2.5 md:top-6 z-10 w-full h-full md:w-[98vw] md:h-[77vh] md:max-w-[95vw] pt-24 md:pt-0 flex flex-col transition-all duration-500 box-border mt-20 md:mt-0 ${isHome ? 'animate-turn-on' : ''}`}>
