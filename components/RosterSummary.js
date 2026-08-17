@@ -7,10 +7,52 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useRouter } from "next/router";
+import { useAuth } from "@/context/AuthContext";
+import ShieldIcon from '@mui/icons-material/Shield';
+
+const utilityBuffs = [
+    { name: "Arcane Intellect", class: "Mage", benefit: "+5% Intellect", icon: "/mage.png", classKey: "mage", category: "core" },
+    { name: "Power Word: Fortitude", class: "Priest", benefit: "+5% Stamina", icon: "/priest.png", classKey: "priest", category: "core" },
+    { name: "Battle Shout", class: "Warrior", benefit: "+5% Attack Power", icon: "/warrior.png", classKey: "warrior", category: "core" },
+    { name: "Mark of the Wild", class: "Druid", benefit: "+3% Versatility & Resistances", icon: "/druid.png", classKey: "druid", category: "core" },
+    { name: "Chaos Brand", class: "Demon Hunter", benefit: "+5% Magic Damage Taken", icon: "/demonhunter.webp", classKey: "demon hunter", category: "core" },
+    { name: "Mystic Touch", class: "Monk", benefit: "+5% Physical Damage Taken", icon: "/monk.png", classKey: "monk", category: "core" },
+    { name: "Blessing of the Bronze", class: "Evoker", benefit: "+Cooldown Reduction", icon: "/evoker.webp", classKey: "evoker", category: "core" },
+    { name: "Devotion Aura", class: "Paladin", benefit: "+3% Damage Reduction", icon: "/paladin.png", classKey: "paladin", category: "core" },
+    
+    // Secondary Support Utilities & Major Raid Cooldowns
+    { name: "Bloodlust / Heroism", class: "Lust Class", benefit: "+30% Haste Raid Cooldown", icon: "/shaman.png", customCheck: (counts) => counts["shaman"] > 0 || counts["mage"] > 0 || counts["hunter"] > 0 || counts["evoker"] > 0, category: "utility" },
+    { name: "Windfury / Skyfury", class: "Shaman", benefit: "Melee / Critical & Mastery Buff", icon: "/shaman.png", classKey: "shaman", category: "utility" },
+    { name: "Healthstone / Gateway", class: "Warlock", benefit: "Consumables & Raid Gateways", icon: "/warlock.png", classKey: "warlock", category: "utility" },
+    { name: "Hunter's Mark", class: "Hunter", benefit: "+5% Damage (above 80% HP)", icon: "/hunter.png", classKey: "hunter", category: "utility" },
+    { name: "Atrophic Poison", class: "Rogue", benefit: "-3% Target Damage Dealt", icon: "/rogue.png", classKey: "rogue", category: "utility" },
+    { name: "Anti-Magic Zone", class: "Death Knight", benefit: "Raid Magic Damage Shield", icon: "/deathknight.png", classKey: "death knight", category: "utility" },
+    { name: "Aura Mastery", class: "Paladin", benefit: "Raid Damage Reduction CD", icon: "/paladin.png", classKey: "paladin", category: "utility" },
+    { name: "Rallying Cry", class: "Warrior", benefit: "+10% Raid Health Cooldown", icon: "/warrior.png", classKey: "warrior", category: "utility" },
+    { name: "Darkness", class: "Demon Hunter", benefit: "20% Avoid Damage Cooldown", icon: "/demonhunter.webp", classKey: "demon hunter", category: "utility" },
+    { name: "Spirit Link / Tide", class: "Shaman", benefit: "Raid Healing Cooldowns", icon: "/shaman.png", classKey: "shaman", category: "utility" },
+    { name: "Stampeding Roar", class: "Druid", benefit: "+60% Speed Raid Cooldown", icon: "/druid.png", classKey: "druid", category: "utility" },
+    { name: "Revival / Cocoon", class: "Monk", benefit: "Raid Healing & Cleanse CD", icon: "/monk.png", classKey: "monk", category: "utility" },
+    { name: "Rewind / Zephyr", class: "Evoker", benefit: "AoE Healing & Avoid CDs", icon: "/evoker.webp", classKey: "evoker", category: "utility" },
+    { name: "Symbol of Hope", class: "Priest", benefit: "Raid Mana & CD Recovery", icon: "/priest.png", classKey: "priest", category: "utility" }
+];
 
 export default function RosterSummary({ roster }) {
+    const router = useRouter();
+    const { loggedIn } = useAuth();
+
+    const handleRedirectToAudit = () => {
+        if (loggedIn) {
+            localStorage.setItem('managePageTab', 'audit');
+            router.push('/manage');
+        }
+    };
+
     // --- State ---
     const [collapsed, setCollapsed] = useState({ TANK: false, HEALER: false, MELEEDPS: false, RANGEDPS: false });
+    const [showCore, setShowCore] = useState(false);
+    const [showUtilities, setShowUtilities] = useState(false);
     const [updatedRoster, setUpdatedRoster] = useState([]);
     const [rawChartData, setRawChartData] = useState([]);
     const [timeRange, setTimeRange] = useState("1M");
@@ -148,6 +190,24 @@ export default function RosterSummary({ roster }) {
             setLoading(false);
         }
     };
+
+    // Calculate Core Buffs stats
+    const coreBuffs = utilityBuffs.filter(b => b.category === "core");
+    const coveredCore = coreBuffs.filter(b => b.customCheck ? b.customCheck(classCounts) : classCounts[b.classKey] > 0);
+    const missingCore = coreBuffs.filter(b => !(b.customCheck ? b.customCheck(classCounts) : classCounts[b.classKey] > 0));
+    const coreCountStr = `${coveredCore.length}/${coreBuffs.length}`;
+    const coreSummary = missingCore.length === 0 
+        ? "ALL ACTIVE" 
+        : `MISSING: ${missingCore.map(b => b.name.split(" / ")[0]).join(", ")}`;
+
+    // Calculate Secondary Utilities stats
+    const utilityBuffsList = utilityBuffs.filter(b => b.category === "utility");
+    const coveredUtilities = utilityBuffsList.filter(b => b.customCheck ? b.customCheck(classCounts) : classCounts[b.classKey] > 0);
+    const utilityCountStr = `${coveredUtilities.length}/${utilityBuffsList.length}`;
+    const utilityNames = coveredUtilities.map(b => b.name.split(" / ")[0]);
+    const utilitySummary = utilityNames.length === 0 
+        ? "NONE AVAILABLE" 
+        : `AVAILABLE: ${utilityNames.join(", ")}`;
 
     return (
         <div className="relative w-full max-w-7xl mx-auto text-white">
@@ -303,14 +363,14 @@ export default function RosterSummary({ roster }) {
             </div>
 
             {/* Action Bar */}
-            <div className="flex justify-center mb-10">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-10">
                 <button
                     onClick={fetchRosterItemLevels}
                     disabled={loading}
                     className={`
                         relative overflow-hidden group px-8 py-4 bg-blue-900/20 border border-blue-500/50 text-blue-200 
                         font-bold uppercase tracking-widest hover:bg-blue-500/20 hover:text-white transition-all
-                        disabled:opacity-50 disabled:cursor-not-allowed
+                        disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto
                     `}
                     style={{ clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
                 >
@@ -321,6 +381,42 @@ export default function RosterSummary({ roster }) {
                     {/* Button Scan Line Effect */}
                     <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-blue-400/10 to-transparent group-hover:animate-shine pointer-events-none" />
                 </button>
+
+                {/* Redirect Button */}
+                <div className="relative group/tooltip w-full sm:w-auto">
+                    <button
+                        onClick={handleRedirectToAudit}
+                        disabled={!loggedIn}
+                        className={`
+                            relative overflow-hidden px-8 py-3.5 font-bold uppercase tracking-widest transition-all w-full sm:w-auto
+                            ${loggedIn 
+                                ? 'bg-cyan-900/20 border border-cyan-500/50 text-cyan-200 hover:bg-cyan-500/20 hover:text-white cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.2)]' 
+                                : 'bg-gray-900/10 border border-gray-800 text-gray-500 cursor-not-allowed opacity-60'
+                            }
+                        `}
+                        style={{ clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
+                    >
+                        <div className="flex items-center gap-3 relative z-10">
+                            <ShieldIcon className="w-5 h-5" />
+                            <div className="flex flex-col items-start text-left">
+                                <span className="text-[12px] leading-tight font-bold">Readiness Dashboard</span>
+                                <span className={`text-[8px] font-mono tracking-widest uppercase mt-0.5
+                                    ${loggedIn ? 'text-cyan-400/85 animate-pulse' : 'text-red-500/75'}
+                                `}>
+                                    Officer Only
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    {/* Tooltip for non-officers */}
+                    {!loggedIn && (
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-black/95 text-red-400 text-[10px] font-mono uppercase tracking-widest font-bold px-4 py-2 border border-red-500/50 whitespace-nowrap opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-300 z-50 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                             style={{ clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" }}>
+                            [ Officer Login Required to View ]
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Class Breakdown Grid */}
@@ -340,6 +436,139 @@ export default function RosterSummary({ roster }) {
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Raid Buff & Utility Coverage Grid */}
+            <div className="mb-10 bg-black/40 border border-blue-500/20 p-6 rounded-lg backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.4)]">
+                
+                {/* Core Buffs Accordion Header */}
+                <button
+                    onClick={() => setShowCore(!showCore)}
+                    className="flex items-center justify-between w-full text-xs text-blue-300/80 hover:text-blue-300 font-black uppercase tracking-widest py-2 px-2 hover:bg-white/5 rounded transition-all select-none mb-3"
+                >
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="text-blue-300 font-black">Core Raid Buffs & Debuffs</span>
+                        {!showCore && (
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded font-mono border transition-all duration-300
+                                ${missingCore.length === 0 
+                                    ? "bg-green-950/40 border-green-500/30 text-green-400 shadow-[0_0_8px_rgba(34,197,94,0.15)]" 
+                                    : "bg-yellow-950/40 border-yellow-500/30 text-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.15)]"
+                                }
+                            `}>
+                                {coreCountStr} COVERED <span className="hidden sm:inline">— {coreSummary}</span>
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <span className="font-mono text-[9px] opacity-60">{showCore ? "COLLAPSE" : "EXPAND"}</span>
+                        {showCore ? <ExpandLessIcon className="w-4.5 h-4.5" /> : <ExpandMoreIcon className="w-4.5 h-4.5" />}
+                    </div>
+                </button>
+                
+                {/* Core Buffs Grid - Larger boxes */}
+                {showCore && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 animate-fade-in">
+                        {coreBuffs.map((buff) => {
+                            const isCovered = buff.customCheck 
+                                ? buff.customCheck(classCounts) 
+                                : classCounts[buff.classKey] > 0;
+                            return (
+                                <div 
+                                    key={buff.name}
+                                    className={`relative p-3 border rounded transition-all flex flex-col items-center justify-between text-center overflow-hidden group min-h-[130px]
+                                        ${isCovered 
+                                            ? 'bg-green-950/15 border-green-500/30 text-green-200 shadow-[inset_0_0_15px_rgba(34,197,94,0.05)]' 
+                                            : 'bg-red-950/10 border-red-500/10 text-red-400/60'
+                                        }
+                                    `}
+                                >
+                                    <div className="flex items-center gap-1.5 mb-2">
+                                        <div className="w-5 h-5 relative rounded overflow-hidden">
+                                            <Image src={buff.icon} alt={buff.class} layout="fill" objectFit="cover" />
+                                        </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">{buff.class}</span>
+                                    </div>
+                                    <div className={`text-xs font-black uppercase mb-1 ${isCovered ? 'text-white' : 'text-white/40'}`}>{buff.name}</div>
+                                    <div className="text-[9px] font-mono opacity-80 mb-2 leading-tight">{buff.benefit}</div>
+                                    
+                                    <div className={`px-2 py-0.5 rounded-sm font-mono text-[9px] font-bold uppercase tracking-widest mt-auto
+                                        ${isCovered 
+                                            ? 'bg-green-500/25 border border-green-400 text-green-300 shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
+                                            : 'bg-red-500/15 border border-red-500/30 text-red-500/80'
+                                        }
+                                    `}>
+                                        {isCovered ? "Covered" : "Missing"}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Collapsible Utility & Support Section */}
+                <div className="border-t border-white/5 mt-6 pt-4">
+                    <button
+                        onClick={() => setShowUtilities(!showUtilities)}
+                        className="flex items-center justify-between w-full text-xs text-blue-300/80 hover:text-blue-300 font-black uppercase tracking-widest py-2 px-2 hover:bg-white/5 rounded transition-all select-none"
+                    >
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                            <span className="text-blue-300/85">Secondary Raid CDs & Utilities</span>
+                            {!showUtilities && (
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded font-mono border transition-all duration-300
+                                    ${coveredUtilities.length > 0 
+                                        ? "bg-cyan-950/40 border-cyan-500/30 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.15)]" 
+                                        : "bg-red-950/40 border-red-500/30 text-red-400 shadow-[0_0_8px_rgba(239,68,68,0.15)]"
+                                    }
+                                `}>
+                                    {utilityCountStr} ACTIVE <span className="hidden sm:inline">— {utilitySummary}</span>
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <span className="font-mono text-[9px] opacity-60">{showUtilities ? "COLLAPSE" : "EXPAND"}</span>
+                            {showUtilities ? <ExpandLessIcon className="w-4.5 h-4.5" /> : <ExpandMoreIcon className="w-4.5 h-4.5" />}
+                        </div>
+                    </button>
+
+                    {showUtilities && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mt-4 transition-all animate-fade-in">
+                            {utilityBuffsList.map((buff) => {
+                                const isCovered = buff.customCheck 
+                                    ? buff.customCheck(classCounts) 
+                                    : classCounts[buff.classKey] > 0;
+                                return (
+                                    <div 
+                                        key={buff.name}
+                                        className={`relative p-2.5 border rounded transition-all flex flex-col items-center justify-between text-center overflow-hidden group min-h-[95px]
+                                            ${isCovered 
+                                                ? 'bg-green-950/10 border-green-500/25 text-green-200 shadow-[inset_0_0_10px_rgba(34,197,94,0.02)]' 
+                                                : 'bg-red-950/5 border-red-500/5 text-red-400/50'
+                                            }
+                                        `}
+                                    >
+                                        <div className="flex items-center gap-1 mb-1">
+                                            <div className="w-3.5 h-3.5 relative rounded overflow-hidden">
+                                                <Image src={buff.icon} alt={buff.class} layout="fill" objectFit="cover" />
+                                            </div>
+                                            <span className="text-[8px] font-bold uppercase tracking-wider">{buff.class}</span>
+                                        </div>
+                                        <div className={`text-[10px] font-black uppercase mb-0.5 leading-tight ${isCovered ? 'text-white' : 'text-white/40'}`}>{buff.name}</div>
+                                        <div className="text-[8px] font-mono opacity-75 mb-1 leading-tight">{buff.benefit}</div>
+                                        
+                                        <div className={`px-1.5 py-0.2 rounded-sm font-mono text-[8px] font-bold uppercase tracking-widest mt-auto
+                                            ${isCovered 
+                                                ? 'bg-green-500/20 border border-green-400/80 text-green-300 shadow-[0_0_5px_rgba(34,197,94,0.15)]' 
+                                                : 'bg-red-500/10 border border-red-500/20 text-red-500'
+                                            }
+                                        `}>
+                                            {isCovered ? "Covered" : "Missing"}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Role Breakdown */}

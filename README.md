@@ -4,6 +4,19 @@
 ---
 
 ## Update Log
+
+**Aug 17 2026 v1** (Update)
+- Officer Dashboard Updated
+    - Officers can analyze each raider's gear and mythic+ score
+- Raid Summary Updated
+    - Raid Buff & Utility Coverage Added
+
+---
+
+**Aug 04 2026 v1** (Update)
+- Strange wordings replaced
+- Cursor design updated
+
 ---
 
 **June 10 2026 v1** (Update)

@@ -80,6 +80,46 @@ export async function getCharacterProfile(realm, name) {
   };
 }
 
+
+// Get character equipment (for enchants and sockets)
+export async function getCharacterEquipment(realm, name) {
+  const token = await getBlizzardToken();
+
+  const res = await fetch(
+    `https://us.api.blizzard.com/profile/wow/character/${realm.toLowerCase()}/${name.toLowerCase()}/equipment?namespace=profile-us&locale=en_US`,
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+
+  if (!res.ok) {
+    console.error("Blizzard API Equipment response:", res.status, await res.text());
+    return null;
+  }
+
+  return await res.json();
+}
+
+// Get character Mythic M+ profile
+export async function getCharacterMythicKeystoneProfile(realm, name) {
+  const token = await getBlizzardToken();
+
+  const res = await fetch(
+    `https://us.api.blizzard.com/profile/wow/character/${realm.toLowerCase()}/${name.toLowerCase()}/mythic-keystone-profile?namespace=profile-us&locale=en_US`,
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+
+  if (!res.ok) {
+    console.error("Blizzard API Mythic profile response:", res.status, await res.text());
+    return null;
+  }
+
+  return await res.json();
+}
+
+
 // Get guild roster
 export async function getGuildRoster(realm, guildName) {
   const token = await getBlizzardToken();

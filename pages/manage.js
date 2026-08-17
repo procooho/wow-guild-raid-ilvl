@@ -19,6 +19,8 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import AddIcon from '@mui/icons-material/Add';
 import CurrentGuildRoster from "./currentGuildRoster";
 import TechConfirmModal from '@/components/TechConfirmModal';
+import ShieldIcon from '@mui/icons-material/Shield';
+import RaidReadinessAudit from "@/components/RaidReadinessAudit";
 
 export default function ManagePage() {
     const { darkMode } = useThemeContext();
@@ -178,6 +180,7 @@ export default function ManagePage() {
                         <TabButton id="video" label="Video & Logs" icon={VideocamIcon} />
                         <TabButton id="notice" label="Notifications" icon={CampaignIcon} />
                         <TabButton id="roster" label="Roster Management" icon={GroupsIcon} />
+                        <TabButton id="audit" label="Readiness Audit" icon={ShieldIcon} />
                         <TabButton id="update" label="Update Log" icon={HistoryIcon} />
                     </div>
 
@@ -265,6 +268,13 @@ export default function ManagePage() {
                         {activeTab === "roster" && (
                             <div className="bg-black/40 border border-white/10 rounded-lg overflow-hidden min-h-[600px]">
                                 <CurrentGuildRoster />
+                            </div>
+                        )}
+
+                        {/* --- READINESS AUDIT TAB --- */}
+                        {activeTab === "audit" && (
+                            <div className="bg-black/40 border border-white/10 rounded-lg p-5 min-h-[600px]">
+                                <RaidReadinessAudit />
                             </div>
                         )}
 

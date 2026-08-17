@@ -8,12 +8,19 @@ datasource db {
 }
 
 model Raider {
-  id          Int                @id @default(autoincrement())
-  name        String
-  server      String
-  role        Role
-  currentIlvl Float?
-  history     ItemLevelHistory[]
+  id                  Int                @id @default(autoincrement())
+  name                String
+  server              String
+  role                Role
+  currentIlvl         Float?
+  characterClass      String?
+  faction             String?
+  race                String?
+  mplusRating         Float?
+  weeklyKeysCompleted String?            // Serialized JSON array of numbers, e.g. "[15, 12, 10, 8]"
+  gearAudit           String?            // Serialized JSON audit report, e.g. '{"missingEnchants":["Ring 1", "Chest"], "emptySockets":2}'
+  lastAuditTime       DateTime?
+  history             ItemLevelHistory[]
 
   @@unique([name, server])
 }
