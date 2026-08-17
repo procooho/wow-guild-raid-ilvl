@@ -15,6 +15,14 @@ export default function Individual({ raider, showToast }) {
   useEffect(() => {
     setRaider(raider);
     setNewRole(raider.role || '');
+    if (raider?.history && Array.isArray(raider.history)) {
+      if (raider.history.length >= 2) {
+        const diff = raider.history[0].ilvl - raider.history[1].ilvl;
+        setProgress(Number(diff.toFixed(2)));
+      } else {
+        setProgress(0);
+      }
+    }
   }, [raider]);
 
   // Custom image loader to skip domain configuration for now
@@ -114,7 +122,7 @@ export default function Individual({ raider, showToast }) {
           const diff = data.raider.history[0].ilvl - data.raider.history[1].ilvl;
           setProgress(Number(diff.toFixed(2)));
         } else {
-          setProgress(null);
+          setProgress(0);
         }
       } catch (err) {
         if (!isActive) return;
@@ -265,8 +273,25 @@ export default function Individual({ raider, showToast }) {
               {raiderState.currentIlvl ?? 0}
             </div>
             {progress !== null && (
-              <div className={`font-mono text-xs font-bold mt-1 ${progress >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {progress > 0 ? '+' : ''}{progress} VARIANCE
+              <div
+                className={`font-mono text-xs font-bold mt-1 flex items-center justify-end gap-1.5 ${
+                  progress > 0
+                    ? 'text-green-400'
+                    : progress < 0
+                    ? 'text-red-400'
+                    : 'text-gray-400'
+                }`}
+              >
+                <span>
+                  {progress > 0
+                    ? `+${progress} ILVL GAIN`
+                    : progress < 0
+                    ? `${progress} ILVL CHANGE`
+                    : `0.00 ILVL CHANGE`}
+                </span>
+                <span className="text-[10px] text-gray-500 font-normal">
+                  (FROM PREV SCAN)
+                </span>
               </div>
             )}
           </div>

@@ -57,6 +57,8 @@ export default function RosterSummary({ roster }) {
     const [rawChartData, setRawChartData] = useState([]);
     const [timeRange, setTimeRange] = useState("1M");
     const [loading, setLoading] = useState(false);
+    const [forceLoading, setForceLoading] = useState(false);
+    const [alreadyScannedToday, setAlreadyScannedToday] = useState(false);
 
     // Custom Toast State
     const [toast, setToast] = useState({ show: false, message: "", type: "info" }); // type: success, error, info
@@ -96,11 +98,25 @@ export default function RosterSummary({ roster }) {
     };
 
     // --- Effects ---
+    // Check daily scan status on mount
     useEffect(() => {
-        if (roster) {
-            setUpdatedRoster(roster);
-            showToast("System initialized. Data loaded.", "info");
-        }
+        const checkScanStatus = async () => {
+            try {
+                const res = await fetch("/api/rosterItemLevels?checkOnly=true");
+                if (res.ok) {
+                    const data = await res.json();
+                    setAlreadyScannedToday(Boolean(data.alreadyScannedToday));
+                }
+            } catch (err) {
+                console.error("Failed to check scan status:", err);
+            }
+        };
+        checkScanStatus();
+    }, []);
+
+    // Sync updatedRoster with roster prop
+    useEffect(() => {
+        setUpdatedRoster(roster || []);
     }, [roster]);
 
     useEffect(() => {
@@ -174,20 +190,56 @@ export default function RosterSummary({ roster }) {
         ? updatedRoster.reduce((sum, r) => sum + (Number(r.currentIlvl) || 0), 0) / updatedRoster.length
         : 0;
 
-    const fetchRosterItemLevels = async () => {
-        setLoading(true);
-        showToast("Refreshing roster...", "info");
+    const fetchRosterItemLevels = async (force = false) => {
+        if (alreadyScannedToday && !force) {
+            showToast("Daily limit reached. Roster has already been scanned today. Please ask an officer for a refresh.", "error");
+            return;
+        }
+
+        if (force) {
+            setForceLoading(true);
+            showToast("Officer force scanning roster...", "info");
+        } else {
+            setLoading(true);
+            showToast("Refreshing roster...", "info");
+        }
+
         try {
-            const res = await fetch("/api/rosterItemLevels");
-            if (!res.ok) throw new Error(`Status ${res.status}`);
+            const url = force ? "/api/rosterItemLevels?force=true" : "/api/rosterItemLevels";
+            const res = await fetch(url);
             const data = await res.json();
+
+            if (!res.ok) {
+                const errorMsg = data.error || "Failed to refresh roster.";
+                if (data.alreadyScannedToday) {
+                    setAlreadyScannedToday(true);
+                }
+                showToast(errorMsg, "error");
+                return;
+            }
+
             setUpdatedRoster(data);
-            showToast("Roster updated successfully.", "success");
+            setAlreadyScannedToday(true);
+            showToast(force ? "Officer force scan completed successfully!" : "Roster updated successfully.", "success");
+
+            // Refresh history charts
+            try {
+                const historyRes = await fetch("/api/rosterHistory");
+                if (historyRes.ok) {
+                    const historyData = await historyRes.json();
+                    if (Array.isArray(historyData)) {
+                        setRawChartData(historyData);
+                    }
+                }
+            } catch (hErr) {
+                console.error("Failed to re-fetch history after scan:", hErr);
+            }
         } catch (err) {
             console.error("Refresh failed:", err);
             showToast("Failed to refresh roster.", "error");
         } finally {
             setLoading(false);
+            setForceLoading(false);
         }
     };
 
@@ -363,32 +415,72 @@ export default function RosterSummary({ roster }) {
             </div>
 
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-10">
-                <button
-                    onClick={fetchRosterItemLevels}
-                    disabled={loading}
-                    className={`
-                        relative overflow-hidden group px-8 py-4 bg-blue-900/20 border border-blue-500/50 text-blue-200 
-                        font-bold uppercase tracking-widest hover:bg-blue-500/20 hover:text-white transition-all
-                        disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto
-                    `}
-                    style={{ clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
-                >
-                    <div className="flex items-center gap-3 relative z-10">
-                        <RefreshIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-                        <span>{loading ? "Refreshing Roster..." : "Refresh Roster (Daily)"}</span>
-                    </div>
-                    {/* Button Scan Line Effect */}
-                    <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-blue-400/10 to-transparent group-hover:animate-shine pointer-events-none" />
-                </button>
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-10">
+                {/* Regular Daily Scan Button */}
+                <div className="flex flex-col items-center w-full md:w-auto">
+                    <button
+                        onClick={() => fetchRosterItemLevels(false)}
+                        disabled={loading || forceLoading}
+                        className={`
+                            relative overflow-hidden group px-8 py-4 bg-blue-900/20 border border-blue-500/50 text-blue-200 
+                            font-bold uppercase tracking-widest hover:bg-blue-500/20 hover:text-white transition-all
+                            disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto
+                        `}
+                        style={{ clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
+                    >
+                        <div className="flex items-center gap-3 relative z-10">
+                            <RefreshIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                            <span>
+                                {loading 
+                                    ? "Refreshing Roster..." 
+                                    : alreadyScannedToday 
+                                    ? "Roster Synced (Daily 1/1)" 
+                                    : "Scan Entire Roster (Daily)"}
+                            </span>
+                        </div>
+                        {/* Button Scan Line Effect */}
+                        <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-blue-400/10 to-transparent group-hover:animate-shine pointer-events-none" />
+                    </button>
+                    {alreadyScannedToday && (
+                        <span className="text-[9px] text-blue-400/60 font-mono tracking-wider mt-1.5 uppercase">
+                            Daily scan used. Ask officer for refresh.
+                        </span>
+                    )}
+                </div>
 
-                {/* Redirect Button */}
-                <div className="relative group/tooltip w-full sm:w-auto">
+                {/* Officer Force Scan Button (Only Shows to Logged In Officers) */}
+                {loggedIn && (
+                    <div className="flex flex-col items-center w-full md:w-auto">
+                        <button
+                            onClick={() => fetchRosterItemLevels(true)}
+                            disabled={loading || forceLoading}
+                            className={`
+                                relative overflow-hidden group px-8 py-4 bg-amber-950/30 border border-amber-500/60 text-amber-300 
+                                font-bold uppercase tracking-widest hover:bg-amber-500/20 hover:text-white transition-all
+                                disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto shadow-[0_0_15px_rgba(245,158,11,0.15)]
+                            `}
+                            style={{ clipPath: "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)" }}
+                        >
+                            <div className="flex items-center gap-3 relative z-10">
+                                <RefreshIcon className={`w-5 h-5 ${forceLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                                <span>{forceLoading ? "Force Scanning..." : "Force Scan Roster"}</span>
+                            </div>
+                            {/* Button Scan Line Effect */}
+                            <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-amber-400/10 to-transparent group-hover:animate-shine pointer-events-none" />
+                        </button>
+                        <span className="text-[9px] text-amber-400/80 font-mono tracking-wider mt-1.5 uppercase text-center">
+                            * Officer Only: Only shows to logged in officer. Bypasses daily scan limit.
+                        </span>
+                    </div>
+                )}
+
+                {/* Redirect Button (Readiness Dashboard) */}
+                <div className="relative group/tooltip w-full md:w-auto flex flex-col items-center">
                     <button
                         onClick={handleRedirectToAudit}
                         disabled={!loggedIn}
                         className={`
-                            relative overflow-hidden px-8 py-3.5 font-bold uppercase tracking-widest transition-all w-full sm:w-auto
+                            relative overflow-hidden group px-8 py-4 font-bold uppercase tracking-widest transition-all w-full md:w-auto
                             ${loggedIn 
                                 ? 'bg-cyan-900/20 border border-cyan-500/50 text-cyan-200 hover:bg-cyan-500/20 hover:text-white cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.2)]' 
                                 : 'bg-gray-900/10 border border-gray-800 text-gray-500 cursor-not-allowed opacity-60'
@@ -398,16 +490,16 @@ export default function RosterSummary({ roster }) {
                     >
                         <div className="flex items-center gap-3 relative z-10">
                             <ShieldIcon className="w-5 h-5" />
-                            <div className="flex flex-col items-start text-left">
-                                <span className="text-[12px] leading-tight font-bold">Readiness Dashboard</span>
-                                <span className={`text-[8px] font-mono tracking-widest uppercase mt-0.5
-                                    ${loggedIn ? 'text-cyan-400/85 animate-pulse' : 'text-red-500/75'}
-                                `}>
-                                    Officer Only
-                                </span>
-                            </div>
+                            <span>Readiness Dashboard</span>
                         </div>
+                        {/* Button Scan Line Effect */}
+                        {loggedIn && (
+                            <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent group-hover:animate-shine pointer-events-none" />
+                        )}
                     </button>
+                    <span className={`text-[9px] font-mono tracking-wider mt-1.5 uppercase text-center ${loggedIn ? 'text-cyan-400/80' : 'text-gray-500/80'}`}>
+                        {loggedIn ? "* Officer View: Gear & Mythic+ Audit" : "* Officer Login Required"}
+                    </span>
                     
                     {/* Tooltip for non-officers */}
                     {!loggedIn && (

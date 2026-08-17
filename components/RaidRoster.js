@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useThemeContext } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
 import RosterList from './RosterList';
 import Individual from './Individual';
 import SearchIcon from '@mui/icons-material/Search';
@@ -20,7 +21,26 @@ export default function RaidRoster({ roster, onDelete }) {
   const [updatedRoster, setUpdatedRoster] = useState(roster);
 
   const [loading, setLoading] = useState(false);
+  const [forceLoading, setForceLoading] = useState(false);
+  const [alreadyScannedToday, setAlreadyScannedToday] = useState(false);
   const { darkMode } = useThemeContext();
+  const { loggedIn } = useAuth();
+
+  // Check daily scan status on mount
+  useEffect(() => {
+    const checkScanStatus = async () => {
+      try {
+        const res = await fetch('/api/rosterItemLevels?checkOnly=true');
+        if (res.ok) {
+          const data = await res.json();
+          setAlreadyScannedToday(Boolean(data.alreadyScannedToday));
+        }
+      } catch (err) {
+        console.error('Failed to check scan status in RaidRoster:', err);
+      }
+    };
+    checkScanStatus();
+  }, []);
 
   // Toast State
   const [toast, setToast] = useState({ show: false, message: "", type: "info" });
@@ -94,20 +114,56 @@ export default function RaidRoster({ roster, onDelete }) {
     });
   }, [rawChartData, timeRange]);
 
-  const fetchRosterItemLevels = async () => {
-    setLoading(true);
+  const fetchRosterItemLevels = async (force = false) => {
+    if (alreadyScannedToday && !force) {
+      showToast('Daily limit reached. Roster has already been scanned today. Please ask an officer for a refresh.', 'error');
+      return;
+    }
+
+    if (force) {
+      setForceLoading(true);
+      showToast('Officer force syncing roster...', 'info');
+    } else {
+      setLoading(true);
+      showToast('Syncing item levels...', 'info');
+    }
+
     try {
-      const res = await fetch('/api/rosterItemLevels');
-      if (!res.ok) throw new Error(`Failed with status ${res.status}`);
+      const url = force ? '/api/rosterItemLevels?force=true' : '/api/rosterItemLevels';
+      const res = await fetch(url);
       const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg = data.error || 'Failed to refresh item levels.';
+        if (data.alreadyScannedToday) {
+          setAlreadyScannedToday(true);
+        }
+        showToast(errorMsg, 'error');
+        return;
+      }
+
       setUpdatedRoster(data);
-      showToast('Roster item levels refreshed!', 'success');
+      setAlreadyScannedToday(true);
+      showToast(force ? 'Officer force scan completed successfully!' : 'Roster item levels refreshed!', 'success');
+
+      // Refresh history chart
+      try {
+        const historyRes = await fetch('/api/rosterHistory');
+        if (historyRes.ok) {
+          const historyData = await historyRes.json();
+          if (Array.isArray(historyData)) {
+            setRawChartData(historyData);
+          }
+        }
+      } catch (hErr) {
+        console.error('Failed to re-fetch history after scan:', hErr);
+      }
     } catch (err) {
       console.error("Failed to fetch item levels:", err);
-      setUpdatedRoster(roster);
       showToast('Failed to refresh item levels.', 'error');
     } finally {
       setLoading(false);
+      setForceLoading(false);
     }
   };
 
@@ -299,15 +355,46 @@ export default function RaidRoster({ roster, onDelete }) {
         </div>
       </div>
 
-      {/* Refresh Action */}
-      <button
-        onClick={fetchRosterItemLevels}
-        disabled={loading}
-        className="mb-8 w-full md:w-auto self-start flex items-center gap-3 px-6 py-3 border border-blue-500/30 bg-blue-900/10 hover:bg-blue-900/30 text-blue-300 font-mono text-xs uppercase tracking-widest transition-all group"
-      >
-        <RefreshIcon className={`w-4 h-4 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-        {loading ? 'SYNCING DATA...' : 'SYNC ITEM LEVELS'}
-      </button>
+      {/* Refresh Actions Bar */}
+      <div className="mb-8 flex flex-col md:flex-row items-start md:items-center gap-4">
+        {/* Regular Scan Button */}
+        <div className="flex flex-col items-start">
+          <button
+            onClick={() => fetchRosterItemLevels(false)}
+            disabled={loading || forceLoading}
+            className="w-full md:w-auto flex items-center gap-3 px-6 py-3 border border-blue-500/30 bg-blue-900/10 hover:bg-blue-900/30 text-blue-300 font-mono text-xs uppercase tracking-widest transition-all group disabled:opacity-50"
+          >
+            <RefreshIcon className={`w-4 h-4 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+            {loading 
+              ? 'SYNCING DATA...' 
+              : alreadyScannedToday 
+              ? 'DAILY SYNC COMPLETED (1/1)' 
+              : 'SYNC ITEM LEVELS (DAILY)'}
+          </button>
+          {alreadyScannedToday && (
+            <span className="text-[9px] text-blue-400/60 font-mono tracking-wider mt-1 uppercase">
+              Daily scan used. Ask officer for refresh.
+            </span>
+          )}
+        </div>
+
+        {/* Officer Force Scan Button (Only Shows to Logged In Officers) */}
+        {loggedIn && (
+          <div className="flex flex-col items-start">
+            <button
+              onClick={() => fetchRosterItemLevels(true)}
+              disabled={loading || forceLoading}
+              className="w-full md:w-auto flex items-center gap-3 px-6 py-3 border border-amber-500/50 bg-amber-950/20 hover:bg-amber-900/40 text-amber-300 font-mono text-xs uppercase tracking-widest transition-all group shadow-[0_0_10px_rgba(245,158,11,0.15)] disabled:opacity-50"
+            >
+              <RefreshIcon className={`w-4 h-4 ${forceLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+              {forceLoading ? 'FORCE SCANNING...' : 'FORCE SCAN ROSTER'}
+            </button>
+            <span className="text-[9px] text-amber-400/80 font-mono tracking-wider mt-1 uppercase">
+              * Officer Only: Only shows to logged in officer. Bypasses daily limit.
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[600px]">

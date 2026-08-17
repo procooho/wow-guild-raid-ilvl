@@ -120,7 +120,7 @@ export default function RaidReadinessAudit() {
   // --- Sync Data (POST) ---
   const handleSyncReadiness = async (forceSync = false) => {
     if (alreadySyncedToday && !forceSync) {
-      showToast("Sync locked. Roster already synced today.", "error");
+      showToast("Daily limit reached. Roster has already been scanned today. Please ask an officer for a refresh.", "error");
       return;
     }
 
@@ -328,15 +328,20 @@ export default function RaidReadinessAudit() {
             <span>{syncing ? "Auditing..." : alreadySyncedToday ? "DAILY SYNCED" : "RUN DAILY SYNC"}</span>
           </button>
 
-          {/* Debug Force Sync bypass */}
+          {/* Officer Force Sync bypass */}
           {alreadySyncedToday && (
-            <button
-              onClick={() => handleSyncReadiness(true)}
-              disabled={syncing}
-              className="text-[9px] text-white/20 hover:text-white/60 underline uppercase ml-1"
-            >
-              [ Force ]
-            </button>
+            <div className="flex flex-col items-center">
+              <button
+                onClick={() => handleSyncReadiness(true)}
+                disabled={syncing}
+                className="px-3 py-1.5 bg-amber-950/30 border border-amber-500/50 text-amber-300 hover:bg-amber-500/20 text-[10px] font-mono font-bold tracking-wider uppercase transition-all shadow-[0_0_10px_rgba(245,158,11,0.15)] disabled:opacity-50"
+              >
+                [ Force Sync ]
+              </button>
+              <span className="text-[8px] text-amber-400/80 font-mono mt-0.5 tracking-tight">
+                * Officer Only
+              </span>
+            </div>
           )}
         </div>
       </div>

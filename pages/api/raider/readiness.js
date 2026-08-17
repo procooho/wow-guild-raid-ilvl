@@ -50,7 +50,7 @@ export default async function handler(req, res) {
 
       if (alreadySyncedToday && !force) {
         return res.status(403).json({
-          error: "Roster has already been synchronized today. Updates reset at midnight.",
+          error: "Daily limit reached. Roster has already been scanned today. Please ask an officer for a refresh.",
           alreadySynced: true
         });
       }
